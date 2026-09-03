@@ -805,7 +805,6 @@
           document.documentElement.style.setProperty('--font-scale', config.font_size_scale || 1.0);
           closeSettings();
           fetchSignageData();
-          alert('設定を保存・適用しました！');
           return;
         }
       } catch (e) {
@@ -819,9 +818,8 @@
       config = Object.assign({}, config, updated);
       document.documentElement.style.setProperty('--font-scale', config.font_size_scale || 1.0);
       closeSettings();
-      alert('この画面の表示速度・設定を適用しました！');
     } catch (e) {
-      alert('設定保存エラー: ' + e.message);
+      console.warn('LocalStorage config save failed:', e);
     }
   }
 
