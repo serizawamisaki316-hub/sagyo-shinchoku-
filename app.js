@@ -791,26 +791,35 @@
       font_size_scale: parseFloat(inputFontScale.value) || 1.0
     };
 
-    if (useStaticScriptMode) {
-      alert('閲覧モード（共有サーバー表示）のため、ここからの設定変更はできません。\n設定変更は管理者PCのサーバー画面から行ってください。');
-      closeSettings();
-      return;
+    const isHttp = window.location.protocol.startsWith('http');
+
+    if (isHttp) {
+      try {
+        const resp = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated)
+        });
+        if (resp.ok) {
+          config = Object.assign({}, config, updated);
+          document.documentElement.style.setProperty('--font-scale', config.font_size_scale || 1.0);
+          closeSettings();
+          fetchSignageData();
+          alert('設定を保存・適用しました！');
+          return;
+        }
+      } catch (e) {
+        console.warn('HTTP config save failed:', e);
+      }
     }
 
+    // Fallback for file:/// mode: apply and save locally
     try {
-      const resp = await fetch('/api/config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated)
-      });
-      if (resp.ok) {
-        config = Object.assign({}, config, updated);
-        document.documentElement.style.setProperty('--font-scale', config.font_size_scale || 1.0);
-        closeSettings();
-        fetchSignageData();
-      } else {
-        alert('設定の保存に失敗しました');
-      }
+      localStorage.setItem('local_signage_config', JSON.stringify(updated));
+      config = Object.assign({}, config, updated);
+      document.documentElement.style.setProperty('--font-scale', config.font_size_scale || 1.0);
+      closeSettings();
+      alert('この画面の表示速度・設定を適用しました！');
     } catch (e) {
       alert('設定保存エラー: ' + e.message);
     }
