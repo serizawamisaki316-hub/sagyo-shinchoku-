@@ -347,14 +347,15 @@ def get_live_com_rows(target_excel_path, canonical_day):
         if wb is None:
             return None
 
-        # Worksheet 1: 表示
-        ws_disp = wb.Worksheets(1)
-        # Worksheet 2: データ
+        ws_disp = None
         ws_data = None
         for s in wb.Worksheets:
-            if "データ" in s.Name:
+            if "表示" in s.Name:
+                ws_disp = s
+            elif "データ" in s.Name:
                 ws_data = s
-                break
+        if ws_disp is None:
+            ws_disp = wb.Worksheets(1)
         if ws_data is None:
             ws_data = ws_disp
 
@@ -594,8 +595,18 @@ def refresh_data_for_day(canonical_day):
 
         wb = openpyxl.load_workbook(io.BytesIO(file_bytes), data_only=True)
         sheetnames = wb.sheetnames
-        ws_disp = wb[sheetnames[0]]
-        ws_data = wb[sheetnames[1]] if len(sheetnames) > 1 else ws_disp
+        ws_disp = None
+        ws_data = None
+        for s in sheetnames:
+            if "表示" in s:
+                ws_disp = wb[s]
+            elif "データ" in s:
+                ws_data = wb[s]
+        if ws_disp is None:
+            ws_disp = wb[sheetnames[0]]
+        if ws_data is None:
+            ws_data = wb[sheetnames[1]] if len(sheetnames) > 1 else ws_disp
+
         disp_rows = list(ws_disp.iter_rows(values_only=True))
         data_rows = list(ws_data.iter_rows(values_only=True))
         last_mod = datetime.datetime.fromtimestamp(mtime).strftime("%Y/%m/%d %H:%M:%S")
