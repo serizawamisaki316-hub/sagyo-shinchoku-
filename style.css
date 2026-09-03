@@ -252,12 +252,12 @@ html, body {
   table-layout: fixed;
 }
 
-/* 列幅設定（コース名・号車名が切れないように幅を最適化: コース列20%確保） */
-.col-vehicle    { width: 10.0%; }
-.col-course-sub { width: 10.0%; }
-.col-time       { width: 7.0%; }
+/* 列幅設定（コース名・号車名・時間列の視認性を最大化） */
+.col-vehicle    { width: 10.5%; }
+.col-course-sub { width: 10.5%; }
+.col-time       { width: 7.5%; }
 .col-line       { width: 3.5%; }
-.col-num        { width: 2.64%; } /* 25 cols * 2.64% = 66.0% */
+.col-num        { width: 2.58%; } /* 25 cols * 2.58% = 64.5% */
 .col-slip       { width: 3.5%; }
 
 .header-table th {
@@ -380,14 +380,14 @@ html, body {
    コース名・号車バッジ（★特大フォント ＆ はみ出し防止自動フィット）
    ========================================================= */
 .cell-vehicle-tall {
-  padding: 6px 4px !important;
+  padding: 5px 3px !important;
   border-right: 1.5px solid var(--border-table) !important;
   height: 100% !important;
   vertical-align: middle !important;
   overflow: hidden;
 }
 
-/* 連結号車バッジ（例: 2号車、12号車、11号車②） ★特大フォント＆自動最適化 */
+/* 連結号車バッジ（例: 2号車、12号車、11号車②） ★38px〜50px特大フォント＆自動最適化 */
 .badge-vehicle-tall {
   width: 100%;
   height: 100%;
@@ -398,7 +398,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(20px, calc(30px * var(--font-scale)), 40px);
+  font-size: clamp(28px, calc(40px * var(--font-scale)), 50px);
   font-weight: 900;
   letter-spacing: -0.5px;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
@@ -407,9 +407,9 @@ html, body {
   box-sizing: border-box;
 }
 
-/* サブコースバッジ（例: AA, AC, AD, 03, HF, HG, HH, HD） ★特大フォント＆自動最適化 */
+/* サブコースバッジ（例: AA, AC, AD, 03, HF, HG, HH, HD） ★46px〜58px特大フォント＆自動最適化 */
 .cell-course-sub {
-  padding: 6px 4px !important;
+  padding: 5px 3px !important;
   border-right: 1.5px solid var(--border-table) !important;
   vertical-align: middle !important;
   overflow: hidden;
@@ -424,7 +424,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(24px, calc(38px * var(--font-scale)), 48px);
+  font-size: clamp(34px, calc(48px * var(--font-scale)), 58px);
   font-weight: 900;
   letter-spacing: -0.5px;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
@@ -433,9 +433,9 @@ html, body {
   box-sizing: border-box;
 }
 
-/* 1対1号車バッジ（例: 7号車、13号車、10号車①、4号車①） ★特大フォント＆自動最適化 */
+/* 1対1号車バッジ（例: 7号車、13号車、10号車①、4号車①） ★38px〜50px特大フォント＆自動最適化 */
 .cell-vehicle-single {
-  padding: 6px 4px !important;
+  padding: 5px 3px !important;
   border-right: 1px solid var(--border-cell) !important;
   vertical-align: middle !important;
   overflow: hidden;
@@ -450,7 +450,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(20px, calc(30px * var(--font-scale)), 40px);
+  font-size: clamp(28px, calc(40px * var(--font-scale)), 50px);
   font-weight: 900;
   letter-spacing: -0.5px;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
@@ -459,9 +459,9 @@ html, body {
   box-sizing: border-box;
 }
 
-/* ワイドコースバッジ（例: A4, C1） ★特大フォント＆自動最適化 */
+/* ワイドコースバッジ（例: A4, C1） ★54px〜68px超特大フォント＆自動最適化 */
 .cell-course-full {
-  padding: 6px 4px !important;
+  padding: 5px 3px !important;
   border-right: 1.5px solid var(--border-table) !important;
   vertical-align: middle !important;
   overflow: hidden;
@@ -476,7 +476,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(26px, calc(46px * var(--font-scale)), 56px);
+  font-size: clamp(40px, calc(56px * var(--font-scale)), 68px);
   font-weight: 900;
   letter-spacing: -0.5px;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
@@ -532,10 +532,10 @@ html, body {
 }
 
 /* =========================================================
-   搬送完了時間（フォント 28px ＆ 上下中央揃え）
+   搬送完了時間（フォント 38px ＆ 上下中央揃え）
    ========================================================= */
 .cell-time, .cell-time-tall {
-  padding: 8px 6px !important;
+  padding: 8px 4px !important;
   border-right: 1.5px solid var(--border-table) !important;
   vertical-align: middle !important;
   text-align: center;
@@ -546,18 +546,18 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   width: 100%;
 }
 
 .time-val {
-  font-size: calc(28px * var(--font-scale));
+  font-size: clamp(28px, calc(38px * var(--font-scale)), 46px);
   font-weight: 900;
   color: var(--time-text);
   font-variant-numeric: tabular-nums;
   transition: all 0.25s ease;
   letter-spacing: 0.5px;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
 /* 2段表示コンテナ（視認性向上） */
