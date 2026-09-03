@@ -1,0 +1,1018 @@
+/* =========================================================
+   倉庫作業進捗サイネージ - スタイルシート (style.css)
+   【コース名・号車名 フォント最大化 ＆ 上下左右中央配置 ＆ 完了時グレー連動】
+   ========================================================= */
+
+:root {
+  --header-bg: #0A2458;
+  --header-text: #FFFFFF;
+  
+  --bg-viewport: #EFF6FF;
+  --bg-card: #FFFFFF;
+  --bg-card-alt: #F8FAFC;
+  
+  --border-table: #93C5FD;
+  --border-cell: #DBEAFE;
+  
+  /* コース名の濃紺立体バッジ */
+  --badge-navy: #0A2558;
+  --badge-text: #FFFFFF;
+  
+  --time-text: #0A2558;
+  
+  /* 1〜25 進捗タイルカラー (ご指定仕様) */
+  --tile-done-bg: #0070C0;        /* 完了済み: 鮮やかなブルー */
+  --tile-active-bg: #94A3B8;      /* 進行中: グレー */
+  --tile-nodelivery-bg: #C6EFCE;  /* 配送なし: 薄い黄緑 */
+  --tile-pending-border: #CBD5E1;  /* 未着手: 白枠線 */
+  
+  --slip-done-bg: #0070C0;        /* 伝票完了: 完了済みと同じブルー */
+  
+  /* 完了コース (F列=1) グレー背景色 (案A) */
+  --completed-row-bg: #E2E8F0;
+  
+  --font-scale: 1.0;
+  --group-gap: 16px;              /* 号車グループ間の余白 */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-viewport);
+  color: #0F172A;
+  font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================================
+   Top Bar (上部ヘッダー)
+   ========================================================= */
+.signage-header {
+  height: 56px;
+  background: linear-gradient(180deg, #091E47 0%, #061633 100%);
+  border-bottom: 2px solid #00122E;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: relative;
+  z-index: 50;
+  color: #FFFFFF;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.system-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 9999px;
+  padding: 3px 10px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10B981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #10B981;
+  animation: pulse-green 2s infinite ease-in-out;
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.badge-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: #38BDF8;
+}
+
+/* 曜日切替タブボタングループ */
+.day-tabs-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(15, 23, 42, 0.75);
+  padding: 3px 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.day-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 4px 11px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.day-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+.day-tab.active {
+  background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+  color: #FFFFFF;
+  border-color: #38BDF8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
+  font-weight: 900;
+}
+
+.course-count-badge {
+  background: #1E293B;
+  color: #38BDF8;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.clock-display {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 3px 14px;
+  border-radius: 6px;
+}
+
+.clock-date {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94A3B8;
+}
+
+.clock-time {
+  font-size: 22px;
+  font-weight: 900;
+  color: #38BDF8;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #CBD5E1;
+}
+
+.controls-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-ctrl {
+  background: #1E293B;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #F8FAFC;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-ctrl:hover {
+  background: #334155;
+  color: #FFFFFF;
+}
+
+.btn-fullscreen {
+  background: #1D4ED8;
+  border-color: #3B82F6;
+}
+
+/* =========================================================
+   Fixed Column Header Table (ダークネイビー固定ヘッダー)
+   ========================================================= */
+.table-fixed-header-wrapper {
+  width: 100%;
+  background: var(--header-bg);
+  border-bottom: 2px solid #00173D;
+  position: relative;
+  z-index: 40;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0 12px;
+}
+
+.signage-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* 列幅設定（コース名・号車名が切れないように幅を最適化） */
+.col-vehicle    { width: 9.5%; }
+.col-course-sub { width: 9.5%; }
+.col-time       { width: 7.0%; }
+.col-line       { width: 3.5%; }
+.col-num        { width: 2.68%; } /* 25 cols * 2.68% = 67.0% */
+.col-slip       { width: 3.5%; }
+
+.header-table th {
+  background: var(--header-bg);
+  color: #FFFFFF;
+  font-size: clamp(12px, calc(14px * var(--font-scale)), 18px);
+  font-weight: 800;
+  text-align: center;
+  padding: 10px 2px;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.header-table th:last-child {
+  border-right: none;
+}
+
+/* =========================================================
+   Scrollable Viewport (スクロール領域)
+   ========================================================= */
+.scroll-viewport {
+  width: 100%;
+  height: calc(100vh - 56px - 42px);
+  overflow-y: auto;
+  position: relative;
+  background-color: var(--bg-viewport);
+  padding: 12px 12px 0 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #93C5FD transparent;
+  cursor: pointer;
+}
+
+.scroll-viewport::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-viewport::-webkit-scrollbar-thumb {
+  background: #93C5FD;
+  border-radius: 4px;
+}
+
+.scroll-viewport::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
+}
+
+.scroll-content {
+  width: 100%;
+  position: relative;
+  padding-bottom: 24px;
+}
+
+/* =========================================================
+   Vehicle Group Card (号車ごとの白カード ＆ 青枠線 ＆ 隙間)
+   ========================================================= */
+.vehicle-group-card {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: var(--group-gap);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-table);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(10, 36, 88, 0.08);
+}
+
+.vehicle-group-card td {
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+  border-right: 1px solid var(--border-cell);
+  border-bottom: 1px solid var(--border-cell);
+  font-size: calc(15px * var(--font-scale));
+  font-weight: 700;
+  background-color: #FFFFFF;
+}
+
+.vehicle-group-card tr:last-child td {
+  border-bottom: none;
+}
+
+.vehicle-group-card td:last-child {
+  border-right: none;
+}
+
+.course-separator-row td {
+  border-bottom: 1.5px solid var(--border-table) !important;
+}
+
+/* 行の縦幅 (64px / 60px) */
+.course-row-1 {
+  height: calc(64px * var(--font-scale));
+}
+
+.course-row-2 {
+  height: calc(60px * var(--font-scale));
+}
+
+.course-row-2 td {
+  background-color: #F8FAFC;
+}
+
+/* =========================================================
+   完了コース (F列=1) 全セル背景グレー (#E2E8F0) 連動
+   ========================================================= */
+.course-completed-row td {
+  background-color: var(--completed-row-bg) !important;
+}
+
+.group-completed-cell {
+  background-color: var(--completed-row-bg) !important;
+}
+
+/* =========================================================
+   コース名・号車バッジ（★最大限拡大 ＆ 自動フィット対応）
+   ========================================================= */
+.cell-vehicle-tall {
+  padding: 8px 6px !important;
+  border-right: 1.5px solid var(--border-table) !important;
+  height: 100% !important;
+  vertical-align: middle !important;
+  overflow: hidden;
+}
+
+/* 連結号車バッジ（例: 2号車、12号車、11号車②） ★フォント自動最適化＆文字詰め */
+.badge-vehicle-tall {
+  width: 100%;
+  height: 100%;
+  min-height: calc(114px * var(--font-scale));
+  background: var(--badge-navy);
+  color: var(--badge-text);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(16px, calc(24px * var(--font-scale)), 30px);
+  font-weight: 900;
+  letter-spacing: 0px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
+  padding: 0 2px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* サブコースバッジ（例: AA, AC, AD, 03, HF, HG, HH） ★フォント自動最適化 */
+.cell-course-sub {
+  padding: 8px 4px !important;
+  border-right: 1.5px solid var(--border-table) !important;
+  vertical-align: middle !important;
+  overflow: hidden;
+}
+
+.badge-course-sub {
+  width: 100%;
+  height: calc(106px * var(--font-scale));
+  background: var(--badge-navy);
+  color: var(--badge-text);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(18px, calc(32px * var(--font-scale)), 38px);
+  font-weight: 900;
+  letter-spacing: 0px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
+  padding: 0 2px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 1対1号車バッジ（例: 7号車、13号車、10号車①、4号車①） ★フォント自動最適化 */
+.cell-vehicle-single {
+  padding: 8px 4px !important;
+  border-right: 1px solid var(--border-cell) !important;
+  vertical-align: middle !important;
+  overflow: hidden;
+}
+
+.badge-vehicle-single {
+  width: 100%;
+  height: calc(106px * var(--font-scale));
+  background: var(--badge-navy);
+  color: var(--badge-text);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(16px, calc(24px * var(--font-scale)), 30px);
+  font-weight: 900;
+  letter-spacing: 0px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
+  padding: 0 2px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ワイドコースバッジ（例: A4, C1） ★フォント自動最適化 */
+.cell-course-full {
+  padding: 8px 6px !important;
+  border-right: 1.5px solid var(--border-table) !important;
+  vertical-align: middle !important;
+  overflow: hidden;
+}
+
+.badge-course-full {
+  width: 100%;
+  height: calc(106px * var(--font-scale));
+  background: var(--badge-navy);
+  color: var(--badge-text);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(18px, calc(32px * var(--font-scale)), 40px);
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
+  padding: 0 4px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* バッジ内テキストインナー（どんなモニター・文字数でも枠内に自動スケーリング） */
+.badge-text-inner {
+  display: inline-block;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.1;
+  width: max-content;
+  max-width: none;
+  transform-origin: center center;
+  transition: transform 0.1s ease;
+}
+
+/* =========================================================
+   ★ コース完了時（CK列=1）のグレー表示スタイル
+   ========================================================= */
+/* 1. 完了バッジ（濃紺から落ち着いたグレーへ変化） */
+.badge-completed,
+.group-completed-cell .badge-vehicle-tall,
+.group-completed-cell .badge-course-sub,
+.group-completed-cell .badge-vehicle-single,
+.group-completed-cell .badge-course-full {
+  background: #64748B !important; /* スレートグレー */
+  color: #F8FAFC !important;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid #475569 !important;
+}
+
+/* 2. 完了コース行の背景（薄いグレー） */
+.course-completed-row td {
+  background-color: var(--completed-row-bg, #E2E8F0) !important;
+}
+
+.course-completed-row .cell-line-furidashi,
+.course-completed-row .cell-line-sagyo {
+  color: #475569 !important;
+}
+
+.course-completed-row .progress-tile.tile-unstarted {
+  background-color: #F8FAFC !important;
+  border-color: #CBD5E1 !important;
+}
+
+.course-completed-row .slip-checkbox.slip-pending-empty {
+  background-color: #F8FAFC !important;
+  border-color: #CBD5E1 !important;
+}
+
+/* =========================================================
+   搬送完了時間（フォント 28px ＆ 上下中央揃え）
+   ========================================================= */
+.cell-time, .cell-time-tall {
+  padding: 8px 6px !important;
+  border-right: 1.5px solid var(--border-table) !important;
+  vertical-align: middle !important;
+  text-align: center;
+}
+
+.time-cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.time-val {
+  font-size: calc(28px * var(--font-scale));
+  font-weight: 900;
+  color: var(--time-text);
+  font-variant-numeric: tabular-nums;
+  transition: all 0.25s ease;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+
+/* 2段表示コンテナ（視認性向上） */
+.time-diff-2tier {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  min-width: 96px;
+  margin-top: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+/* 1段目: 完了時刻（例: 完了 13:35） */
+.diff-tier-time {
+  font-size: calc(11.5px * var(--font-scale));
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* 2段目: 時間差（例: +95分 遅延 / -15分 早着） */
+.diff-tier-val {
+  font-size: calc(14px * var(--font-scale));
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  line-height: 1.15;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 早着（緑系） */
+.diff-box-early {
+  background: #ECFDF5;
+  border: 1.5px solid #10B981;
+}
+.diff-box-early .diff-tier-time {
+  color: #065F46;
+}
+.diff-box-early .diff-tier-val {
+  color: #047857;
+}
+
+/* 遅延（赤系） */
+.diff-box-late {
+  background: #FEF2F2;
+  border: 1.5px solid #EF4444;
+}
+.diff-box-late .diff-tier-time {
+  color: #991B1B;
+}
+.diff-box-late .diff-tier-val {
+  color: #B91C1C;
+}
+
+/* 定刻（青・スレート系） */
+.diff-box-ontime {
+  background: #F1F5F9;
+  border: 1.5px solid #94A3B8;
+}
+.diff-box-ontime .diff-tier-time {
+  color: #475569;
+}
+.diff-box-ontime .diff-tier-val {
+  color: #0F172A;
+}
+
+/* 10分前未完了警告（文字自体の光彩・発光点滅アニメーション） */
+@keyframes text-pulse-yellow-glow {
+  0%, 100% {
+    color: #D97706; /* 濃いゴールデンアンバー */
+    text-shadow: 0 0 8px rgba(245, 158, 11, 0.4), 0 0 14px rgba(251, 191, 36, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    color: #EAB308; /* 輝くビビッドイエロー */
+    text-shadow: 0 0 12px rgba(234, 179, 8, 0.95), 0 0 24px rgba(250, 204, 21, 0.8), 0 0 36px rgba(253, 224, 71, 0.6);
+    transform: scale(1.06);
+  }
+}
+
+.time-val-warning {
+  display: inline-block;
+  animation: text-pulse-yellow-glow 1.8s infinite ease-in-out !important;
+  font-weight: 900 !important;
+  letter-spacing: 1px;
+}
+
+/* =========================================================
+   項目（振出 / 査照）
+   ========================================================= */
+.cell-line-furidashi {
+  font-size: calc(16px * var(--font-scale));
+  font-weight: 800;
+  color: #0A2458;
+  border-right: 1.5px solid var(--border-table) !important;
+  vertical-align: middle !important;
+}
+
+.cell-line-sagyo {
+  font-size: calc(16px * var(--font-scale));
+  font-weight: 800;
+  color: #0A2458;
+  border-right: 1.5px solid var(--border-table) !important;
+  vertical-align: middle !important;
+}
+
+/* =========================================================
+   1〜25 進捗タイル
+   ========================================================= */
+.cell-tile-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.progress-tile {
+  width: calc(36px * var(--font-scale));
+  height: calc(36px * var(--font-scale));
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(16px * var(--font-scale));
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  transition: all 0.15s ease;
+}
+
+/* ① ブルー: 完了済み (99) -> 青背景 + 白文字数字 */
+.progress-tile.tile-blue-done {
+  background-color: var(--tile-done-bg);
+  color: #FFFFFF;
+  border: 1px solid #005A9E;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+/* ① グレー: 進行中 (1) -> グレー背景 + 白文字数字 */
+.progress-tile.tile-grey-active {
+  background-color: var(--tile-active-bg);
+  color: #FFFFFF;
+  border: 1px solid #64748B;
+}
+
+/* ① 薄い黄緑: 配送なし -> 薄緑背景 (数字なし) */
+.progress-tile.tile-green-nodelivery {
+  background-color: var(--tile-nodelivery-bg);
+  border: 1px solid #A3E635;
+  color: transparent;
+}
+
+/* ③ 色なし: 未着手 (0) -> 白背景 + 薄い枠線 (数字非表示) */
+.progress-tile.tile-unstarted {
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--tile-pending-border);
+  color: transparent;
+}
+
+/* =========================================================
+   伝票
+   ========================================================= */
+.cell-slip {
+  border-left: 1.5px solid var(--border-table) !important;
+  vertical-align: middle !important;
+}
+
+.slip-checkbox-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.slip-checkbox {
+  width: calc(42px * var(--font-scale));
+  height: calc(42px * var(--font-scale));
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(25px * var(--font-scale));
+  font-weight: 900;
+}
+
+/* ② 伝票完了: 完了済みと同じブルー背景 + 白チェック */
+.slip-checkbox.slip-done-blue {
+  background-color: var(--slip-done-bg);
+  color: #FFFFFF;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* 伝票 配送なし: 薄い黄緑背景 (チェックなし) */
+.slip-checkbox.slip-nodelivery-green {
+  background-color: var(--tile-nodelivery-bg);
+  border: 1.5px solid #A3E635;
+  color: transparent;
+}
+
+/* 伝票未完了: 白抜き枠線 */
+.slip-checkbox.slip-pending-empty {
+  background-color: #FFFFFF;
+  border: 2px solid #CBD5E1;
+}
+
+/* Loop Notice Bar */
+.loop-notice-bar {
+  height: 52px;
+  background: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #0A2558;
+  font-size: 14px;
+  font-weight: 800;
+  border: 1.5px dashed #93C5FD;
+  border-radius: 6px;
+  margin: 12px 0;
+}
+
+.loop-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #93C5FD;
+  border-top-color: #0A2558;
+  border-radius: 50%;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Pause Floating Toast */
+.pause-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(10, 36, 88, 0.92);
+  color: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  z-index: 90;
+  pointer-events: none;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Error Banner */
+.error-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #DC2626;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+}
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-card {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  width: 560px;
+  max-width: 90vw;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  color: #0F172A;
+}
+
+.modal-header {
+  padding: 14px 20px;
+  background: var(--header-bg);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h2 {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.form-input {
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 5px;
+  padding: 8px 10px;
+  color: #0F172A;
+  font-size: 13px;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: #2563EB;
+  background: #FFFFFF;
+}
+
+.form-help {
+  font-size: 11px;
+  color: #64748B;
+}
+
+.modal-footer {
+  padding: 12px 20px;
+  background: #F1F5F9;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-secondary {
+  background: #E2E8F0;
+  color: #475569;
+}
+
+.btn-primary {
+  background: #0A2E65;
+  color: #FFFFFF;
+}
+
+/* =========================================================
+   ステータス凡例 (案1: トップヘッダー左側組み込み)
+   【作業中 -> 完了 -> 配送なし】
+   ========================================================= */
+.legend-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 6px;
+  padding: 4px 12px;
+  margin-left: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #E2E8F0;
+}
+
+.legend-tile {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend-tile-grey {
+  background-color: var(--tile-active-bg);
+  color: #FFFFFF;
+  border: 1px solid #64748B;
+}
+
+.legend-tile-blue {
+  background-color: var(--tile-done-bg);
+  color: #FFFFFF;
+  border: 1px solid #005A9E;
+}
+
+.legend-tile-green {
+  background-color: var(--tile-nodelivery-bg);
+  border: 1px solid #A3E635;
+}

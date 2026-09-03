@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>完了行グレー背景色（振出・査照 同一カラー）プレビュー比較</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      overflow-y: auto !important;
+      padding: 30px 20px;
+      background: #EFF6FF;
+    }
+    .preview-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .proposal-card-box {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 16px rgba(10, 36, 88, 0.08);
+      border: 1px solid #CBD5E1;
+    }
+    .proposal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #E2E8F0;
+    }
+    .proposal-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #0A2558;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .proposal-tag {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      background: #E2E8F0;
+      color: #334155;
+    }
+    .tag-recommended {
+      background: #FEF08A;
+      color: #854D0E;
+      border: 1px solid #EAB308;
+    }
+
+    /* 案A: 振出・査照ともに #E2E8F0 (スレート・クールグレー) */
+    .row-completed-a-r1 td:not(.cell-vehicle-tall):not(.cell-course-sub):not(.cell-vehicle-single):not(.cell-course-full):not(.cell-time):not(.cell-time-tall),
+    .row-completed-a-r2 td:not(.cell-vehicle-tall):not(.cell-course-sub):not(.cell-vehicle-single):not(.cell-course-full):not(.cell-time):not(.cell-time-tall) {
+      background-color: #E2E8F0 !important;
+    }
+
+    /* 案B: 振出・査照ともに #E5E7EB (ソフト・ライトグレー) */
+    .row-completed-b-r1 td:not(.cell-vehicle-tall):not(.cell-course-sub):not(.cell-vehicle-single):not(.cell-course-full):not(.cell-time):not(.cell-time-tall),
+    .row-completed-b-r2 td:not(.cell-vehicle-tall):not(.cell-course-sub):not(.cell-vehicle-single):not(.cell-course-full):not(.cell-time):not(.cell-time-tall) {
+      background-color: #E5E7EB !important;
+    }
+
+    /* 案C: 振出・査照ともに #CBD5E1 (シルバー・スモーキーグレー) */
+    .row-completed-c-r1 td:not(.cell-vehicle-tall):not(.cell-course-sub):not(.cell-vehicle-single):not(.cell-course-full):not(.cell-time):not(.cell-time-tall),
+    .row-completed-c-r2 td:not(.cell-vehicle-tall):not(.cell-course-sub):not(.cell-vehicle-single):not(.cell-course-full):not(.cell-time):not(.cell-time-tall) {
+      background-color: #CBD5E1 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="preview-container">
+    <div style="text-align: center; margin-bottom: 6px;">
+      <h1 style="color: #0A2458; font-size: 24px; font-weight: 900; margin-bottom: 6px;">
+        【比較プレビュー】完了コース（F列=1）進捗行の背景色（振出・査照 同一カラー）
+      </h1>
+      <p style="color: #475569; font-size: 14px; font-weight: 600;">
+        振出・査照を同じ色に統一し、案A〜Cの濃い方の色で比較表示しています。
+      </p>
+    </div>
+
+    <!-- 0. 現在の未完了状態 (白背景) -->
+    <div class="proposal-card-box">
+      <div class="proposal-header">
+        <div class="proposal-title">
+          <span>⚪ 【基準】未完了コース（F列 = 0）</span>
+          <span class="proposal-tag">現在の表示（未完了）</span>
+        </div>
+        <div style="color: #64748B; font-weight: 700; font-size: 13px;">背景色: 白 (#FFFFFF)</div>
+      </div>
+
+      <table class="signage-table vehicle-group-card" style="margin-bottom: 0;">
+        <colgroup>
+          <col class="col-vehicle"><col class="col-course-sub"><col class="col-time"><col class="col-line"><col class="col-num" span="25"><col class="col-slip">
+        </colgroup>
+        <tbody>
+          <tr class="course-row-1">
+            <td class="cell-vehicle-tall" rowspan="2"><div class="badge-vehicle-tall">4号車</div></td>
+            <td class="cell-course-sub" rowspan="2"><div class="badge-course-sub">17</div></td>
+            <td class="cell-time-tall" rowspan="2"><span class="time-val">12:40</span></td>
+            <td class="cell-line-furidashi">振出</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-grey-active">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td class="cell-slip" rowspan="2"><div class="slip-checkbox-container"><div class="slip-checkbox slip-pending-empty"></div></div></td>
+          </tr>
+          <tr class="course-row-2">
+            <td class="cell-line-sagyo">査照</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 1. 案A (★推奨) スレート・クールグレー #E2E8F0 統一 -->
+    <div class="proposal-card-box" style="border: 2px solid #3B82F6;">
+      <div class="proposal-header">
+        <div class="proposal-title">
+          <span>🔷 【案A（推奨）】スレート・クールグレー（振出・査照ともに #E2E8F0）</span>
+          <span class="proposal-tag tag-recommended">★ 一番おすすめ</span>
+        </div>
+        <div style="color: #1D4ED8; font-weight: 800; font-size: 14px;">統一カラーコード: #E2E8F0</div>
+      </div>
+      <p style="color: #334155; font-size: 13px; margin-bottom: 10px;">
+        振出・査照の2行とも同じスレートグレー（#E2E8F0）で塗りつぶし、ひとつの大きな完了ブロックとして見せます。ブルータイルとの一体感が最も綺麗です。
+      </p>
+
+      <table class="signage-table vehicle-group-card" style="margin-bottom: 0;">
+        <colgroup>
+          <col class="col-vehicle"><col class="col-course-sub"><col class="col-time"><col class="col-line"><col class="col-num" span="25"><col class="col-slip">
+        </colgroup>
+        <tbody>
+          <tr class="course-row-1 row-completed-a-r1">
+            <td class="cell-vehicle-tall" rowspan="2"><div class="badge-vehicle-tall">12号車</div></td>
+            <td class="cell-course-sub" rowspan="2"><div class="badge-course-sub">DF</div></td>
+            <td class="cell-time-tall" rowspan="2"><span class="time-val">12:10</span></td>
+            <td class="cell-line-furidashi">振出</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td class="cell-slip" rowspan="2"><div class="slip-checkbox-container"><div class="slip-checkbox slip-done-blue">✓</div></div></td>
+          </tr>
+          <tr class="course-row-2 row-completed-a-r2">
+            <td class="cell-line-sagyo">査照</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. 案B ソフト・ライトグレー #E5E7EB 統一 -->
+    <div class="proposal-card-box">
+      <div class="proposal-header">
+        <div class="proposal-title">
+          <span>◽ 【案B】ソフト・ライトグレー（振出・査照ともに #E5E7EB）</span>
+          <span class="proposal-tag">落ち着いたトーン</span>
+        </div>
+        <div style="color: #475569; font-weight: 800; font-size: 14px;">統一カラーコード: #E5E7EB</div>
+      </div>
+      <p style="color: #334155; font-size: 13px; margin-bottom: 10px;">
+        振出・査照の2行とも同じライトグレー（#E5E7EB）で塗りつぶし、柔らかく落ち着いた雰囲気で完了を示します。
+      </p>
+
+      <table class="signage-table vehicle-group-card" style="margin-bottom: 0;">
+        <colgroup>
+          <col class="col-vehicle"><col class="col-course-sub"><col class="col-time"><col class="col-line"><col class="col-num" span="25"><col class="col-slip">
+        </colgroup>
+        <tbody>
+          <tr class="course-row-1 row-completed-b-r1">
+            <td class="cell-vehicle-tall" rowspan="2"><div class="badge-vehicle-tall">12号車</div></td>
+            <td class="cell-course-sub" rowspan="2"><div class="badge-course-sub">DG</div></td>
+            <td class="cell-time-tall" rowspan="2"><span class="time-val">12:10</span></td>
+            <td class="cell-line-furidashi">振出</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">3</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td class="cell-slip" rowspan="2"><div class="slip-checkbox-container"><div class="slip-checkbox slip-done-blue">✓</div></div></td>
+          </tr>
+          <tr class="course-row-2 row-completed-b-r2">
+            <td class="cell-line-sagyo">査照</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">3</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 3. 案C シルバー・スモーキーグレー #CBD5E1 統一 -->
+    <div class="proposal-card-box">
+      <div class="proposal-header">
+        <div class="proposal-title">
+          <span>⬛ 【案C】シルバー・スモーキーグレー（振出・査照ともに #CBD5E1）</span>
+          <span class="proposal-tag">強コントラスト</span>
+        </div>
+        <div style="color: #334155; font-weight: 800; font-size: 14px;">統一カラーコード: #CBD5E1</div>
+      </div>
+      <p style="color: #334155; font-size: 13px; margin-bottom: 10px;">
+        振出・査照の2行とも同じスモーキーグレー（#CBD5E1）で塗りつぶし、白背景との差を最も強く主張します。
+      </p>
+
+      <table class="signage-table vehicle-group-card" style="margin-bottom: 0;">
+        <colgroup>
+          <col class="col-vehicle"><col class="col-course-sub"><col class="col-time"><col class="col-line"><col class="col-num" span="25"><col class="col-slip">
+        </colgroup>
+        <tbody>
+          <tr class="course-row-1 row-completed-c-r1">
+            <td class="cell-vehicle-tall" rowspan="2"><div class="badge-vehicle-tall">12号車</div></td>
+            <td class="cell-course-sub" rowspan="2"><div class="badge-course-sub">DH</div></td>
+            <td class="cell-time-tall" rowspan="2"><span class="time-val">12:10</span></td>
+            <td class="cell-line-furidashi">振出</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td class="cell-slip" rowspan="2"><div class="slip-checkbox-container"><div class="slip-checkbox slip-done-blue">✓</div></div></td>
+          </tr>
+          <tr class="course-row-2 row-completed-c-r2">
+            <td class="cell-line-sagyo">査照</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</body>
+</html>

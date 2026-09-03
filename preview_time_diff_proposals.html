@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>【デザイン案】全コース完了時の「搬送完了時間」と「完了時間差」の表示パターン</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      overflow-y: auto !important;
+      padding: 24px 20px 60px 20px;
+      background: #0B192C;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'BIZ UDPGothic', sans-serif;
+      color: #F1F5F9;
+    }
+
+    .preview-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 20px 28px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 900;
+      color: #38BDF8;
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-header p {
+      margin: 0;
+      color: #94A3B8;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .proposal-card-box {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      border: 1.5px solid #CBD5E1;
+      color: #0F172A;
+    }
+
+    .proposal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #E2E8F0;
+    }
+
+    .proposal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .proposal-badge {
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: #0A2458;
+      color: #FFFFFF;
+    }
+
+    .badge-recommended {
+      background: #059669;
+      color: #FFFFFF;
+    }
+
+    .proposal-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #0A2458;
+      margin: 0;
+    }
+
+    .proposal-desc {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    /* 時間セル内部のレイアウト拡張 */
+    .time-cell-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 4px 0;
+    }
+
+    .time-main-val {
+      font-size: calc(28px * var(--font-scale));
+      font-weight: 900;
+      color: var(--time-text);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* パターンA: ピル型バッジ（時間差 + 完了時刻） ★おすすめ */
+    .diff-pill-early {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1.5px solid #10B981;
+      border-radius: 9999px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
+    }
+    .diff-pill-early .diff-min {
+      font-size: 14px;
+      font-weight: 900;
+      color: #047857;
+    }
+
+    .diff-pill-late {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #FEF2F2;
+      color: #991B1B;
+      border: 1.5px solid #EF4444;
+      border-radius: 9999px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2);
+    }
+    .diff-pill-late .diff-min {
+      font-size: 14px;
+      font-weight: 900;
+      color: #B91C1C;
+    }
+
+    .actual-time-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748B;
+      letter-spacing: 0.3px;
+    }
+
+    /* パターンB: 2段バッジ（上段: 完了 11:45 / 下段: -15分 早着） */
+    .diff-badge-box-early {
+      background: #F0FDF4;
+      border: 1px solid #86EFAC;
+      border-radius: 6px;
+      padding: 3px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+    .diff-badge-box-early .badge-top {
+      font-size: 11px;
+      font-weight: 700;
+      color: #166534;
+    }
+    .diff-badge-box-early .badge-bottom {
+      font-size: 13px;
+      font-weight: 900;
+      color: #15803D;
+    }
+
+    .diff-badge-box-late {
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      border-radius: 6px;
+      padding: 3px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+    .diff-badge-box-late .badge-top {
+      font-size: 11px;
+      font-weight: 700;
+      color: #991B1B;
+    }
+    .diff-badge-box-late .badge-bottom {
+      font-size: 13px;
+      font-weight: 900;
+      color: #DC2626;
+    }
+
+    /* パターンC: スタイリッシュ直下テキスト（シンプル） */
+    .diff-text-early {
+      font-size: 13px;
+      font-weight: 900;
+      color: #059669;
+      background: rgba(16, 185, 129, 0.12);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .diff-text-late {
+      font-size: 13px;
+      font-weight: 900;
+      color: #DC2626;
+      background: rgba(239, 68, 68, 0.12);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* パターンD: タグ＋完了時刻一体型（スマートダーク） */
+    .diff-tag-dark-early {
+      background: #0A2458;
+      color: #6EE7B7;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+    .diff-tag-dark-early .tag-diff {
+      color: #FFFFFF;
+      font-weight: 900;
+    }
+
+    .diff-tag-dark-late {
+      background: #7F1D1D;
+      color: #FCA5A5;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+    .diff-tag-dark-late .tag-diff {
+      color: #FFFFFF;
+      font-weight: 900;
+    }
+
+    /* 固定ヘッダーのプレビュー表示 */
+    .header-preview {
+      width: 100%;
+      background: #0A2458;
+      border-radius: 6px 6px 0 0;
+      margin-bottom: 0;
+    }
+    .header-preview th {
+      background: #0A2458;
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 8px 2px;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="preview-container">
+
+    <!-- 概要ヘッダー -->
+    <div class="page-header">
+      <h1>📊 全コース完了時「完了時間差」表示デザイン案</h1>
+      <p>
+        全コース完了時に背景がグレー（#E2E8F0）になった際、<strong>「搬送完了予定時間」の下に「グレーになった完了時間」と「時間差（予定より何分早かったか／遅れたか）」</strong>を表示するUIの4つのバリエーションです。<br>
+        Excelの「完了時間（CM列）」および「時間差（CN列）」のデータと連動して自動表示されます。
+      </p>
+    </div>
+
+    <!-- ==========================================
+         案1: ピル型バッジ（時間差強調 ＋ 完了時刻） ★推奨
+         ========================================== -->
+    <div class="proposal-card-box">
+      <div class="proposal-header">
+        <div>
+          <div class="proposal-title-wrap">
+            <span class="proposal-badge badge-recommended">★ 案1（推奨）</span>
+            <h2 class="proposal-title">ピル型バッジ表示（早着: 緑 / 遅延: 赤 ＋ 完了時刻）</h2>
+          </div>
+          <div class="proposal-desc">
+            ひと目で「15分早く終わった（-15分）」「10分遅れた（+10分）」が識別でき、下に小さく実際の完了時刻（例: 完了 11:45）を表示します。
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 12px; color: #64748B; font-weight: 700;">
+          視認性：★★★★★ ／ 直感性：★★★★★
+        </div>
+      </div>
+
+      <!-- 比較用: 早着の例 (-15分) -->
+      <table class="signage-table header-preview">
+        <colgroup>
+          <col class="col-vehicle"><col class="col-course-sub"><col class="col-time"><col class="col-line"><col class="col-num" span="25"><col class="col-slip">
+        </colgroup>
+        <thead>
+          <tr>
+            <th colspan="2">平日コース</th>
+            <th>搬送完了時間</th>
+            <th>項目</th>
+            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th><th>19</th><th>20</th><th>21</th><th>22</th><th>23</th><th>24</th><th>25</th>
+            <th>伝票</th>
+          </tr>
+        </thead>
+      </table>
+
+      <!-- 2号車 (4コース連結 - 15分早着の例) -->
+      <table class="signage-table vehicle-group-card" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+        <colgroup>
+          <col class="col-vehicle"><col class="col-course-sub"><col class="col-time"><col class="col-line"><col class="col-num" span="25"><col class="col-slip">
+        </colgroup>
+        <tbody>
+          <!-- 03 -->
+          <tr class="course-row-1 course-completed-row">
+            <td class="cell-vehicle-tall group-completed-cell" rowspan="8">
+              <div class="badge-vehicle-tall">2号車</div>
+            </td>
+            <td class="cell-course-sub group-completed-cell" rowspan="2">
+              <div class="badge-course-sub">03</div>
+            </td>
+            <td class="cell-time-tall group-completed-cell" rowspan="8">
+              <div class="time-cell-content">
+                <span class="time-main-val">12:00</span>
+                <!-- 早着ピルバッジ -->
+                <div class="diff-pill-early">
+                  <span>▲</span><span class="diff-min">15分</span><span>早着</span>
+                </div>
+                <span class="actual-time-sub">完了 11:45</span>
+              </div>
+            </td>
+            <td class="cell-line-furidashi">振出</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">3</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">4</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">5</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">6</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">7</div></div></td>
+            <!-- 空白タイル -->
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>
+            <td class="cell-slip" rowspan="2">
+              <div class="slip-checkbox-container"><div class="slip-checkbox slip-done-blue">✓</div></div>
+            </td>
+          </tr>
+          <tr class="course-row-2 course-completed-row course-separator-row">
+            <td class="cell-line-sagyo">査照</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">3</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">4</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">5</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">6</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">7</div></div></td>
+            <td colspan="18"></td>
+          </tr>
+
+          <!-- HF -->
+          <tr class="course-row-1 course-completed-row">
+            <td class="cell-course-sub group-completed-cell" rowspan="2">
+              <div class="badge-course-sub">HF</div>
+            </td>
+            <td class="cell-line-furidashi">振出</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td colspan="23"></td>
+            <td class="cell-slip" rowspan="2">
+              <div class="slip-checkbox-container"><div class="slip-checkbox slip-done-blue">✓</div></div>
+            </td>
+          </tr>
+          <tr class="course-row-2 course-completed-row course-separator-row">
+            <td class="cell-line-sagyo">査照</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td colspan="23"></td>
+          </tr>
+
+          <!-- HG -->
+          <tr class="course-row-1 course-completed-row">
+            <td class="cell-course-sub group-completed-cell" rowspan="2">
+              <div class="badge-course-sub">HG</div>
+            </td>
+            <td class="cell-line-furidashi">振出</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">3</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">4</div></div></td>
+            <td colspan="21"></td>
+            <td class="cell-slip" rowspan="2">
+              <div class="slip-checkbox-container"><div class="slip-checkbox slip-done-blue">✓</div></div>
+            </td>
+          </tr>
+          <tr class="course-row-2 course-completed-row course-separator-row">
+            <td class="cell-line-sagyo">査照</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">3</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">4</div></div></td>
+            <td colspan="21"></td>
+          </tr>
+
+          <!-- HH -->
+          <tr class="course-row-1 course-completed-row">
+            <td class="cell-course-sub group-completed-cell" rowspan="2">
+              <div class="badge-course-sub">HH</div>
+            </td>
+            <td class="cell-line-furidashi">振出</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td colspan="23"></td>
+            <td class="cell-slip" rowspan="2">
+              <div class="slip-checkbox-container"><div class="slip-checkbox slip-done-blue">✓</div></div>
+            </td>
+          </tr>
+          <tr class="course-row-2 course-completed-row">
+            <td class="cell-line-sagyo">査照</td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+            <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+            <td colspan="23"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <!-- ==========================================
+         案2: 2段コンパクトバッジ型（上段: 完了時刻 / 下段: 時間差）
+         ========================================== -->
+    <div class="proposal-card-box">
+      <div class="proposal-header">
+        <div>
+          <div class="proposal-title-wrap">
+            <span class="proposal-badge">案2</span>
+            <h2 class="proposal-title">2段コンパクトボックス型</h2>
+          </div>
+          <div class="proposal-desc">
+            完了時刻と時間差をスッキリとした四角い枠内に整理して2段表示します。
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 12px; color: #64748B; font-weight: 700;">
+          視認性：★★★★☆ ／ 整理感：★★★★★
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: center; justify-content: space-around; background: #E2E8F0; padding: 24px; border-radius: 8px;">
+        <!-- 早着の例 -->
+        <div style="background: #FFFFFF; padding: 16px 24px; border-radius: 8px; border: 1.5px solid #CBD5E1; text-align: center; width: 220px;">
+          <div style="font-size: 12px; color: #64748B; font-weight: 800; margin-bottom: 6px;">【早着パターンの見え方】</div>
+          <div class="time-cell-content">
+            <span class="time-main-val">12:00</span>
+            <div class="diff-badge-box-early">
+              <span class="badge-top">完了 11:45</span>
+              <span class="badge-bottom">15分 早着 (-15)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 遅延の例 -->
+        <div style="background: #FFFFFF; padding: 16px 24px; border-radius: 8px; border: 1.5px solid #CBD5E1; text-align: center; width: 220px;">
+          <div style="font-size: 12px; color: #64748B; font-weight: 800; margin-bottom: 6px;">【遅延パターンの見え方】</div>
+          <div class="time-cell-content">
+            <span class="time-main-val">12:00</span>
+            <div class="diff-badge-box-late">
+              <span class="badge-top">完了 12:10</span>
+              <span class="badge-bottom">10分 遅延 (+10)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 定刻の例 -->
+        <div style="background: #FFFFFF; padding: 16px 24px; border-radius: 8px; border: 1.5px solid #CBD5E1; text-align: center; width: 220px;">
+          <div style="font-size: 12px; color: #64748B; font-weight: 800; margin-bottom: 6px;">【定刻パターンの見え方】</div>
+          <div class="time-cell-content">
+            <span class="time-main-val">12:00</span>
+            <div class="diff-badge-box-early" style="background: #F1F5F9; border-color: #CBD5E1;">
+              <span class="badge-top" style="color: #475569;">完了 12:00</span>
+              <span class="badge-bottom" style="color: #0F172A;">定刻通り (±0)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==========================================
+         案3: シンプル直下テキスト型（余白すっきり）
+         ========================================== -->
+    <div class="proposal-card-box">
+      <div class="proposal-header">
+        <div>
+          <div class="proposal-title-wrap">
+            <span class="proposal-badge">案3</span>
+            <h2 class="proposal-title">シンプル直下テキスト型（時間差のみスッキリ表示）</h2>
+          </div>
+          <div class="proposal-desc">
+            余計な装飾を省き、「-15分」や「+10分」の差分テキストを直接すっきりと表示します。
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 12px; color: #64748B; font-weight: 700;">
+          シンプルさ：★★★★★ ／ 省スペース：★★★★★
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: center; justify-content: space-around; background: #E2E8F0; padding: 24px; border-radius: 8px;">
+        <div style="background: #FFFFFF; padding: 16px 24px; border-radius: 8px; border: 1.5px solid #CBD5E1; text-align: center; width: 220px;">
+          <div style="font-size: 12px; color: #64748B; font-weight: 800; margin-bottom: 6px;">【15分早着】</div>
+          <div class="time-cell-content">
+            <span class="time-main-val">12:00</span>
+            <span class="diff-text-early">-15分 (11:45完了)</span>
+          </div>
+        </div>
+
+        <div style="background: #FFFFFF; padding: 16px 24px; border-radius: 8px; border: 1.5px solid #CBD5E1; text-align: center; width: 220px;">
+          <div style="font-size: 12px; color: #64748B; font-weight: 800; margin-bottom: 6px;">【10分遅延】</div>
+          <div class="time-cell-content">
+            <span class="time-main-val">12:00</span>
+            <span class="diff-text-late">+10分 (12:10完了)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ==========================================
+         案4: ネイビーダークタグ型（サイネージの統一感）
+         ========================================== -->
+    <div class="proposal-card-box">
+      <div class="proposal-header">
+        <div>
+          <div class="proposal-title-wrap">
+            <span class="proposal-badge">案4</span>
+            <h2 class="proposal-title">ネイビーダークタグ型（号車バッジと同系色のダーク統一）</h2>
+          </div>
+          <div class="proposal-desc">
+            左側の号車バッジ（ネイビー）と質感を合わせ、ダークネイビーのタグで引き締まったプロフェッショナルな印象にします。
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 12px; color: #64748B; font-weight: 700;">
+          デザイン統一感：★★★★★ ／ 存在感：★★★★☆
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: center; justify-content: space-around; background: #E2E8F0; padding: 24px; border-radius: 8px;">
+        <div style="background: #FFFFFF; padding: 16px 24px; border-radius: 8px; border: 1.5px solid #CBD5E1; text-align: center; width: 220px;">
+          <div style="font-size: 12px; color: #64748B; font-weight: 800; margin-bottom: 6px;">【早着】</div>
+          <div class="time-cell-content">
+            <span class="time-main-val">12:00</span>
+            <div class="diff-tag-dark-early">
+              <span>完了 11:45</span>
+              <span class="tag-diff">▲15分</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: #FFFFFF; padding: 16px 24px; border-radius: 8px; border: 1.5px solid #CBD5E1; text-align: center; width: 220px;">
+          <div style="font-size: 12px; color: #64748B; font-weight: 800; margin-bottom: 6px;">【遅延】</div>
+          <div class="time-cell-content">
+            <span class="time-main-val">12:00</span>
+            <div class="diff-tag-dark-late">
+              <span>完了 12:10</span>
+              <span class="tag-diff">＋10分</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

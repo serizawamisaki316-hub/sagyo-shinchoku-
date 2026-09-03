@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>凡例（説明）デザイン提案プレビュー - 倉庫作業進捗サイネージ</title>
+  <style>
+    :root {
+      --header-bg: #091E47;
+      --tile-done-bg: #0070C0;
+      --tile-active-bg: #94A3B8;
+      --tile-nodelivery-bg: #C6EFCE;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 30px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: #38BDF8;
+    }
+    p.desc {
+      font-size: 14px;
+      color: #94A3B8;
+      margin-bottom: 24px;
+    }
+    .proposal-card {
+      background: #1E293B;
+      border: 1.5px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .proposal-card.recommended {
+      border-color: #38BDF8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+    }
+    .proposal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #F8FAFC;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rec-badge {
+      background: #0284C7;
+      color: #FFF;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .preview-box {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 14px;
+    }
+    
+    /* Header Mockup */
+    .signage-header-mock {
+      height: 58px;
+      background: linear-gradient(180deg, #091E47 0%, #061633 100%);
+      border-bottom: 2px solid #00122E;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: #FFFFFF;
+    }
+    .header-left-mock {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .system-badge-mock {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #38BDF8;
+    }
+    .live-dot-mock {
+      width: 8px; height: 8px;
+      background-color: #10B981;
+      border-radius: 50%;
+    }
+    .sheet-title-mock {
+      font-size: 18px;
+      font-weight: 900;
+      color: #FFFFFF;
+    }
+    .count-badge-mock {
+      background: #1E293B;
+      color: #38BDF8;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .clock-mock {
+      font-size: 18px;
+      font-weight: 900;
+      color: #38BDF8;
+      background: rgba(0,0,0,0.3);
+      padding: 4px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    /* 凡例コンポーネント */
+    .legend-container-compact {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 6px;
+      padding: 4px 12px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #E2E8F0;
+    }
+    .legend-tile {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .legend-tile-blue {
+      background-color: var(--tile-done-bg);
+      color: #FFFFFF;
+      border: 1px solid #005A9E;
+    }
+    .legend-tile-grey {
+      background-color: var(--tile-active-bg);
+      color: #FFFFFF;
+      border: 1px solid #64748B;
+    }
+    .legend-tile-green {
+      background-color: var(--tile-nodelivery-bg);
+      border: 1px solid #A3E635;
+    }
+
+    /* 案3: サブバー */
+    .legend-subbar {
+      height: 32px;
+      background: #0F172A;
+      border-bottom: 1px solid #1E293B;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 20px;
+      gap: 16px;
+    }
+
+    .features-list {
+      font-size: 13px;
+      color: #CBD5E1;
+      line-height: 1.6;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📊 ステータス凡例（説明）デザイン提案プレビュー</h1>
+  <p class="desc">ご要望の「青: 完了」「グレー: 作業中」「緑: 配送なし」を画面上部へ配置するデザイン案です。</p>
+
+  <!-- 案1 -->
+  <div class="proposal-card recommended">
+    <div class="proposal-title">
+      🔷 【案1（★推奨）】トップヘッダー内・タイトル横組み込み型
+      <span class="rec-badge">推奨（最もすっきり・画面縦幅を消費しない）</span>
+    </div>
+    <div class="preview-box">
+      <div class="signage-header-mock">
+        <div class="header-left-mock">
+          <div class="system-badge-mock">
+            <span class="live-dot-mock"></span>
+            <span>リアルタイム作業進捗</span>
+          </div>
+          <span class="sheet-title-mock">(平日)表示</span>
+          <span class="count-badge-mock">70 コース</span>
+          
+          <!-- 凡例 -->
+          <div class="legend-container-compact">
+            <div class="legend-item">
+              <div class="legend-tile legend-tile-blue">1</div>
+              <span>完了</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-tile legend-tile-grey">1</div>
+              <span>作業中</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-tile legend-tile-green"></div>
+              <span>配送なし</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="clock-mock">16:30:00</div>
+
+        <div style="display:flex; gap:6px;">
+          <span style="background:#1E293B; font-size:11px; padding:4px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.1);">⏸️ スクロール中</span>
+          <span style="background:#1E293B; font-size:11px; padding:4px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.1);">⚡ 標準</span>
+        </div>
+      </div>
+    </div>
+    <ul class="features-list">
+      <li><strong>特長</strong>: ヘッダー左側のタイトル・コース数のすぐ隣にスマートに組み込みます。</li>
+      <li><strong>メリット</strong>: 画面の縦幅（高さ）を一切削らず、サイネージの作業コース一覧の表示領域を最大に保ちます。</li>
+      <li><strong>見た目</strong>: 濃紺ヘッダーの統一感を崩さず、サイバー＆モダンなガラスピルで綺麗にまとまります。</li>
+    </ul>
+  </div>
+
+  <!-- 案2 -->
+  <div class="proposal-card">
+    <div class="proposal-title">
+      🔷 【案2】トップヘッダー内・時計の右側（右寄り）配置型
+    </div>
+    <div class="preview-box">
+      <div class="signage-header-mock">
+        <div class="header-left-mock">
+          <div class="system-badge-mock">
+            <span class="live-dot-mock"></span>
+            <span>リアルタイム作業進捗</span>
+          </div>
+          <span class="sheet-title-mock">(平日)表示</span>
+          <span class="count-badge-mock">70 コース</span>
+        </div>
+
+        <div class="clock-mock">16:30:00</div>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+          <!-- 凡例 -->
+          <div class="legend-container-compact">
+            <div class="legend-item">
+              <div class="legend-tile legend-tile-blue">1</div>
+              <span>完了</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-tile legend-tile-grey">1</div>
+              <span>作業中</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-tile legend-tile-green"></div>
+              <span>配送なし</span>
+            </div>
+          </div>
+
+          <span style="background:#1E293B; font-size:11px; padding:4px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.1);">⏸️ スクロール中</span>
+        </div>
+      </div>
+    </div>
+    <ul class="features-list">
+      <li><strong>特長</strong>: タイトル周辺をすっきりさせ、中央時計と操作ボタンの間に配置します。</li>
+    </ul>
+  </div>
+
+  <!-- 案3 -->
+  <div class="proposal-card">
+    <div class="proposal-title">
+      🔷 【案3】ヘッダー直下の専用サブバー帯
+    </div>
+    <div class="preview-box">
+      <div class="signage-header-mock">
+        <div class="header-left-mock">
+          <div class="system-badge-mock">
+            <span class="live-dot-mock"></span>
+            <span>リアルタイム作業進捗</span>
+          </div>
+          <span class="sheet-title-mock">(平日)表示</span>
+          <span class="count-badge-mock">70 コース</span>
+        </div>
+        <div class="clock-mock">16:30:00</div>
+        <div style="font-size:11px; color:#94A3B8;">同期中</div>
+      </div>
+      <div class="legend-subbar">
+        <span style="font-size:12px; color:#94A3B8; font-weight:700;">【ステータス凡例】</span>
+        <div class="legend-item">
+          <div class="legend-tile legend-tile-blue">1</div>
+          <span>青: 完了</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-tile legend-tile-grey">1</div>
+          <span>グレー: 作業中</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-tile legend-tile-green"></div>
+          <span>緑: 配送なし</span>
+        </div>
+      </div>
+    </div>
+    <ul class="features-list">
+      <li><strong>特長</strong>: ヘッダーの下に独立した帯（高さ32px）を設け、凡例を強調します。</li>
+      <li><strong>注意点</strong>: 縦幅を約32px消費するため、1画面に表示できるコース数がわずかに減ります。</li>
+    </ul>
+  </div>
+
+</body>
+</html>

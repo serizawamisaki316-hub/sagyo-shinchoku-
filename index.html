@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>倉庫作業進捗サイネージ</title>
+  <link rel="stylesheet" href="style.css?v=20260902_03">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <!-- Top Navigation & Dashboard Bar -->
+  <header class="signage-header" id="signage-header">
+    <div class="header-left">
+      <div class="system-badge">
+        <span class="live-dot"></span>
+        <span class="badge-text">リアルタイム進捗</span>
+      </div>
+
+      <!-- 曜日切替タブ (平日 / 月曜 / 火曜 / 日・祝) -->
+      <div class="day-tabs-group" id="day-tabs-group">
+        <button class="day-tab" data-day="平日">平日</button>
+        <button class="day-tab" data-day="月曜">月曜</button>
+        <button class="day-tab" data-day="火曜">火曜</button>
+        <button class="day-tab" data-day="日・祝">日・祝</button>
+      </div>
+
+      <span class="course-count-badge" id="course-count-badge">70 コース</span>
+      <div class="legend-container">
+        <div class="legend-item">
+          <div class="legend-tile legend-tile-grey">1</div>
+          <span>作業中</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-tile legend-tile-blue">1</div>
+          <span>完了</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-tile legend-tile-green"></div>
+          <span>配送なし</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="clock-display">
+        <span class="clock-date" id="clock-date">2026/08/28 (金)</span>
+        <span class="clock-time" id="clock-time">11:30:00</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="status-pill" id="sync-status-pill">
+        <span class="status-icon" id="sync-status-icon">🟢</span>
+        <span class="status-text" id="sync-status-text">最終更新 11:30:00</span>
+      </div>
+
+      <div class="controls-group">
+        <button class="btn-ctrl" id="btn-toggle-scroll" title="スクロール一時停止/再開 (Space)">
+          <span id="scroll-icon">⏸️</span>
+          <span id="scroll-btn-text">スクロール中</span>
+        </button>
+        <button class="btn-ctrl" id="btn-speed" title="スクロール速度切替">
+          ⚡ <span id="speed-label">標準</span>
+        </button>
+        <button class="btn-ctrl" id="btn-settings" title="設定">
+          ⚙️ 設定
+        </button>
+        <button class="btn-ctrl btn-fullscreen" id="btn-fullscreen" title="全画面表示 (F11)">
+          ⛶ 全画面
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Fixed Table Column Headers (Dark Navy) -->
+  <div class="table-fixed-header-wrapper">
+    <table class="signage-table header-table">
+      <colgroup>
+        <col class="col-vehicle">
+        <col class="col-course-sub">
+        <col class="col-time">
+        <col class="col-line">
+        <col class="col-num" span="25">
+        <col class="col-slip">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="th-course-name th-course-main" id="th-course-main">平日コース</th>
+          <th class="th-course-name th-course-sub" id="th-course-sub">平日コース</th>
+          <th class="th-time">搬送完了時間</th>
+          <th class="th-line">項目</th>
+          <th class="th-num">1</th>
+          <th class="th-num">2</th>
+          <th class="th-num">3</th>
+          <th class="th-num">4</th>
+          <th class="th-num">5</th>
+          <th class="th-num">6</th>
+          <th class="th-num">7</th>
+          <th class="th-num">8</th>
+          <th class="th-num">9</th>
+          <th class="th-num">10</th>
+          <th class="th-num">11</th>
+          <th class="th-num">12</th>
+          <th class="th-num">13</th>
+          <th class="th-num">14</th>
+          <th class="th-num">15</th>
+          <th class="th-num">16</th>
+          <th class="th-num">17</th>
+          <th class="th-num">18</th>
+          <th class="th-num">19</th>
+          <th class="th-num">20</th>
+          <th class="th-num">21</th>
+          <th class="th-num">22</th>
+          <th class="th-num">23</th>
+          <th class="th-num">24</th>
+          <th class="th-num">25</th>
+          <th class="th-slip">伝票</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+
+  <!-- Scrollable Viewport Container -->
+  <main class="scroll-viewport" id="scroll-viewport">
+    <div class="scroll-content" id="scroll-content">
+      <div id="course-cards-container"></div>
+
+      <!-- Bottom Loop Notice -->
+      <div class="loop-notice-bar" id="loop-notice-bar">
+        <span class="loop-spinner"></span>
+        <span>全コース表示完了 - まもなく先頭へ戻ります</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Error Banner -->
+  <div class="error-banner" id="error-banner" style="display: none;">
+    <span class="error-icon">⚠️</span>
+    <span class="error-msg" id="error-msg">エクセルデータを読み込み中...</span>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settings-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>⚙️ サイネージ設定</h2>
+        <button class="modal-close" id="btn-close-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="input-excel-path">Teams / OneDriveのエクセルファイルパス:</label>
+          <input type="text" id="input-excel-path" class="form-input" placeholder="C:\path	o\(平日)作業進捗管理データ.xlsm">
+          <small class="form-help">Teamsの同期フォルダ内にある .xlsm ファイルの絶対パスを指定します。</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="input-poll-interval">データ更新間隔 (秒):</label>
+            <input type="number" id="input-poll-interval" class="form-input" min="2" max="60" value="5">
+          </div>
+          <div class="form-group">
+            <label for="input-scroll-speed">スクロール速度 (px/秒):</label>
+            <input type="number" id="input-scroll-speed" class="form-input" min="10" max="100" value="35">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="input-bottom-pause">最下部の一時停止 (秒):</label>
+            <input type="number" id="input-bottom-pause" class="form-input" min="1" max="30" value="4">
+          </div>
+          <div class="form-group">
+            <label for="input-top-pause">最上部の一時停止 (秒):</label>
+            <input type="number" id="input-top-pause" class="form-input" min="1" max="30" value="2">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="input-font-scale">文字サイズ倍率:</label>
+          <select id="input-font-scale" class="form-input">
+            <option value="0.9">小 (90%)</option>
+            <option value="1.0" selected>標準 (100%)</option>
+            <option value="1.15">大 (115% - 大型モニター推奨)</option>
+            <option value="1.3">特大 (130% - 遠距離用)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-cancel-settings">キャンセル</button>
+        <button class="btn btn-primary" id="btn-save-settings">保存して適用</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="signage_data.js"></script>
+  <script src="app.js?v=20260903_02"></script>
+</body>
+
+</html>
