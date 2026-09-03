@@ -633,16 +633,31 @@
       `;
     });
 
-    const savedScrollPos = viewport ? viewport.scrollTop : 0;
+    const prevScrollTop = viewport ? viewport.scrollTop : 0;
+    const prevIsScrolling = isScrolling;
 
     courseCardsContainer.innerHTML = html;
     fitBadgeFontSizes();
 
-    // Preserve scroll position so re-renders never jump to top
-    if (viewport && savedScrollPos > 0) {
-      viewport.scrollTop = savedScrollPos;
-      currentScrollY = savedScrollPos;
+    // 1. Synchronous immediate scroll restoration
+    if (viewport && prevScrollTop > 0) {
+      viewport.scrollTop = prevScrollTop;
+      currentScrollY = prevScrollTop;
     }
+
+    // 2. Secondary restoration on animation frame (protects against browser layout reflow)
+    requestAnimationFrame(() => {
+      if (viewport && prevScrollTop > 0) {
+        viewport.scrollTop = prevScrollTop;
+        currentScrollY = prevScrollTop;
+      }
+      if (!prevIsScrolling) {
+        isScrolling = false;
+        if (pauseToast) pauseToast.style.display = 'flex';
+        if (scrollIcon) scrollIcon.textContent = '▶️';
+        if (scrollBtnText) scrollBtnText.textContent = '停止中';
+      }
+    });
   }
 
   function fitBadgeFontSizes() {
@@ -716,12 +731,6 @@
             viewport.scrollTo({ top: 0, behavior: 'smooth' });
 
             pauseTimer = setTimeout(() => {
-              if (useStaticScriptMode) {
-                sessionStorage.setItem('signage_scroll_top', '0');
-                sessionStorage.setItem('signage_is_paused', 'false');
-                window.location.reload();
-                return;
-              }
               isScrolling = true;
               lastTimestamp = performance.now();
               requestAnimationFrame(scrollStep);
@@ -955,19 +964,6 @@
     }
   } catch (e) {
     setTimeout(startScrolling, 1000);
-  }
-
-  // Periodic Auto-Refresh for Standalone/Teams preview: only runs when paused to not interrupt full-screen scroll
-  if (useStaticScriptMode) {
-    setInterval(() => {
-      if (!isScrolling) {
-        try {
-          sessionStorage.setItem('signage_scroll_top', String(viewport.scrollTop));
-          sessionStorage.setItem('signage_is_paused', 'true');
-        } catch (e) {}
-        window.location.reload();
-      }
-    }, 25000);
   }
 
 })();
