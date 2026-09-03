@@ -128,6 +128,14 @@ def save_config(cfg):
         print("[CONFIG SAVE ERROR]", e, flush=True)
 
 
+def expand_path(p):
+    """Expands %USERPROFILE%, %USERNAME%, and environment variables in path."""
+    if not p or not isinstance(p, str):
+        return ""
+    expanded = os.path.expandvars(p.strip())
+    return os.path.normpath(expanded)
+
+
 def get_candidate_onedrive_roots():
     candidate_onedrive_roots = []
     user_profile = os.environ.get("USERPROFILE", "")
@@ -139,27 +147,91 @@ def get_candidate_onedrive_roots():
         if os.path.exists(p1) and p1 not in candidate_onedrive_roots:
             candidate_onedrive_roots.append(p1)
     for fallback in [
-        r"c:\Users\00137184\OneDrive - トヨタモビリティパーツ株式会社",
-        r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社"
+        r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社",
+        r"c:\Users\00137184\OneDrive - トヨタモビリティパーツ株式会社"
     ]:
         if os.path.exists(fallback) and fallback not in candidate_onedrive_roots:
             candidate_onedrive_roots.append(fallback)
     return candidate_onedrive_roots
 
 
+# Cache to log source transitions only when changed
+LAST_LOGGED_SOURCE = {}
+
+
 def find_excel_file_for_day(canonical_day):
+    """
+    Finds target Excel file with multi-tier automatic fallback:
+      Priority 1: Dedicated Server PC (85371-housen-k5) direct path
+      Priority 2: config.json defined candidate paths (supports list & %USERPROFILE%)
+      Priority 3: Auto-detected active OneDrive / Shortcuts / ★入力シート on current running PC
+    """
+    global LAST_LOGGED_SOURCE
     try:
         cfg = load_config()
-        configured_paths = cfg.get("excel_paths", {})
-        if canonical_day in configured_paths and configured_paths[canonical_day]:
-            p = configured_paths[canonical_day]
-            if os.path.exists(p):
+        current_user = os.environ.get("USERNAME", "ローカルユーザー")
+        keywords = DAY_KEYWORD_MAP.get(canonical_day, ["(平日)"])
+
+        # -------------------------------------------------------------
+        # Priority 1: Check Dedicated Server PC (85371-housen-k5) paths
+        # -------------------------------------------------------------
+        server_pc_candidates = {
+            "平日": [
+                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - 平日(水～土)（本番用・使用不可）\(平日)作業進捗管理データ.xlsm",
+                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
+                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm"
+            ],
+            "月曜": [
+                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - 月曜（本番用・使用不可）\(月)作業進捗管理データ.xlsm",
+                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\月曜（本番用）\(月)作業進捗管理データ.xlsm"
+            ],
+            "火曜": [
+                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - 火曜（本番用・使用不可）\(火)作業進捗管理データ.xlsm",
+                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\火曜（本番用）\(火)作業進捗管理データ.xlsm"
+            ],
+            "日・祝": [
+                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - 日祝（本番用・使用不可）\(日祝)作業進捗管理データ.xlsm",
+                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\日祝（本番用）\(日祝)作業進捗管理データ.xlsm"
+            ]
+        }
+
+        for candidate in server_pc_candidates.get(canonical_day, []):
+            p = expand_path(candidate)
+            if p and os.path.exists(p):
+                if LAST_LOGGED_SOURCE.get(canonical_day) != p:
+                    LAST_LOGGED_SOURCE[canonical_day] = p
+                    print(f"[DATA SOURCE: 優先①] [{canonical_day}] サーバーPC(85371-housen-k5)のOneDriveを検出: {p}", flush=True)
                 return p
 
+        # -------------------------------------------------------------
+        # Priority 2: Configured paths in config.json
+        # -------------------------------------------------------------
+        configured_entry = cfg.get("excel_paths", {}).get(canonical_day)
+        candidates_from_config = []
+        if isinstance(configured_entry, list):
+            candidates_from_config.extend(configured_entry)
+        elif isinstance(configured_entry, str) and configured_entry.strip():
+            candidates_from_config.append(configured_entry.strip())
+
+        if canonical_day == "平日":
+            legacy_p = cfg.get("excel_path", "")
+            if legacy_p and legacy_p not in candidates_from_config:
+                candidates_from_config.append(legacy_p)
+
+        for raw_p in candidates_from_config:
+            p = expand_path(raw_p)
+            if p and os.path.exists(p):
+                if LAST_LOGGED_SOURCE.get(canonical_day) != p:
+                    LAST_LOGGED_SOURCE[canonical_day] = p
+                    print(f"[DATA SOURCE: 優先②] [{canonical_day}] config.json指定パスを使用: {p}", flush=True)
+                return p
+
+        # -------------------------------------------------------------
+        # Priority 3: Automatic fallback on current PC's OneDrive / Shortcuts
+        # -------------------------------------------------------------
         search_dirs = []
         candidate_onedrive_roots = get_candidate_onedrive_roots()
 
-        # Prioritize Shortcuts / ★入力シート and OneDrive subdirectories FIRST
         for onedrive_root in candidate_onedrive_roots:
             if not os.path.exists(onedrive_root):
                 continue
@@ -169,7 +241,6 @@ def find_excel_file_for_day(canonical_day):
                     depth = len(rel.split(os.sep)) if rel != "." else 0
                     if depth <= 3:
                         if root_dir not in search_dirs:
-                            # Prioritize folders with '入力シート' or '新体制'
                             if "入力シート" in root_dir or "新体制" in root_dir:
                                 search_dirs.insert(0, root_dir)
                             else:
@@ -179,16 +250,6 @@ def find_excel_file_for_day(canonical_day):
             except Exception:
                 pass
 
-        main_path = cfg.get("excel_path", "")
-        if main_path:
-            main_dir = os.path.dirname(main_path)
-            if os.path.exists(main_dir) and main_dir not in search_dirs:
-                search_dirs.append(main_dir)
-
-        if APP_DIR not in search_dirs:
-            search_dirs.append(APP_DIR)
-
-        keywords = DAY_KEYWORD_MAP.get(canonical_day, ["(平日)"])
         matched_candidates = []
 
         for s_dir in search_dirs:
@@ -210,12 +271,16 @@ def find_excel_file_for_day(canonical_day):
                 pass
 
         if matched_candidates:
-            # Sort by official name first, then by newest mtime
             matched_candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
-            return matched_candidates[0][2]
+            chosen = matched_candidates[0][2]
+            if LAST_LOGGED_SOURCE.get(canonical_day) != chosen:
+                LAST_LOGGED_SOURCE[canonical_day] = chosen
+                print(f"[PATH FALLBACK: 優先③] [{canonical_day}] サーバーPC未検出のため、{current_user}のOneDriveを自動検知して使用: {chosen}", flush=True)
+            return chosen
 
         return ""
-    except Exception:
+    except Exception as e:
+        print(f"[PATH ERROR] [{canonical_day}]: {e}", flush=True)
         return ""
 
 
