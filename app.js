@@ -641,10 +641,10 @@
 
   // 3. Smooth Auto-Scroll Engine with Click Toggle & Free Mouse Scroll
   function getScrollMetrics() {
-    const contentH = scrollContent.offsetHeight;
+    const scrollH = viewport.scrollHeight;
     const viewH = viewport.clientHeight;
-    const maxScroll = Math.max(0, contentH - viewH);
-    return { contentH, viewH, maxScroll };
+    const maxScroll = Math.max(0, scrollH - viewH);
+    return { scrollH, viewH, maxScroll };
   }
 
   function scrollStep(timestamp) {
@@ -903,15 +903,17 @@
     setTimeout(startScrolling, 1000);
   }
 
-  // Periodic Auto-Refresh for Standalone/Teams preview (every 20s) to guarantee live data even while paused
+  // Periodic Auto-Refresh for Standalone/Teams preview: only runs when paused to not interrupt full-screen scroll
   if (useStaticScriptMode) {
     setInterval(() => {
-      try {
-        sessionStorage.setItem('signage_scroll_top', String(viewport.scrollTop));
-        sessionStorage.setItem('signage_is_paused', String(!isScrolling));
-      } catch (e) {}
-      window.location.reload();
-    }, 20000);
+      if (!isScrolling) {
+        try {
+          sessionStorage.setItem('signage_scroll_top', String(viewport.scrollTop));
+          sessionStorage.setItem('signage_is_paused', 'true');
+        } catch (e) {}
+        window.location.reload();
+      }
+    }, 25000);
   }
 
 })();
