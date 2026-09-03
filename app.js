@@ -633,8 +633,16 @@
       `;
     });
 
+    const savedScrollPos = viewport ? viewport.scrollTop : 0;
+
     courseCardsContainer.innerHTML = html;
     fitBadgeFontSizes();
+
+    // Preserve scroll position so re-renders never jump to top
+    if (viewport && savedScrollPos > 0) {
+      viewport.scrollTop = savedScrollPos;
+      currentScrollY = savedScrollPos;
+    }
   }
 
   function fitBadgeFontSizes() {
