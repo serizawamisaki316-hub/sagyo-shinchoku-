@@ -185,8 +185,46 @@
   // Initial tab highlight and header titles
   updateDayTabsUi(currentSelectedDay);
 
-  // Helper: Reload signage_data.js dynamically without CORS or cache issues
-  function loadDataViaScript() {
+  // Helper: Reload signage data dynamically across all environments (file://, http://, X:, OneDrive)
+  async function loadDataFromSharedStorage() {
+    // 1. First Priority: Try Fetching JSON with Cache-Busting (fastest & cleanest)
+    try {
+      const url = 'signage_data.json' + (isFileProtocol ? '' : ('?_t=' + Date.now()));
+      const resp = await fetch(url, { cache: 'no-store' });
+      if (resp.ok) {
+        const json = await resp.json();
+        if (json && json.days && Object.keys(json.days).length > 0) {
+          window.__ALL_SIGNAGE_DATA__ = json;
+          return json;
+        }
+      }
+    } catch (e) {}
+
+    // 2. Second Priority: Try XMLHttpRequest for JSON (Supported locally in file:/// on Chromium)
+    try {
+      const xhrJson = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'signage_data.json', true);
+        xhr.onload = () => {
+          if (xhr.status === 200 || xhr.status === 0) {
+            try {
+              const res = JSON.parse(xhr.responseText);
+              resolve(res);
+            } catch (err) { reject(err); }
+          } else {
+            reject(new Error('XHR status ' + xhr.status));
+          }
+        };
+        xhr.onerror = reject;
+        xhr.send();
+      });
+      if (xhrJson && xhrJson.days && Object.keys(xhrJson.days).length > 0) {
+        window.__ALL_SIGNAGE_DATA__ = xhrJson;
+        return xhrJson;
+      }
+    } catch (e) {}
+
+    // 3. Third Priority: Dynamic Script Element Loading with cache buster on HTTP or direct script on file://
     return new Promise((resolve) => {
       const scriptId = 'dynamic_signage_data_script';
       const existing = document.getElementById(scriptId);
@@ -195,11 +233,12 @@
       }
       const script = document.createElement('script');
       script.id = scriptId;
-      script.src = 'signage_data.js?_t=' + Date.now();
+      // On file:// do not append query string to prevent ERR_FILE_NOT_FOUND on Windows
+      script.src = isFileProtocol ? 'signage_data.js' : ('signage_data.js?_t=' + Date.now());
 
       let timer = setTimeout(() => {
         resolve(window.__ALL_SIGNAGE_DATA__ || null);
-      }, 1500);
+      }, 1200);
 
       script.onload = () => {
         clearTimeout(timer);
@@ -236,9 +275,9 @@
       }
 
       if (useStaticScriptMode) {
-        // ALWAYS await loadDataViaScript to get freshest data on every poll
+        // ALWAYS await loadDataFromSharedStorage to get freshest data on every poll
         try {
-          const reloaded = await loadDataViaScript();
+          const reloaded = await loadDataFromSharedStorage();
           if (reloaded) {
             allData = reloaded;
           }

@@ -982,7 +982,8 @@ def sync_shared_export(force=False):
             "days": days_data
         }
 
-        js_data = "window.__ALL_SIGNAGE_DATA__ = " + json.dumps(payload, ensure_ascii=False) + ";\n"
+        raw_json = json.dumps(payload, ensure_ascii=False)
+        js_data = "window.__ALL_SIGNAGE_DATA__ = " + raw_json + ";\n"
         standalone_html = build_standalone_viewer_html(payload)
 
         for target_dir in export_dirs:
@@ -1003,6 +1004,28 @@ def sync_shared_export(force=False):
                     if os.path.exists(tmp_file):
                         try:
                             os.remove(tmp_file)
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+
+            # 2. Write pure JSON (signage_data.json) for instant XHR/fetch
+            try:
+                json_file = os.path.join(target_dir, "signage_data.json")
+                tmp_json = os.path.join(target_dir, "signage_data_json.tmp")
+                with open(tmp_json, "w", encoding="utf-8") as f:
+                    f.write(raw_json)
+                try:
+                    if os.path.exists(json_file):
+                        os.replace(tmp_json, json_file)
+                    else:
+                        os.rename(tmp_json, json_file)
+                except Exception:
+                    with open(json_file, "w", encoding="utf-8") as f:
+                        f.write(raw_json)
+                    if os.path.exists(tmp_json):
+                        try:
+                            os.remove(tmp_json)
                         except Exception:
                             pass
             except Exception:
