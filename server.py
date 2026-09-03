@@ -987,69 +987,27 @@ def sync_shared_export(force=False):
         standalone_html = build_standalone_viewer_html(payload)
 
         for target_dir in export_dirs:
-            # 1. Write signage_data.js
+            # 1. Write signage_data.js directly (prevents OneDrive .tmp deletion popups)
             try:
                 js_file = os.path.join(target_dir, "signage_data.js")
-                tmp_file = os.path.join(target_dir, "signage_data.tmp")
-                with open(tmp_file, "w", encoding="utf-8") as f:
+                with open(js_file, "w", encoding="utf-8") as f:
                     f.write(js_data)
-                try:
-                    if os.path.exists(js_file):
-                        os.replace(tmp_file, js_file)
-                    else:
-                        os.rename(tmp_file, js_file)
-                except Exception:
-                    with open(js_file, "w", encoding="utf-8") as f:
-                        f.write(js_data)
-                    if os.path.exists(tmp_file):
-                        try:
-                            os.remove(tmp_file)
-                        except Exception:
-                            pass
             except Exception:
                 pass
 
-            # 2. Write pure JSON (signage_data.json) for instant XHR/fetch
+            # 2. Write pure JSON (signage_data.json) directly
             try:
                 json_file = os.path.join(target_dir, "signage_data.json")
-                tmp_json = os.path.join(target_dir, "signage_data_json.tmp")
-                with open(tmp_json, "w", encoding="utf-8") as f:
+                with open(json_file, "w", encoding="utf-8") as f:
                     f.write(raw_json)
-                try:
-                    if os.path.exists(json_file):
-                        os.replace(tmp_json, json_file)
-                    else:
-                        os.rename(tmp_json, json_file)
-                except Exception:
-                    with open(json_file, "w", encoding="utf-8") as f:
-                        f.write(raw_json)
-                    if os.path.exists(tmp_json):
-                        try:
-                            os.remove(tmp_json)
-                        except Exception:
-                            pass
             except Exception:
                 pass
 
-            # 2. Write standalone self-contained viewer HTML
+            # 3. Write standalone self-contained viewer HTML directly
             try:
                 viewer_file = os.path.join(target_dir, "作業進捗サイネージ(閲覧用).html")
-                tmp_viewer = os.path.join(target_dir, "作業進捗サイネージ(閲覧用).tmp")
-                with open(tmp_viewer, "w", encoding="utf-8") as f:
+                with open(viewer_file, "w", encoding="utf-8") as f:
                     f.write(standalone_html)
-                try:
-                    if os.path.exists(viewer_file):
-                        os.replace(tmp_viewer, viewer_file)
-                    else:
-                        os.rename(tmp_viewer, viewer_file)
-                except Exception:
-                    with open(viewer_file, "w", encoding="utf-8") as f:
-                        f.write(standalone_html)
-                    if os.path.exists(tmp_viewer):
-                        try:
-                            os.remove(tmp_viewer)
-                        except Exception:
-                            pass
             except Exception:
                 pass
 
