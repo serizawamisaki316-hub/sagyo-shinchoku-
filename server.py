@@ -7,6 +7,7 @@ import datetime
 import urllib.parse
 import threading
 import shutil
+import glob
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 # Import Windows COM & Win32 File API
@@ -37,12 +38,12 @@ CONFIG_FILE = os.path.join(APP_DIR, "config.json")
 PORT = 8080
 
 DEFAULT_CONFIG = {
-    "excel_path": "",
+    "excel_path": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
     "excel_paths": {
-        "平日": "",
-        "月曜": "",
-        "火曜": "",
-        "日・祝": ""
+        "平日": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
+        "月曜": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\月曜（本番用）\(月)作業進捗管理データ.xlsm",
+        "火曜": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\火曜（本番用）\(火)作業進捗管理データ.xlsm",
+        "日・祝": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\日祝（本番用）\(日祝)作業進捗管理データ.xlsm"
     },
     "poll_interval_sec": 5,
     "font_size_scale": 1.0,
@@ -50,8 +51,7 @@ DEFAULT_CONFIG = {
     "scroll_speed_px_per_sec": 50,
     "bottom_pause_sec": 4,
     "top_pause_sec": 2,
-    "theme": "dark",
-    "export_dir": ""
+    "theme": "dark"
 }
 
 DAYS_ORDER = ["平日", "月曜", "火曜", "日・祝"]
@@ -73,7 +73,29 @@ DAY_KEYWORD_MAP = {
 # In-memory thread-safe cache
 MEMORY_CACHE = {}
 LAST_FILE_MTIME = {}
+LAST_LIVE_TIME = {}
 CACHE_LOCK = threading.Lock()
+
+
+def calculate_progress_score(data):
+    """進捗度合いをスコアリングして古いデータ（同期遅延・巻き戻り）を検知する"""
+    if not data or not isinstance(data, dict):
+        return 0
+    courses = data.get("courses", [])
+    if not courses:
+        return 0
+    score = 0
+    for c in courses:
+        for typ in ["furidashi", "sasho"]:
+            items = c.get(typ, {}).get("items", [])
+            for it in items:
+                st = it.get("status")
+                if st == 99:
+                    score += 10
+                elif st == 1:
+                    score += 1
+    return score
+
 
 
 def resolve_canonical_day(day_input):
@@ -147,7 +169,7 @@ def get_candidate_onedrive_roots():
         if os.path.exists(p1) and p1 not in candidate_onedrive_roots:
             candidate_onedrive_roots.append(p1)
     for fallback in [
-        r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社",
+        r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社",
         r"c:\Users\00137184\OneDrive - トヨタモビリティパーツ株式会社"
     ]:
         if os.path.exists(fallback) and fallback not in candidate_onedrive_roots:
@@ -162,7 +184,7 @@ LAST_LOGGED_SOURCE = {}
 def find_excel_file_for_day(canonical_day):
     """
     Finds target Excel file with multi-tier automatic fallback:
-      Priority 1: Dedicated Server PC (85371-housen-k5) direct path
+      Priority 1: Dedicated Server PC (85371-butsuryupc) direct path
       Priority 2: config.json defined candidate paths (supports list & %USERPROFILE%)
       Priority 3: Auto-detected active OneDrive / Shortcuts / ★入力シート on current running PC
     """
@@ -173,25 +195,24 @@ def find_excel_file_for_day(canonical_day):
         keywords = DAY_KEYWORD_MAP.get(canonical_day, ["(平日)"])
 
         # -------------------------------------------------------------
-        # Priority 1: Check Dedicated Server PC (85371-housen-k5) paths
+        # Priority 1: Check Dedicated Server PC (85371-butsuryupc) paths
         # -------------------------------------------------------------
         server_pc_candidates = {
             "平日": [
-                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - 平日(水～土)（本番用・使用不可）\(平日)作業進捗管理データ.xlsm",
-                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
-                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm"
+                r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
+                r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm"
             ],
             "月曜": [
-                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - 月曜（本番用・使用不可）\(月)作業進捗管理データ.xlsm",
-                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\月曜（本番用）\(月)作業進捗管理データ.xlsm"
+                r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\月曜（本番用）\(月)作業進捗管理データ.xlsm",
+                r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\月曜（本番用）\(月)作業進捗管理データ.xlsm"
             ],
             "火曜": [
-                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - 火曜（本番用・使用不可）\(火)作業進捗管理データ.xlsm",
-                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\火曜（本番用）\(火)作業進捗管理データ.xlsm"
+                r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\火曜（本番用）\(火)作業進捗管理データ.xlsm",
+                r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\火曜（本番用）\(火)作業進捗管理データ.xlsm"
             ],
             "日・祝": [
-                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - 日祝（本番用・使用不可）\(日祝)作業進捗管理データ.xlsm",
-                r"C:\Users\85371-housen-k5\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\日祝（本番用）\(日祝)作業進捗管理データ.xlsm"
+                r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\日祝（本番用）\(日祝)作業進捗管理データ.xlsm",
+                r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\日祝（本番用）\(日祝)作業進捗管理データ.xlsm"
             ]
         }
 
@@ -200,7 +221,36 @@ def find_excel_file_for_day(canonical_day):
             if p and os.path.exists(p):
                 if LAST_LOGGED_SOURCE.get(canonical_day) != p:
                     LAST_LOGGED_SOURCE[canonical_day] = p
-                    print(f"[DATA SOURCE: 優先①] [{canonical_day}] サーバーPC(85371-housen-k5)のOneDriveを検出: {p}", flush=True)
+                    print(f"[DATA SOURCE: 優先①] [{canonical_day}] 専用サーバーPC(85371-butsuryupc)のOneDrive検出: {p}", flush=True)
+                return p
+
+        # -------------------------------------------------------------
+        # Priority 1.5: Current User PC (00137184 etc.) direct path check
+        # -------------------------------------------------------------
+        user_pc_candidates = {
+            "平日": [
+                rf"C:\Users\{current_user}\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
+                rf"C:\Users\{current_user}\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm"
+            ],
+            "月曜": [
+                rf"C:\Users\{current_user}\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\月曜（本番用）\(月)作業進捗管理データ.xlsm",
+                rf"C:\Users\{current_user}\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\月曜（本番用）\(月)作業進捗管理データ.xlsm"
+            ],
+            "火曜": [
+                rf"C:\Users\{current_user}\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\火曜（本番用）\(火)作業進捗管理データ.xlsm",
+                rf"C:\Users\{current_user}\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\火曜（本番用）\(火)作業進捗管理データ.xlsm"
+            ],
+            "日・祝": [
+                rf"C:\Users\{current_user}\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\日祝（本番用）\(日祝)作業進捗管理データ.xlsm",
+                rf"C:\Users\{current_user}\OneDrive - トヨタモビリティパーツ株式会社\新体制移行の情報共有 - ★入力シート\日祝（本番用）\(日祝)作業進捗管理データ.xlsm"
+            ]
+        }
+        for candidate in user_pc_candidates.get(canonical_day, []):
+            p = expand_path(candidate)
+            if p and os.path.exists(p):
+                if LAST_LOGGED_SOURCE.get(canonical_day) != p:
+                    LAST_LOGGED_SOURCE[canonical_day] = p
+                    print(f"[DATA SOURCE: 優先①-2] [{canonical_day}] 実行中ユーザー({current_user})のOneDrive検出: {p}", flush=True)
                 return p
 
         # -------------------------------------------------------------
@@ -223,7 +273,7 @@ def find_excel_file_for_day(canonical_day):
             if p and os.path.exists(p):
                 if LAST_LOGGED_SOURCE.get(canonical_day) != p:
                     LAST_LOGGED_SOURCE[canonical_day] = p
-                    print(f"[DATA SOURCE: 優先②] [{canonical_day}] config.json指定パスを使用: {p}", flush=True)
+                    print(f"[DATA SOURCE: 優先②] [{canonical_day}] config.json指定パス使用: {p}", flush=True)
                 return p
 
         # -------------------------------------------------------------
@@ -310,74 +360,219 @@ def read_locked_file_bytes(filepath):
         return None
 
 
-def get_live_com_rows(target_excel_path, canonical_day):
-    """Reads in-memory unsaved data from running Excel process via Windows COM strictly matching filename or day keywords."""
+# =========================================================
+# バックグラウンド非表示Excel自動管理エンジン (Headless Engine)
+# =========================================================
+class HeadlessExcelEngine:
+    """バックグラウンドで非表示Excelを常駐させ、高速に最新データを取得するエンジン"""
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.xl = None
+        self.workbooks = {}
+        self.last_opened_paths = {}
+
+    def ensure_excel_app(self):
+        if not HAS_WIN32:
+            return None
+        if self.xl is not None:
+            try:
+                _ = self.xl.Visible
+                return self.xl
+            except Exception:
+                self.cleanup()
+        try:
+            pythoncom.CoInitialize()
+            self.xl = win32com.client.DispatchEx("Excel.Application")
+            self.xl.Visible = False
+            self.xl.DisplayAlerts = False
+            self.xl.EnableEvents = False
+            self.xl.ScreenUpdating = False
+            self.xl.AskToUpdateLinks = False
+            return self.xl
+        except Exception as e:
+            self.xl = None
+            return None
+
+    def get_data(self, target_excel_path, canonical_day):
+        if not HAS_WIN32:
+            return None
+        with self.lock:
+            try:
+                pythoncom.CoInitialize()
+                xl = self.ensure_excel_app()
+                if not xl:
+                    return None
+
+                wb = self.workbooks.get(canonical_day)
+                last_p = self.last_opened_paths.get(canonical_day)
+
+                needs_open = False
+                if wb is None or last_p != target_excel_path:
+                    needs_open = True
+                else:
+                    try:
+                        _ = wb.Name
+                    except Exception:
+                        needs_open = True
+
+                if needs_open:
+                    if wb is not None:
+                        try:
+                            wb.Close(False)
+                        except Exception:
+                            pass
+                    if not os.path.exists(target_excel_path):
+                        return None
+                    try:
+                        wb = xl.Workbooks.Open(target_excel_path, ReadOnly=True, UpdateLinks=0)
+                        self.workbooks[canonical_day] = wb
+                        self.last_opened_paths[canonical_day] = target_excel_path
+                    except Exception:
+                        return None
+
+                # 最新のクラウド再読込＆再計算
+                try:
+                    wb.UpdateFromFile()
+                except Exception:
+                    pass
+
+                try:
+                    wb.Calculate()
+                except Exception:
+                    pass
+
+                ws_disp = None
+                ws_data = None
+                for s in wb.Worksheets:
+                    if "表示" in s.Name:
+                        ws_disp = s
+                    elif "データ" in s.Name:
+                        ws_data = s
+                if ws_disp is None:
+                    ws_disp = wb.Worksheets(1)
+                if ws_data is None:
+                    ws_data = ws_disp
+
+                disp_range = ws_disp.Range("A1:CZ145").Value
+                data_range = ws_data.Range("A1:CZ145").Value
+
+                disp_rows = [list(r) for r in disp_range]
+                data_rows = [list(r) for r in data_range]
+
+                return {
+                    "title": ws_disp.Name,
+                    "disp_rows": disp_rows,
+                    "data_rows": data_rows,
+                    "last_modified": datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S") + " (Auto Headless)"
+                }
+            except Exception as e:
+                self.cleanup()
+                return None
+
+    def cleanup(self):
+        for wb in self.workbooks.values():
+            try:
+                wb.Close(False)
+            except Exception:
+                pass
+        self.workbooks.clear()
+        self.last_opened_paths.clear()
+        if self.xl is not None:
+            try:
+                self.xl.Quit()
+            except Exception:
+                pass
+            self.xl = None
+
+
+HEADLESS_ENGINE = HeadlessExcelEngine()
+import atexit
+atexit.register(HEADLESS_ENGINE.cleanup)
+
+
+def get_user_open_excel_rows(target_excel_path, canonical_day):
+    """
+    ユーザーが画面上で実際に開いているExcel（Visible == True）から
+    リアルタイムの生データを直接取得するエンジン（全76コース・保存前でも即座に反映）。
+    ※非表示の常駐Excel（ゾンビ）は絶対に起動しません。
+    """
     if not HAS_WIN32:
         return None
+
     try:
         pythoncom.CoInitialize()
+        xl_app = win32com.client.GetActiveObject("Excel.Application")
+        if not xl_app:
+            return None
+
+        # 画面上に表示されているExcelのみを対象にする
+        try:
+            if not xl_app.Visible:
+                return None
+        except Exception:
+            return None
+
         wb = None
         target_name = os.path.basename(target_excel_path).lower()
         keywords = DAY_KEYWORD_MAP.get(canonical_day, [])
 
-        try:
-            xl_app = win32com.client.GetActiveObject("Excel.Application")
-            if xl_app:
-                # 1. Exact match on FullName or Name
-                for w in xl_app.Workbooks:
-                    try:
-                        if w.FullName.lower() == target_excel_path.lower() or w.Name.lower() == target_name:
-                            wb = w
-                            break
-                    except Exception:
-                        pass
-                # 2. Keyword match (e.g. "(日祝)" in w.Name)
-                if wb is None:
-                    for w in xl_app.Workbooks:
-                        try:
-                            w_name = w.Name.lower()
-                            if any(kw.lower() in w_name for kw in keywords):
-                                wb = w
-                                break
-                        except Exception:
-                            pass
-        except Exception:
-            pass
+        for w in xl_app.Workbooks:
+            try:
+                if w.FullName.lower() == target_excel_path.lower() or w.Name.lower() == target_name:
+                    wb = w
+                    break
+            except Exception:
+                pass
 
         if wb is None:
-            return None
+            for w in xl_app.Workbooks:
+                try:
+                    w_name = w.Name.lower()
+                    if any(kw.lower() in w_name for kw in keywords):
+                        wb = w
+                        break
+                except Exception:
+                    pass
 
-        ws_disp = None
-        ws_data = None
-        for s in wb.Worksheets:
-            if "表示" in s.Name:
-                ws_disp = s
-            elif "データ" in s.Name:
-                ws_data = s
-        if ws_disp is None:
-            ws_disp = wb.Worksheets(1)
-        if ws_data is None:
-            ws_data = ws_disp
+        if wb is not None:
+            ws_disp = None
+            ws_data = None
+            for s in wb.Worksheets:
+                if "表示" in s.Name:
+                    ws_disp = s
+                elif "データ" in s.Name:
+                    ws_data = s
+            if ws_disp is None:
+                ws_disp = wb.Worksheets(1)
+            if ws_data is None:
+                ws_data = ws_disp
 
-        disp_range = ws_disp.Range("A1:CZ145").Value
-        data_range = ws_data.Range("A1:CZ145").Value
+            # 全行（76コース以上、300行まで）を取得
+            disp_range = ws_disp.Range("A1:CZ300").Value
+            data_range = ws_data.Range("A1:CZ300").Value
 
-        disp_rows = [list(r) for r in disp_range]
-        data_rows = [list(r) for r in data_range]
+            disp_rows = [list(r) for r in disp_range]
+            data_rows = [list(r) for r in data_range]
 
-        return {
-            "title": ws_disp.Name,
-            "disp_rows": disp_rows,
-            "data_rows": data_rows,
-            "last_modified": datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S") + " (Live RAM)"
-        }
+            now_str = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+            return {
+                "title": ws_disp.Name,
+                "disp_rows": disp_rows,
+                "data_rows": data_rows,
+                "last_modified": f"{now_str} (画面Excel)"
+            }
     except Exception:
-        return None
+        pass
     finally:
         try:
             pythoncom.CoUninitialize()
         except Exception:
             pass
+    return None
+
+
+def get_live_com_rows(target_excel_path, canonical_day):
+    return get_user_open_excel_rows(target_excel_path, canonical_day)
 
 
 def format_cell_name(val):
@@ -446,29 +641,36 @@ def parse_rows_into_signage_data(canonical_day, excel_path, disp_rows, data_rows
         data_r1 = data_rows[r_idx] if r_idx < len(data_rows) else [None] * 105
         data_r2 = data_rows[r_idx + 1] if r_idx + 1 < len(data_rows) else [None] * 105
 
-        # 1. 振出: 奇数行 (data_r1) の G..AE列 (インデックス 6..30)
-        furidashi_items = []
-        for num_idx in range(1, 26):
-            data_col_idx = 5 + num_idx
-            st_val = data_r1[data_col_idx] if len(data_r1) > data_col_idx and data_r1[data_col_idx] is not None else 0
-            val_num = int(st_val) if isinstance(st_val, (int, float)) else 0
-            status = val_num if val_num in (99, 1) else 0
-            furidashi_items.append({
-                "num": num_idx,
-                "status": status
-            })
+        # 1 & 2. 振出・査照のタクト判定:
+        # Excelの G..AE列（1〜25タクト）の「パワポ表示用変換」値を完全評価
+        # （データシート上でエンドカード99が打たれた場合、手前のタクトはすべて99完了となり青色表示される）
+        def eval_row_tacts(data_row):
+            # AG..BE列 (インデックス 32..56) の現場入力値を取得
+            ag_be = []
+            for i in range(25):
+                c = 32 + i
+                v = data_row[c] if len(data_row) > c and data_row[c] is not None else 0
+                try:
+                    v_num = int(float(v))
+                except (ValueError, TypeError):
+                    v_num = 0
+                ag_be.append(v_num if v_num in (99, 1) else 0)
 
-        # 2. 査照: 偶数行 (data_r2) の G..AE列 (インデックス 6..30)
-        sagyo_items = []
-        for num_idx in range(1, 26):
-            data_col_idx = 5 + num_idx
-            st_val = data_r2[data_col_idx] if len(data_r2) > data_col_idx and data_r2[data_col_idx] is not None else 0
-            val_num = int(st_val) if isinstance(st_val, (int, float)) else 0
-            status = val_num if val_num in (99, 1) else 0
-            sagyo_items.append({
-                "num": num_idx,
-                "status": status
-            })
+            # エンドカード(99)が存在する場合、そのタクトおよび手前はすべて99(完了/青)
+            if 99 in ag_be:
+                match_99 = ag_be.index(99)
+                result = []
+                for idx in range(25):
+                    if idx <= match_99:
+                        result.append(99)
+                    else:
+                        result.append(ag_be[idx])
+                return [{"num": i + 1, "status": result[i]} for i in range(25)]
+            else:
+                return [{"num": i + 1, "status": ag_be[i]} for i in range(25)]
+
+        furidashi_items = eval_row_tacts(data_r1)
+        sagyo_items = eval_row_tacts(data_r2)
 
         # 3. 伝票: データシート CH列 (インデックス 85) が 1
         slip_val = data_r1[85] if len(data_r1) > 85 and data_r1[85] is not None else 0
@@ -544,7 +746,8 @@ def parse_rows_into_signage_data(canonical_day, excel_path, disp_rows, data_rows
 
 
 def refresh_data_for_day(canonical_day):
-    """Background update for a single day. Returns data object."""
+    """Background update for a single day. Returns data object with stale protection."""
+    global LAST_LIVE_TIME
     try:
         excel_path = find_excel_file_for_day(canonical_day)
         if not excel_path or not os.path.exists(excel_path):
@@ -558,63 +761,104 @@ def refresh_data_for_day(canonical_day):
                 "error": f"「{canonical_day}」のExcelファイルが見つかりません"
             }
 
-        # 1. Try Live RAM COM
-        com_result = get_live_com_rows(excel_path, canonical_day)
-        if com_result:
+        # 1. 【最優先】ユーザーが画面上で開いているExcel(Visible==True)からLive RAMデータを取得
+        # 編集中の変更や未保存データ、Teamsリアルタイム共同編集内容を0秒で即座に反映
+        live_result = get_user_open_excel_rows(excel_path, canonical_day)
+        if live_result and live_result.get("disp_rows"):
             try:
-                return parse_rows_into_signage_data(
+                parsed_data = parse_rows_into_signage_data(
                     canonical_day,
                     excel_path,
-                    com_result["disp_rows"],
-                    com_result["data_rows"],
-                    com_result["last_modified"]
+                    live_result["disp_rows"],
+                    live_result["data_rows"],
+                    live_result["last_modified"]
                 )
-            except Exception:
-                pass
+                with CACHE_LOCK:
+                    cached = MEMORY_CACHE.get(canonical_day)
+                    cached_score = calculate_progress_score(cached)
+                    new_score = calculate_progress_score(parsed_data)
+                    # Liveデータが進捗後退していないか（または初回）
+                    if not cached or new_score >= cached_score:
+                        LAST_FILE_MTIME[canonical_day] = -1.0
+                        LAST_LIVE_TIME[canonical_day] = time.time()
+                        MEMORY_CACHE[canonical_day] = parsed_data
+                        return parsed_data
+                    else:
+                        # 万一Liveデータでも一時的なゴミデータが入った場合は最新キャッシュを維持
+                        return cached
+            except Exception as e:
+                print(f"[LIVE COM PARSE ERROR] [{canonical_day}]: {e}", flush=True)
 
-        # 2. Check file mtime
+        # 2. 画面上のExcelからLiveデータが取れなかった場合
+        # 直近（60秒以内）にLiveデータを取得しており、かつディスクファイルがそれ以降に保存更新されていない場合、
+        # ディスクファイルは確実にLiveデータより古い（未保存・同期前）ため、キャッシュを維持してディスクを読まない！
         try:
             mtime = os.path.getmtime(excel_path)
-            with CACHE_LOCK:
-                cached = MEMORY_CACHE.get(canonical_day)
-                last_mtime = LAST_FILE_MTIME.get(canonical_day)
-                if cached and cached.get("success") and last_mtime == mtime:
-                    return cached  # File unchanged, reuse memory cache instantly
         except Exception:
             mtime = 0
 
-        # 3. Read file bytes and parse
-        file_bytes = read_locked_file_bytes(excel_path)
-        if file_bytes is None:
-            with CACHE_LOCK:
-                return MEMORY_CACHE.get(canonical_day, {
-                    "success": False,
-                    "day": canonical_day,
-                    "error": f"ファイル読込待機中: {os.path.basename(excel_path)}"
-                })
-
-        wb = openpyxl.load_workbook(io.BytesIO(file_bytes), data_only=True)
-        sheetnames = wb.sheetnames
-        ws_disp = None
-        ws_data = None
-        for s in sheetnames:
-            if "表示" in s:
-                ws_disp = wb[s]
-            elif "データ" in s:
-                ws_data = wb[s]
-        if ws_disp is None:
-            ws_disp = wb[sheetnames[0]]
-        if ws_data is None:
-            ws_data = wb[sheetnames[1]] if len(sheetnames) > 1 else ws_disp
-
-        disp_rows = list(ws_disp.iter_rows(values_only=True))
-        data_rows = list(ws_data.iter_rows(values_only=True))
-        last_mod = datetime.datetime.fromtimestamp(mtime).strftime("%Y/%m/%d %H:%M:%S")
-
-        parsed_data = parse_rows_into_signage_data(canonical_day, excel_path, disp_rows, data_rows, last_mod)
         with CACHE_LOCK:
-            LAST_FILE_MTIME[canonical_day] = mtime
-        return parsed_data
+            cached = MEMORY_CACHE.get(canonical_day)
+            last_live = LAST_LIVE_TIME.get(canonical_day, 0)
+            if cached and cached.get("success") and last_live > 0 and (time.time() - last_live) < 60 and mtime <= last_live:
+                return cached
+
+            last_mtime = LAST_FILE_MTIME.get(canonical_day)
+            # ファイルに変更がなく、すでにキャッシュがある場合は即時返却
+            if cached and cached.get("success") and last_mtime == mtime and mtime > 0:
+                return cached
+
+        # 3. ディスクファイルから直接読み込み (openpyxl)
+        file_bytes = read_locked_file_bytes(excel_path)
+        if file_bytes is not None:
+            wb = openpyxl.load_workbook(io.BytesIO(file_bytes), data_only=True)
+            sheetnames = wb.sheetnames
+            ws_disp = None
+            ws_data = None
+            for s in sheetnames:
+                if "表示" in s:
+                    ws_disp = wb[s]
+                elif "データ" in s:
+                    ws_data = wb[s]
+            if ws_disp is None:
+                ws_disp = wb[sheetnames[0]]
+            if ws_data is None:
+                ws_data = wb[sheetnames[1]] if len(sheetnames) > 1 else ws_disp
+
+            disp_rows = list(ws_disp.iter_rows(values_only=True))
+            data_rows = list(ws_data.iter_rows(values_only=True))
+            last_mod = datetime.datetime.fromtimestamp(mtime).strftime("%Y/%m/%d %H:%M:%S")
+
+            parsed_data = parse_rows_into_signage_data(canonical_day, excel_path, disp_rows, data_rows, last_mod)
+            with CACHE_LOCK:
+                cached = MEMORY_CACHE.get(canonical_day)
+                cached_score = calculate_progress_score(cached)
+                new_score = calculate_progress_score(parsed_data)
+
+                # 【古いファイル拾い防止ガード】
+                # 現在のキャッシュが進捗を持っており、読み込んだディスクデータの進捗スコアが後退している場合、
+                # これは確実に「OneDrive同期遅延」または「古いファイル」を拾った状態であるため、破棄して既存キャッシュを維持する
+                if cached and cached.get("success") and cached_score > 0 and new_score < cached_score:
+                    cached_mod = cached.get("last_modified", "")
+                    today_str = datetime.datetime.now().strftime("%Y/%m/%d")
+                    if today_str in cached_mod or "画面Excel" in cached_mod:
+                        print(f"[STALE GUARD: 抑止] [{canonical_day}] 古いファイルの読み込みをブロックしました (現スコア:{cached_score} > 読込スコア:{new_score})", flush=True)
+                        return cached
+
+                LAST_FILE_MTIME[canonical_day] = mtime
+                MEMORY_CACHE[canonical_day] = parsed_data
+            return parsed_data
+
+        # Fallback to cached if available
+        with CACHE_LOCK:
+            cached = MEMORY_CACHE.get(canonical_day)
+            if cached:
+                return cached
+        return {
+            "success": False,
+            "day": canonical_day,
+            "error": f"ファイル読込待機中: {os.path.basename(excel_path)}"
+        }
     except Exception as e:
         with CACHE_LOCK:
             cached = MEMORY_CACHE.get(canonical_day)
@@ -623,483 +867,88 @@ def refresh_data_for_day(canonical_day):
         return {"success": False, "day": canonical_day, "error": f"エクセル解析エラー: {str(e)}"}
 
 
-def render_courses_to_html(courses):
-    """Server-side pre-renderer for courses table HTML so it displays fully styled even in previewers."""
-    if not courses:
-        return '<div style="padding: 40px; text-align: center; color: #64748B;">データがありません</div>'
+# =========================================================
+# Firebase Firestore Cloud Sync Engine
+# =========================================================
+FIREBASE_PROJECT_ID = "warehouse-work-progress"
+FIREBASE_CREDS = None
+FIREBASE_TOKEN = None
+FIREBASE_TOKEN_EXPIRY = 0
+LAST_CLOUD_SYNC_TIME = 0
+LAST_CLOUD_SYNC_HASH = ""
 
-    def clean_num(val):
-        if val is None:
-            return ""
-        s = str(val).strip()
-        if s.endswith(".0"):
-            try:
-                num = float(s)
-                if num.is_integer():
-                    s = str(int(num))
-            except Exception:
-                pass
-        return s
+def find_firebase_credentials():
+    candidates = [
+        os.path.join(APP_DIR, "firebase_credentials.json"),
+        os.path.join(APP_DIR, "warehouse-work-progress-firebase-adminsdk-fbsvc-8bf0b53b80.json"),
+        os.path.expanduser("~/Downloads/warehouse-work-progress-firebase-adminsdk-fbsvc-8bf0b53b80.json")
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    for f in glob.glob(os.path.join(APP_DIR, "*adminsdk*.json")):
+        return f
+    for f in glob.glob(os.path.expanduser("~/Downloads/*warehouse-work-progress*.json")):
+        return f
+    return None
 
-    groups = []
-    curr_group = None
-    for c in courses:
-        v = clean_num(c.get("vehicle", ""))
-        c["vehicle"] = v
-        c["course"] = clean_num(c.get("course", ""))
-        if v != "" and curr_group and curr_group["vehicleName"] == v:
-            curr_group["courses"].append(c)
-        else:
-            curr_group = {"vehicleName": v, "courses": [c]}
-            groups.append(curr_group)
-
-    now = datetime.datetime.now()
-    curr_total_min = now.hour * 60 + now.minute
-
-    def is_within_10min_or_past(t_str):
-        if not t_str or ":" not in t_str:
-            return False
-        try:
-            parts = t_str.split(":")
-            th = int(parts[0])
-            tm = int(parts[1])
-            target_min = th * 60 + tm
-            return (target_min - curr_total_min) <= 10
-        except Exception:
-            return False
-
-    html_parts = []
-    for group in groups:
-        num_courses = len(group["courses"])
-        total_rows = num_courses * 2
-        is_multi = num_courses > 1
-
-        group_time = ""
-        group_comp_time = ""
-        group_diff_min = None
-
-        for c in group["courses"]:
-            if c.get("time", "").strip():
-                group_time = c.get("time", "").strip()
-                break
-
-        for c in group["courses"]:
-            if c.get("group_completed_time"):
-                group_comp_time = c.get("group_completed_time")
-            if c.get("group_diff_minutes") is not None:
-                group_diff_min = c.get("group_diff_minutes")
-
-        if not group_comp_time and len(group["courses"]) > 0:
-            group_comp_time = group["courses"][0].get("course_completed_time", "")
-        if group_diff_min is None and len(group["courses"]) > 0:
-            group_diff_min = group["courses"][0].get("course_diff_minutes")
-
-        is_group_all_comp = all(c.get("is_completed") is True for c in group["courses"])
-        is_group_warn = (not is_group_all_comp) and is_within_10min_or_past(group_time)
-        group_warn_class = "time-val-warning" if is_group_warn else ""
-
-        def build_time_cell(time_str, is_comp, comp_time, diff_min, warn_cls):
-            diff_html = ""
-            if is_comp and (comp_time or diff_min is not None):
-                t_label = f"完了 {comp_time}" if comp_time else "完了"
-                diff_class = "diff-box-ontime"
-                diff_text = "定刻 (±0)"
-                if diff_min is not None:
-                    if diff_min < 0:
-                        diff_class = "diff-box-early"
-                        diff_text = f"{diff_min}分 早着"
-                    elif diff_min > 0:
-                        diff_class = "diff-box-late"
-                        diff_text = f"+{diff_min}分 遅延"
-                    else:
-                        diff_class = "diff-box-ontime"
-                        diff_text = "定刻 (±0)"
-                diff_html = f'<div class="time-diff-2tier {diff_class}"><span class="diff-tier-time">{t_label}</span><span class="diff-tier-val">{diff_text}</span></div>'
-            return f'<div class="time-cell-content"><span class="time-val {warn_cls}">{time_str or ""}</span>{diff_html}</div>'
-
-        html_parts.append('<table class="signage-table vehicle-group-card"><colgroup><col class="col-vehicle"><col class="col-course-sub"><col class="col-time"><col class="col-line"><col class="col-num" span="25"><col class="col-slip"></colgroup><tbody>')
-
-        for idx, c in enumerate(group["courses"]):
-            is_first = (idx == 0)
-            is_last = (idx == num_courses - 1)
-            sep_class = "course-separator-row" if not is_last else ""
-            is_nodel = c.get("is_no_delivery", False)
-
-            def build_tile(item):
-                t_class = "tile-unstarted"
-                d_num = ""
-                st = item.get("status", 0)
-                if is_nodel:
-                    t_class = "tile-green-nodelivery"
-                elif st >= 99:
-                    t_class = "tile-blue-done"
-                    d_num = str(item.get("num", ""))
-                elif st == 1:
-                    t_class = "tile-grey-active"
-                    d_num = str(item.get("num", ""))
-                else:
-                    t_class = "tile-unstarted"
-                return f'<td><div class="cell-tile-container"><div class="progress-tile {t_class}">{d_num}</div></div></td>'
-
-            f_tiles = "".join(build_tile(it) for it in c.get("furidashi", {}).get("items", []))
-            s_tiles = "".join(build_tile(it) for it in c.get("sagyo", {}).get("items", []))
-
-            slip_done = c.get("slip", {}).get("is_done", False)
-            if is_nodel:
-                slip_html = '<div class="slip-checkbox slip-nodelivery-green"></div>'
-            elif slip_done:
-                slip_html = '<div class="slip-checkbox slip-done-blue">✓</div>'
-            else:
-                slip_html = '<div class="slip-checkbox slip-pending-empty"></div>'
-
-            grp_comp_cls = "group-completed-cell" if is_group_all_comp else ""
-            left_cols = ""
-            if is_multi:
-                if is_first:
-                    t_inner = build_time_cell(group_time, is_group_all_comp, group_comp_time, group_diff_min, group_warn_class)
-                    badge_v_cls = "badge-completed" if is_group_all_comp else ""
-                    badge_c_cls = "badge-completed" if c.get("is_completed") else ""
-                    c_comp_cls = "group-completed-cell" if c.get("is_completed") else ""
-                    left_cols = f'''
-                    <td class="cell-vehicle-tall {grp_comp_cls}" rowspan="{total_rows}">
-                        <div class="badge-vehicle-tall {badge_v_cls}"><span class="badge-text-inner">{group["vehicleName"]}</span></div>
-                    </td>
-                    <td class="cell-course-sub {c_comp_cls}" rowspan="2">
-                        <div class="badge-course-sub {badge_c_cls}"><span class="badge-text-inner">{c.get("course") or "-"}</span></div>
-                    </td>
-                    <td class="cell-time-tall {grp_comp_cls}" rowspan="{total_rows}" data-time-val="{group_time}" data-is-completed="{str(is_group_all_comp).lower()}">
-                        {t_inner}
-                    </td>
-                    '''
-                else:
-                    badge_c_cls = "badge-completed" if c.get("is_completed") else ""
-                    c_comp_cls = "group-completed-cell" if c.get("is_completed") else ""
-                    left_cols = f'''
-                    <td class="cell-course-sub {c_comp_cls}" rowspan="2">
-                        <div class="badge-course-sub {badge_c_cls}"><span class="badge-text-inner">{c.get("course") or "-"}</span></div>
-                    </td>
-                    '''
-            else:
-                is_single_comp = (c.get("is_completed") is True)
-                is_single_warn = (not is_single_comp) and is_within_10min_or_past(c.get("time", ""))
-                single_warn_cls = "time-val-warning" if is_single_warn else ""
-                single_comp_cls = "group-completed-cell" if is_single_comp else ""
-                s_comp_time = c.get("group_completed_time") or c.get("course_completed_time") or ""
-                s_diff_min = c.get("group_diff_minutes") if c.get("group_diff_minutes") is not None else c.get("course_diff_minutes")
-                t_inner = build_time_cell(c.get("time", ""), is_single_comp, s_comp_time, s_diff_min, single_warn_cls)
-
-                def is_hyphen(s):
-                    return s is None or str(s).strip() in ("", "-", "ー", "―", "‐", "－", "ｰ")
-
-                is_c_empty = is_hyphen(c.get("course"))
-                is_v_empty = is_hyphen(group["vehicleName"])
-                is_same = (not is_c_empty) and (c.get("course") == group["vehicleName"])
-                if is_c_empty or is_v_empty or is_same:
-                    merged_lbl = group["vehicleName"] if not is_v_empty else (c.get("course") if not is_c_empty else "-")
-                    badge_full_cls = "badge-completed" if is_single_comp else ""
-                    left_cols = f'''
-                    <td class="cell-course-full {single_comp_cls}" colspan="2" rowspan="2">
-                        <div class="badge-course-full {badge_full_cls}"><span class="badge-text-inner">{merged_lbl}</span></div>
-                    </td>
-                    '''
-                else:
-                    badge_v_cls = "badge-completed" if is_single_comp else ""
-                    badge_c_cls = "badge-completed" if is_single_comp else ""
-                    left_cols = f'''
-                    <td class="cell-vehicle-single {single_comp_cls}" rowspan="2">
-                        <div class="badge-vehicle-single {badge_v_cls}"><span class="badge-text-inner">{group["vehicleName"] or "-"}</span></div>
-                    </td>
-                    <td class="cell-course-sub {single_comp_cls}" rowspan="2">
-                        <div class="badge-course-sub {badge_c_cls}"><span class="badge-text-inner">{c.get("course") or "-"}</span></div>
-                    </td>
-                    '''
-                left_cols += f'''
-                <td class="cell-time {single_comp_cls}" rowspan="2" data-time-val="{c.get("time") or ""}" data-is-completed="{str(is_single_comp).lower()}">
-                    {t_inner}
-                </td>
-                '''
-
-            comp_row_cls = "course-completed-row" if c.get("is_completed") else ""
-            f_lbl = c.get("furidashi", {}).get("label", "振出")
-            s_lbl = c.get("sagyo", {}).get("label", "査照")
-
-            html_parts.append(f'''
-            <tr class="course-row-1 {comp_row_cls}" id="{c.get("id")}_r1">
-                {left_cols}
-                <td class="cell-line-furidashi">{f_lbl}</td>
-                {f_tiles}
-                <td class="cell-slip" rowspan="2">
-                    <div class="slip-cell-container">{slip_html}</div>
-                </td>
-            </tr>
-            <tr class="course-row-2 {comp_row_cls} {sep_class}" id="{c.get("id")}_r2">
-                <td class="cell-line-sagyo">{s_lbl}</td>
-                {s_tiles}
-            </tr>
-            ''')
-
-        html_parts.append('</tbody></table>')
-
-    return "\n".join(html_parts)
-
-
-def build_standalone_viewer_html(payload):
-    """Build a completely self-contained single-file HTML with inline CSS, pre-rendered tables, and embedded scripts."""
-    canonical_day = resolve_canonical_day("")
-    days_map = payload.get("days", {})
-    day_data = days_map.get(canonical_day) or days_map.get("平日") or (list(days_map.values())[0] if days_map else {})
-    courses = day_data.get("courses", [])
-    count = day_data.get("count", len(courses))
-    excel_file = day_data.get("excel_file", "Excel")
-    last_mod = day_data.get("last_modified", "")
-    time_str = last_mod.split(" ")[1] if " " in last_mod else "--:--:--"
-
-    courses_html = render_courses_to_html(courses)
-
-    css_path = os.path.join(APP_DIR, "style.css")
-    css_content = ""
-    if os.path.exists(css_path):
-        with open(css_path, "r", encoding="utf-8") as f:
-            css_content = f.read()
-
-    app_js_path = os.path.join(APP_DIR, "app.js")
-    js_content = ""
-    if os.path.exists(app_js_path):
-        with open(app_js_path, "r", encoding="utf-8") as f:
-            js_content = f.read()
-
-    js_data = "window.__ALL_SIGNAGE_DATA__ = " + json.dumps(payload, ensure_ascii=False) + ";\n"
-    now_dt = datetime.datetime.now()
-    date_jp = now_dt.strftime("%Y/%m/%d")
-    days_jp = ["月", "火", "水", "木", "金", "土", "日"]
-    weekday_str = days_jp[now_dt.weekday()]
-    clock_time_str = now_dt.strftime("%H:%M:%S")
-
-    tab_active_hei = "active" if canonical_day == "平日" else ""
-    tab_active_mon = "active" if canonical_day == "月曜" else ""
-    tab_active_tue = "active" if canonical_day == "火曜" else ""
-    tab_active_sun = "active" if canonical_day == "日・祝" else ""
-
-    html = f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>倉庫作業進捗サイネージ (閲覧用)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
-  <style>
-{css_content}
-  </style>
-</head>
-<body>
-  <header class="signage-header" id="signage-header">
-    <div class="header-left">
-      <div class="system-badge">
-        <span class="live-dot"></span>
-        <span class="badge-text">リアルタイム進捗</span>
-      </div>
-      <div class="day-tabs-group" id="day-tabs-group">
-        <button class="day-tab {tab_active_hei}" data-day="平日">平日</button>
-        <button class="day-tab {tab_active_mon}" data-day="月曜">月曜</button>
-        <button class="day-tab {tab_active_tue}" data-day="火曜">火曜</button>
-        <button class="day-tab {tab_active_sun}" data-day="日・祝">日・祝</button>
-      </div>
-      <span class="course-count-badge" id="course-count-badge">{count} コース</span>
-      <div class="legend-container">
-        <div class="legend-item"><div class="legend-tile legend-tile-grey">1</div><span>作業中</span></div>
-        <div class="legend-item"><div class="legend-tile legend-tile-blue">1</div><span>完了</span></div>
-        <div class="legend-item"><div class="legend-tile legend-tile-green"></div><span>配送なし</span></div>
-      </div>
-    </div>
-    <div class="header-center">
-      <div class="clock-display">
-        <span class="clock-date" id="clock-date">{date_jp} ({weekday_str})</span>
-        <span class="clock-time" id="clock-time">{clock_time_str}</span>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="status-pill" id="sync-status-pill">
-        <span class="status-icon" id="sync-status-icon">🟢</span>
-        <span class="status-text" id="sync-status-text">同期: {clock_time_str} ({excel_file}: {time_str})</span>
-      </div>
-      <div class="controls-group">
-        <button class="btn-ctrl" id="btn-toggle-scroll" title="スクロール一時停止/再開 (Space)"><span id="scroll-icon">⏸️</span><span id="scroll-btn-text">スクロール中</span></button>
-        <button class="btn-ctrl" id="btn-speed" title="スクロール速度切替">⚡ <span id="speed-label">標準</span></button>
-        <button class="btn-ctrl" id="btn-settings" title="設定" style="display: none;">⚙️ 設定</button>
-        <button class="btn-ctrl btn-fullscreen" id="btn-fullscreen" title="全画面表示 (F11)">⛶ 全画面</button>
-      </div>
-    </div>
-  </header>
-
-  <div class="table-fixed-header-wrapper">
-    <table class="signage-table header-table">
-      <colgroup>
-        <col class="col-vehicle"><col class="col-course-sub"><col class="col-time"><col class="col-line"><col class="col-num" span="25"><col class="col-slip">
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="th-course-name th-course-main" id="th-course-main">{canonical_day}コース</th>
-          <th class="th-course-name th-course-sub" id="th-course-sub">平日コース</th>
-          <th class="th-time">搬送完了時間</th>
-          <th class="th-line">項目</th>
-          <th class="th-num">1</th><th class="th-num">2</th><th class="th-num">3</th><th class="th-num">4</th><th class="th-num">5</th>
-          <th class="th-num">6</th><th class="th-num">7</th><th class="th-num">8</th><th class="th-num">9</th><th class="th-num">10</th>
-          <th class="th-num">11</th><th class="th-num">12</th><th class="th-num">13</th><th class="th-num">14</th><th class="th-num">15</th>
-          <th class="th-num">16</th><th class="th-num">17</th><th class="th-num">18</th><th class="th-num">19</th><th class="th-num">20</th>
-          <th class="th-num">21</th><th class="th-num">22</th><th class="th-num">23</th><th class="th-num">24</th><th class="th-num">25</th>
-          <th class="th-slip">伝票</th>
-        </tr>
-      </thead>
-    </table>
-  </div>
-
-  <main class="scroll-viewport" id="scroll-viewport">
-    <div class="scroll-content" id="scroll-content">
-      <div id="course-cards-container">
-{courses_html}
-      </div>
-      <div class="loop-notice-bar" id="loop-notice-bar">
-        <span class="loop-spinner"></span>
-        <span>全コース表示完了 - まもなく先頭へ戻ります</span>
-      </div>
-    </div>
-  </main>
-
-  <div class="error-banner" id="error-banner" style="display: none;">
-    <span class="error-icon">⚠️</span>
-    <span class="error-msg" id="error-msg">進捗データを同期中...</span>
-  </div>
-
-  <script>
-{js_data}
-{js_content}
-  </script>
-</body>
-</html>
-"""
-    return html
-
-
-LAST_EXPORT_SIGNATURE = ""
-
-
-def sync_shared_export(force=False):
-    """Export current memory cache to signage_data.js and standalone viewer only when data changes."""
-    global LAST_EXPORT_SIGNATURE
+def sync_to_firestore_cloud(all_days_data, cfg=None):
+    """Pushes current memory cache to Firestore live document so web users stay updated."""
+    global FIREBASE_CREDS, FIREBASE_TOKEN, FIREBASE_TOKEN_EXPIRY, LAST_CLOUD_SYNC_TIME, LAST_CLOUD_SYNC_HASH
     try:
-        cfg = load_config()
-        export_dirs = [APP_DIR]
+        from google.oauth2 import service_account
+        from google.auth.transport.requests import Request
+        import requests
 
-        # 1. Configured export directories (string or list)
-        cfg_export = cfg.get("export_dirs", cfg.get("export_dir", ""))
-        if isinstance(cfg_export, list):
-            for d in cfg_export:
-                if d and os.path.exists(str(d).strip()):
-                    p = os.path.abspath(str(d).strip())
-                    if p not in [os.path.abspath(x) for x in export_dirs]:
-                        export_dirs.append(p)
-        elif isinstance(cfg_export, str) and cfg_export.strip():
-            p = os.path.abspath(cfg_export.strip())
-            if os.path.exists(p) and p not in [os.path.abspath(x) for x in export_dirs]:
-                export_dirs.append(p)
+        key_path = find_firebase_credentials()
+        if not key_path:
+            return
 
-        # 2. Teams Excel parent directories
-        candidate_excel_paths = [cfg.get("excel_path", "")] + list(cfg.get("excel_paths", {}).values())
-        for ep in candidate_excel_paths:
-            if ep and os.path.exists(str(ep).strip()):
-                parent_d = os.path.abspath(os.path.dirname(str(ep).strip()))
-                if os.path.exists(parent_d) and parent_d not in [os.path.abspath(x) for x in export_dirs]:
-                    export_dirs.append(parent_d)
+        now = time.time()
+        days_hash = hashlib.md5(json.dumps(all_days_data, sort_keys=True, default=str).encode("utf-8")).hexdigest()
+        
+        # 変化がない場合は30秒に1回の定時ハートビート
+        if days_hash == LAST_CLOUD_SYNC_HASH and (now - LAST_CLOUD_SYNC_TIME) < 30:
+            return
+            return
 
-        # 3. Auto-detect any ★入力シート folder in OneDrive / Shortcuts
-        candidate_onedrive_roots = get_candidate_onedrive_roots()
-        for od_root in candidate_onedrive_roots:
-            if not os.path.exists(od_root):
-                continue
-            try:
-                for root_dir, dirs, _ in os.walk(od_root):
-                    for d in dirs:
-                        if "入力シート" in d:
-                            target_p = os.path.abspath(os.path.join(root_dir, d))
-                            if target_p not in [os.path.abspath(x) for x in export_dirs]:
-                                export_dirs.append(target_p)
-            except Exception:
-                pass
+        if not FIREBASE_TOKEN or now >= FIREBASE_TOKEN_EXPIRY:
+            FIREBASE_CREDS = service_account.Credentials.from_service_account_file(
+                key_path, scopes=["https://www.googleapis.com/auth/datastore"]
+            )
+            FIREBASE_CREDS.refresh(Request())
+            FIREBASE_TOKEN = FIREBASE_CREDS.token
+            FIREBASE_TOKEN_EXPIRY = now + 3000
 
-        # Make sure memory cache has all days populated with valid data
-        for d in DAYS_ORDER:
-            with CACHE_LOCK:
-                cached = MEMORY_CACHE.get(d)
-            if not cached or not cached.get("success"):
-                try:
-                    data = refresh_data_for_day(d)
-                    with CACHE_LOCK:
-                        MEMORY_CACHE[d] = data
-                except Exception:
-                    pass
-
-        with CACHE_LOCK:
-            days_data = {d: MEMORY_CACHE.get(d) for d in DAYS_ORDER if d in MEMORY_CACHE and MEMORY_CACHE.get(d)}
-
-        # MD5 signature of course data to avoid thrashing OneDrive sync
-        sig_input = json.dumps(days_data, sort_keys=True, ensure_ascii=False)
-        current_sig = hashlib.md5(sig_input.encode("utf-8")).hexdigest()
-        if not force and current_sig == LAST_EXPORT_SIGNATURE:
-            return  # No change in data! Skip disk writes so OneDrive upload is never interrupted!
-
-        LAST_EXPORT_SIGNATURE = current_sig
-        print(f"[EXPORT SYNC] データを書き出しました ({datetime.datetime.now().strftime('%H:%M:%S')})", flush=True)
-
-        payload = {
-            "timestamp": datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
-            "config": cfg,
-            "days": days_data
+        now_str = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+        full_payload = {
+            "days": all_days_data,
+            "timestamp": now_str,
+            "config": cfg or load_config()
         }
 
-        raw_json = json.dumps(payload, ensure_ascii=False)
-        js_data = "window.__ALL_SIGNAGE_DATA__ = " + raw_json + ";\n"
-        standalone_html = build_standalone_viewer_html(payload)
-
-        for target_dir in export_dirs:
-            # 1. Write signage_data.js directly (prevents OneDrive .tmp deletion popups)
-            try:
-                js_file = os.path.join(target_dir, "signage_data.js")
-                with open(js_file, "w", encoding="utf-8") as f:
-                    f.write(js_data)
-            except Exception:
-                pass
-
-            # 2. Write pure JSON (signage_data.json) directly
-            try:
-                json_file = os.path.join(target_dir, "signage_data.json")
-                with open(json_file, "w", encoding="utf-8") as f:
-                    f.write(raw_json)
-            except Exception:
-                pass
-
-            # 3. Write standalone self-contained viewer HTML directly
-            try:
-                viewer_file = os.path.join(target_dir, "作業進捗サイネージ(閲覧用).html")
-                with open(viewer_file, "w", encoding="utf-8") as f:
-                    f.write(standalone_html)
-            except Exception:
-                pass
-
-            # 3. Also copy standard static files if needed
-            if os.path.abspath(target_dir) != os.path.abspath(APP_DIR):
-                for fname in ["index.html", "style.css", "app.js"]:
-                    src = os.path.join(APP_DIR, fname)
-                    dst = os.path.join(target_dir, fname)
-                    if os.path.exists(src):
-                        try:
-                            if not os.path.exists(dst) or os.path.getmtime(src) > os.path.getmtime(dst):
-                                shutil.copy2(src, dst)
-                        except Exception:
-                            pass
+        doc_url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/signage_data/live"
+        body = {
+            "fields": {
+                "payload": {
+                    "stringValue": json.dumps(full_payload, ensure_ascii=False)
+                },
+                "updated_at": {
+                    "stringValue": now_str
+                }
+            }
+        }
+        headers = {
+            "Authorization": f"Bearer {FIREBASE_TOKEN}",
+            "Content-Type": "application/json"
+        }
+        resp = requests.patch(doc_url, headers=headers, json=body, timeout=5)
+        if resp.ok:
+            LAST_CLOUD_SYNC_TIME = now
+            LAST_CLOUD_SYNC_HASH = days_hash
+            print(f"[CLOUD SYNC] 最新データをFirestoreへ送信しました ({now_str})", flush=True)
     except Exception as e:
-        print(f"[EXPORT ERROR] {e}", flush=True)
+        pass
 
 
 def background_cache_worker():
@@ -1117,13 +966,14 @@ def background_cache_worker():
             print(f"[CACHE ERROR] [{day}]: {e}", flush=True)
         time.sleep(0.1)
 
-    # Initial export to shared directories
-    sync_shared_export()
+    # Initial Firestore Cloud sync
+    with CACHE_LOCK:
+        init_cache_copy = dict(MEMORY_CACHE)
+    sync_to_firestore_cloud(init_cache_copy)
 
     while True:
         try:
             time.sleep(2)
-            has_update = False
             for day in DAYS_ORDER:
                 try:
                     data = refresh_data_for_day(day)
@@ -1132,8 +982,11 @@ def background_cache_worker():
                 except Exception:
                     pass
                 time.sleep(0.1)
-            # Sync to shared storage
-            sync_shared_export()
+
+            # Sync to Firestore Cloud
+            with CACHE_LOCK:
+                cache_copy = dict(MEMORY_CACHE)
+            sync_to_firestore_cloud(cache_copy)
         except Exception:
             time.sleep(2)
 

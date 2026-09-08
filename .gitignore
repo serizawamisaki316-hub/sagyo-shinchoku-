@@ -1,7 +1,10 @@
 __pycache__/
 *.pyc
 python_runtime/
+node_portable/
 build/
 dist/
 *.log
 *.tmp
+firebase_credentials.json
+不要ファイル/

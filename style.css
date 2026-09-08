@@ -32,7 +32,7 @@
   --completed-row-bg: #E2E8F0;
   
   --font-scale: 1.0;
-  --group-gap: 16px;              /* 号車グループ間の余白 */
+  --group-gap: 13px;              /* 号車グループ間の余白（1画面に約6コース綺麗に収まる最適値） */
 }
 
 * {
@@ -56,13 +56,13 @@ html, body {
    Top Bar (上部ヘッダー)
    ========================================================= */
 .signage-header {
-  height: 56px;
+  height: 52px;
   background: linear-gradient(180deg, #091E47 0%, #061633 100%);
   border-bottom: 2px solid #00122E;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 16px;
   position: relative;
   z-index: 50;
   color: #FFFFFF;
@@ -123,7 +123,7 @@ html, body {
   color: #94A3B8;
   font-size: 13px;
   font-weight: 800;
-  padding: 4px 11px;
+  padding: 3px 10px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -167,7 +167,7 @@ html, body {
   gap: 10px;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 3px 14px;
+  padding: 2px 12px;
   border-radius: 6px;
 }
 
@@ -178,7 +178,7 @@ html, body {
 }
 
 .clock-time {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 900;
   color: #38BDF8;
   letter-spacing: 1px;
@@ -188,7 +188,7 @@ html, body {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .status-pill {
@@ -198,7 +198,7 @@ html, body {
   background: rgba(15, 23, 42, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
-  padding: 4px 8px;
+  padding: 3px 8px;
   font-size: 11px;
   color: #CBD5E1;
 }
@@ -206,14 +206,14 @@ html, body {
 .controls-group {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .btn-ctrl {
   background: #1E293B;
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #F8FAFC;
-  padding: 5px 10px;
+  padding: 4px 9px;
   border-radius: 5px;
   font-size: 11px;
   font-weight: 700;
@@ -252,21 +252,21 @@ html, body {
   table-layout: fixed;
 }
 
-/* 列幅設定（コース名・号車名・時間列の視認性を最大化） */
-.col-vehicle    { width: 10.5%; }
-.col-course-sub { width: 10.5%; }
-.col-time       { width: 7.5%; }
+/* 列幅設定（搬送完了時間を11%に拡大し、1〜25進捗タイルをスリム化） */
+.col-vehicle    { width: 10%; }
+.col-course-sub { width: 10%; }
+.col-time       { width: 11%; }   /* ★ 7.5% → 11% に大幅拡大（余裕のある見やすい幅に） */
 .col-line       { width: 3.5%; }
-.col-num        { width: 2.58%; } /* 25 cols * 2.58% = 64.5% */
-.col-slip       { width: 3.5%; }
+.col-num        { width: 2.46%; } /* ★ 2.58% → 2.46% にスリム化（25列×2.46%=61.5%） */
+.col-slip       { width: 4%; }
 
 .header-table th {
   background: var(--header-bg);
   color: #FFFFFF;
-  font-size: clamp(13px, calc(15px * var(--font-scale)), 19px);
+  font-size: clamp(13px, calc(15.5px * var(--font-scale)), 20px);
   font-weight: 800;
   text-align: center;
-  padding: 10px 2px;
+  padding: 8px 2px;
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -281,11 +281,11 @@ html, body {
    ========================================================= */
 .scroll-viewport {
   width: 100%;
-  height: calc(100vh - 56px - 42px);
+  height: calc(100vh - 52px - 38px);
   overflow-y: auto;
   position: relative;
   background-color: var(--bg-viewport);
-  padding: 12px 12px 0 12px;
+  padding: 8px 12px 0 12px;
   scrollbar-width: thin;
   scrollbar-color: #93C5FD transparent;
   cursor: pointer;
@@ -311,11 +311,12 @@ html, body {
 .scroll-content {
   width: 100%;
   position: relative;
-  padding-bottom: 24px;
+  padding-bottom: 20px;
 }
 
 /* =========================================================
    Vehicle Group Card (号車ごとの白カード ＆ 青枠線 ＆ 隙間)
+   【1画面に約6コースが綺麗に収まる高さ設計: 78px + 72px = 150px】
    ========================================================= */
 .vehicle-group-card {
   width: 100%;
@@ -326,7 +327,7 @@ html, body {
   border: 1.5px solid var(--border-table);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 3px 10px rgba(10, 36, 88, 0.08);
+  box-shadow: 0 2px 8px rgba(10, 36, 88, 0.08);
 }
 
 .vehicle-group-card td {
@@ -335,7 +336,7 @@ html, body {
   vertical-align: middle;
   border-right: 1px solid var(--border-cell);
   border-bottom: 1px solid var(--border-cell);
-  font-size: calc(15px * var(--font-scale));
+  font-size: calc(16px * var(--font-scale));
   font-weight: 700;
   background-color: #FFFFFF;
 }
@@ -352,13 +353,13 @@ html, body {
   border-bottom: 1.5px solid var(--border-table) !important;
 }
 
-/* 行の縦幅 (64px / 60px) */
+/* 行の縦幅 (78px / 72px -> 計150px: 6コース/画面に完全フィット) */
 .course-row-1 {
-  height: calc(64px * var(--font-scale));
+  height: calc(78px * var(--font-scale));
 }
 
 .course-row-2 {
-  height: calc(60px * var(--font-scale));
+  height: calc(72px * var(--font-scale));
 }
 
 .course-row-2 td {
@@ -372,6 +373,12 @@ html, body {
   background-color: var(--completed-row-bg) !important;
 }
 
+.course-completed-row td.cell-vehicle-tall:not(.group-completed-cell),
+.course-completed-row td.cell-course-sub:not(.group-completed-cell),
+.course-completed-row td.cell-time-tall:not(.group-completed-cell) {
+  background-color: #FFFFFF !important;
+}
+
 .group-completed-cell {
   background-color: var(--completed-row-bg) !important;
 }
@@ -380,25 +387,25 @@ html, body {
    コース名・号車バッジ（★特大フォント ＆ はみ出し防止自動フィット）
    ========================================================= */
 .cell-vehicle-tall {
-  padding: 5px 3px !important;
+  padding: 4px 3px !important;
   border-right: 1.5px solid var(--border-table) !important;
   height: 100% !important;
   vertical-align: middle !important;
   overflow: hidden;
 }
 
-/* 連結号車バッジ（例: 2号車、12号車、11号車②） ★38px〜50px特大フォント＆自動最適化 */
+/* 連結号車バッジ（例: 2号車、12号車、11号車②） ★34px〜58px特大フォント＆自動最適化 */
 .badge-vehicle-tall {
   width: 100%;
   height: 100%;
-  min-height: calc(114px * var(--font-scale));
+  min-height: calc(136px * var(--font-scale));
   background: var(--badge-navy);
   color: var(--badge-text);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(28px, calc(40px * var(--font-scale)), 50px);
+  font-size: clamp(32px, calc(46px * var(--font-scale)), 58px);
   font-weight: 900;
   letter-spacing: -0.5px;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
@@ -407,9 +414,9 @@ html, body {
   box-sizing: border-box;
 }
 
-/* サブコースバッジ（例: AA, AC, AD, 03, HF, HG, HH, HD） ★46px〜58px特大フォント＆自動最適化 */
+/* サブコースバッジ（例: AA, AC, AD, 03, HF, HG, HH, HD） ★40px〜66px特大フォント＆自動最適化 */
 .cell-course-sub {
-  padding: 5px 3px !important;
+  padding: 4px 3px !important;
   border-right: 1.5px solid var(--border-table) !important;
   vertical-align: middle !important;
   overflow: hidden;
@@ -417,14 +424,14 @@ html, body {
 
 .badge-course-sub {
   width: 100%;
-  height: calc(106px * var(--font-scale));
+  height: calc(130px * var(--font-scale));
   background: var(--badge-navy);
   color: var(--badge-text);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(34px, calc(48px * var(--font-scale)), 58px);
+  font-size: clamp(38px, calc(54px * var(--font-scale)), 66px);
   font-weight: 900;
   letter-spacing: -0.5px;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
@@ -433,9 +440,9 @@ html, body {
   box-sizing: border-box;
 }
 
-/* 1対1号車バッジ（例: 7号車、13号車、10号車①、4号車①） ★38px〜50px特大フォント＆自動最適化 */
+/* 1対1号車バッジ（例: 7号車、13号車、10号車①、4号車①） ★34px〜58px特大フォント＆自動最適化 */
 .cell-vehicle-single {
-  padding: 5px 3px !important;
+  padding: 4px 3px !important;
   border-right: 1px solid var(--border-cell) !important;
   vertical-align: middle !important;
   overflow: hidden;
@@ -443,14 +450,14 @@ html, body {
 
 .badge-vehicle-single {
   width: 100%;
-  height: calc(106px * var(--font-scale));
+  height: calc(130px * var(--font-scale));
   background: var(--badge-navy);
   color: var(--badge-text);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(28px, calc(40px * var(--font-scale)), 50px);
+  font-size: clamp(32px, calc(46px * var(--font-scale)), 58px);
   font-weight: 900;
   letter-spacing: -0.5px;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
@@ -459,9 +466,9 @@ html, body {
   box-sizing: border-box;
 }
 
-/* ワイドコースバッジ（例: A4, C1） ★54px〜68px超特大フォント＆自動最適化 */
+/* ワイドコースバッジ（例: A4, C1） ★60px〜76px超特大フォント＆自動最適化 */
 .cell-course-full {
-  padding: 5px 3px !important;
+  padding: 4px 3px !important;
   border-right: 1.5px solid var(--border-table) !important;
   vertical-align: middle !important;
   overflow: hidden;
@@ -469,14 +476,14 @@ html, body {
 
 .badge-course-full {
   width: 100%;
-  height: calc(106px * var(--font-scale));
+  height: calc(130px * var(--font-scale));
   background: var(--badge-navy);
   color: var(--badge-text);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(40px, calc(56px * var(--font-scale)), 68px);
+  font-size: clamp(44px, calc(62px * var(--font-scale)), 76px);
   font-weight: 900;
   letter-spacing: -0.5px;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 5px rgba(0, 0, 0, 0.25);
@@ -516,6 +523,12 @@ html, body {
   background-color: var(--completed-row-bg, #E2E8F0) !important;
 }
 
+.course-completed-row td.cell-vehicle-tall:not(.group-completed-cell),
+.course-completed-row td.cell-course-sub:not(.group-completed-cell),
+.course-completed-row td.cell-time-tall:not(.group-completed-cell) {
+  background-color: #FFFFFF !important;
+}
+
 .course-completed-row .cell-line-furidashi,
 .course-completed-row .cell-line-sagyo {
   color: #475569 !important;
@@ -532,13 +545,15 @@ html, body {
 }
 
 /* =========================================================
-   搬送完了時間（フォント 38px ＆ 上下中央揃え）
+   搬送完了時間（セル幅・高さ限界の特大フォント ＆ 上下中央揃え）
    ========================================================= */
 .cell-time, .cell-time-tall {
-  padding: 8px 4px !important;
+  padding: 2px 1px !important; /* 余白を削って文字領域を最大確保 */
   border-right: 1.5px solid var(--border-table) !important;
   vertical-align: middle !important;
   text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .time-cell-content {
@@ -546,58 +561,69 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .time-val {
-  font-size: clamp(28px, calc(38px * var(--font-scale)), 46px);
+  font-size: clamp(36px, calc(52px * var(--font-scale)), 62px) !important;
   font-weight: 900;
   color: var(--time-text);
   font-variant-numeric: tabular-nums;
-  transition: all 0.25s ease;
-  letter-spacing: 0.5px;
-  line-height: 1.05;
+  letter-spacing: -0.5px; /* 文字間を少し詰めてギリギリまで大きく */
+  line-height: 0.95;      /* 上下の余白を削る */
+  white-space: nowrap;
+  display: block;
+  width: 100%;
+  text-align: center;
 }
 
-/* 2段表示コンテナ（視認性向上） */
+/* 2段表示コンテナ（全コース完了時の完了時刻 ＆ 時間差バッジ） ★特大サイズアップ */
 .time-diff-2tier {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 3px 10px;
-  border-radius: 6px;
-  min-width: 96px;
-  margin-top: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  gap: 3px;
+  padding: 5px 6px !important;
+  border-radius: 8px !important;
+  width: 96% !important;
+  max-width: 140px;
+  margin-top: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  border-width: 2px !important; /* 枠線をくっきり太く */
+  box-sizing: border-box;
   transition: all 0.2s ease;
 }
 
-/* 1段目: 完了時刻（例: 完了 13:35） */
+/* 1段目: 完了時刻（例: 完了 09:47） ★16px〜18pxへサイズアップ */
 .diff-tier-time {
-  font-size: calc(11.5px * var(--font-scale));
-  font-weight: 700;
-  letter-spacing: 0.3px;
+  font-size: clamp(13px, calc(16px * var(--font-scale)), 19px) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.5px;
   line-height: 1.1;
   white-space: nowrap;
+  max-width: 100%;
 }
 
-/* 2段目: 時間差（例: +95分 遅延 / -15分 早着） */
+/* 2段目: 時間差（例: -132分 早着 / +15分 遅延） ★22px〜26px超特大化 */
 .diff-tier-val {
-  font-size: calc(14px * var(--font-scale));
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  line-height: 1.15;
+  font-size: clamp(17px, calc(23px * var(--font-scale)), 27px) !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+  max-width: 100%;
 }
 
 /* 早着（緑系） */
 .diff-box-early {
   background: #ECFDF5;
-  border: 1.5px solid #10B981;
+  border: 2px solid #10B981 !important;
 }
 .diff-box-early .diff-tier-time {
   color: #065F46;
@@ -609,7 +635,7 @@ html, body {
 /* 遅延（赤系） */
 .diff-box-late {
   background: #FEF2F2;
-  border: 1.5px solid #EF4444;
+  border: 2px solid #EF4444 !important;
 }
 .diff-box-late .diff-tier-time {
   color: #991B1B;
@@ -621,7 +647,7 @@ html, body {
 /* 定刻（青・スレート系） */
 .diff-box-ontime {
   background: #F1F5F9;
-  border: 1.5px solid #94A3B8;
+  border: 2px solid #94A3B8 !important;
 }
 .diff-box-ontime .diff-tier-time {
   color: #475569;
@@ -655,7 +681,7 @@ html, body {
    項目（振出 / 査照）
    ========================================================= */
 .cell-line-furidashi {
-  font-size: calc(16px * var(--font-scale));
+  font-size: calc(17px * var(--font-scale));
   font-weight: 800;
   color: #0A2458;
   border-right: 1.5px solid var(--border-table) !important;
@@ -663,7 +689,7 @@ html, body {
 }
 
 .cell-line-sagyo {
-  font-size: calc(16px * var(--font-scale));
+  font-size: calc(17px * var(--font-scale));
   font-weight: 800;
   color: #0A2458;
   border-right: 1.5px solid var(--border-table) !important;
@@ -679,19 +705,22 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  padding: 2px 1px;
+  box-sizing: border-box;
 }
 
 .progress-tile {
-  width: calc(36px * var(--font-scale));
-  height: calc(36px * var(--font-scale));
-  border-radius: 4px;
+  width: clamp(24px, calc(38px * var(--font-scale)), 42px);
+  max-width: 96%;
+  height: calc(38px * var(--font-scale));
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(16px * var(--font-scale));
+  font-size: clamp(12px, calc(17px * var(--font-scale)), 22px);
   font-weight: 900;
   font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
   transition: all 0.15s ease;
 }
 
@@ -732,23 +761,24 @@ html, body {
   vertical-align: middle !important;
 }
 
-.slip-checkbox-container {
+.slip-checkbox-container,
+.slip-cell-container {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
+  padding: 4px;
 }
 
 .slip-checkbox {
-  width: calc(42px * var(--font-scale));
-  height: calc(42px * var(--font-scale));
+  width: calc(46px * var(--font-scale));
+  height: calc(46px * var(--font-scale));
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(25px * var(--font-scale));
+  font-size: calc(27px * var(--font-scale));
   font-weight: 900;
 }
 
@@ -1015,3 +1045,203 @@ html, body {
   background-color: var(--tile-nodelivery-bg);
   border: 1px solid #A3E635;
 }
+
+/* =========================================================
+   タブレット・あらゆる画面サイズ向け レスポンシブ最適化
+   ========================================================= */
+
+/* 1. 中型タブレット（iPad Pro / iPad 横 / 画面幅1200px以下） */
+@media (max-width: 1200px) {
+  .col-vehicle    { width: 11%; }
+  .col-course-sub { width: 11%; }
+  .col-time       { width: 9.5%; }
+  .col-line       { width: 3.5%; }
+  .col-num        { width: 2.44%; } /* 25 * 2.44% = 61% */
+  .col-slip       { width: 4%; }
+
+  .header-table th {
+    font-size: clamp(10.5px, calc(13px * var(--font-scale)), 16px);
+    padding: 6px 1px;
+  }
+
+  .course-row-1 {
+    height: calc(62px * var(--font-scale));
+  }
+
+  .course-row-2 {
+    height: calc(58px * var(--font-scale));
+  }
+
+  .badge-vehicle-tall {
+    min-height: calc(108px * var(--font-scale));
+    font-size: clamp(20px, calc(34px * var(--font-scale)), 46px);
+  }
+
+  .badge-course-full {
+    height: calc(108px * var(--font-scale));
+    font-size: clamp(24px, calc(40px * var(--font-scale)), 50px);
+  }
+
+  .badge-course-sub,
+  .badge-vehicle-single {
+    height: calc(52px * var(--font-scale));
+    font-size: clamp(16px, calc(24px * var(--font-scale)), 32px);
+  }
+
+  .time-val {
+    font-size: clamp(15px, calc(2.0vw * var(--font-scale)), 34px);
+  }
+
+  .time-diff-2tier {
+    padding: 2px 4px;
+    max-width: 96%;
+  }
+
+  .cell-line-furidashi,
+  .cell-line-sagyo {
+    font-size: calc(13.5px * var(--font-scale));
+  }
+
+  .progress-tile {
+    width: calc(30px * var(--font-scale));
+    height: calc(30px * var(--font-scale));
+    font-size: calc(14px * var(--font-scale));
+    border-radius: 4px;
+  }
+
+  .slip-checkbox {
+    width: calc(34px * var(--font-scale));
+    height: calc(34px * var(--font-scale));
+    font-size: calc(20px * var(--font-scale));
+  }
+}
+
+/* 2. 小型タブレット・iPad縦向き（画面幅900px以下） */
+@media (max-width: 900px) {
+  .header-top {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  .sheet-title {
+    font-size: 14px;
+  }
+
+  .day-tab-btn {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  .badge-count {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+
+  .clock-display {
+    padding: 2px 6px;
+    gap: 4px;
+  }
+
+  .clock-date {
+    font-size: 10.5px;
+  }
+
+  .clock-time {
+    font-size: 16px;
+  }
+
+  .legend-bar {
+    gap: 6px;
+    padding: 2px 6px;
+    margin-left: 4px;
+  }
+
+  .legend-item {
+    font-size: 10px;
+    gap: 3px;
+  }
+
+  .legend-tile {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+
+  .col-vehicle    { width: 12%; }
+  .col-course-sub { width: 12%; }
+  .col-time       { width: 10%; }
+  .col-line       { width: 4%; }
+  .col-num        { width: 2.32%; } /* 25 * 2.32% = 58% */
+  .col-slip       { width: 4%; }
+
+  .header-table th {
+    font-size: 10px;
+    padding: 4px 0;
+  }
+
+  .course-row-1 {
+    height: calc(48px * var(--font-scale));
+  }
+
+  .course-row-2 {
+    height: calc(44px * var(--font-scale));
+  }
+
+  .badge-vehicle-tall {
+    min-height: calc(82px * var(--font-scale));
+    font-size: clamp(16px, calc(24px * var(--font-scale)), 32px);
+  }
+
+  .badge-course-full {
+    height: calc(82px * var(--font-scale));
+    font-size: clamp(18px, calc(28px * var(--font-scale)), 36px);
+  }
+
+  .badge-course-sub,
+  .badge-vehicle-single {
+    height: calc(38px * var(--font-scale));
+    font-size: clamp(13px, calc(18px * var(--font-scale)), 24px);
+  }
+
+  .time-val {
+    font-size: clamp(13px, calc(1.9vw * var(--font-scale)), 24px);
+  }
+
+  .diff-tier-time {
+    font-size: 8.5px;
+  }
+
+  .diff-tier-val {
+    font-size: 9.5px;
+  }
+
+  .cell-line-furidashi,
+  .cell-line-sagyo {
+    font-size: calc(11px * var(--font-scale));
+  }
+
+  .progress-tile {
+    width: calc(22px * var(--font-scale));
+    height: calc(22px * var(--font-scale));
+    font-size: calc(11px * var(--font-scale));
+    border-radius: 3px;
+  }
+
+  .slip-checkbox {
+    width: calc(26px * var(--font-scale));
+    height: calc(26px * var(--font-scale));
+    font-size: calc(15px * var(--font-scale));
+  }
+}
+
+@media (max-width: 1100px) {
+  .col-vehicle    { width: 11%; }
+  .col-course-sub { width: 11%; }
+  .col-time       { width: 9%; }
+  .time-val       { font-size: clamp(13px, 2vw, 24px) !important; }
+  .badge-vehicle-tall, .badge-vehicle-single, .badge-course-sub {
+    font-size: clamp(16px, 2.8vw, 34px) !important;
+  }
+}
+
+

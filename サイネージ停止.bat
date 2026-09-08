@@ -1,24 +1,23 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-chcp 65001 >nul
-title å€‰åº«ä½œæ¥­é€²æ—ã‚µã‚¤ãƒãƒ¼ã‚¸ åœæ­¢
+title ‘qŒÉì‹Æi’»ƒTƒCƒl[ƒW ’âŽ~
 
 echo ========================================================
-echo   å€‰åº«ä½œæ¥­é€²æ—ã‚µã‚¤ãƒãƒ¼ã‚¸ã‚·ã‚¹ãƒ†ãƒ ã‚’åœæ­¢ã—ã¦ã„ã¾ã™...
+echo   ‘qŒÉì‹Æi’»ƒTƒCƒl[ƒWƒVƒXƒeƒ€‚ð’âŽ~‚µ‚Ä‚¢‚Ü‚·...
 echo ========================================================
 
-:: 1. ãƒãƒ¼ãƒˆ8080ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹ãƒ—ãƒ­ã‚»ã‚¹ã‚’æŽ¢ã—ã¦çµ‚äº†
-powershell -NoProfile -Command "Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }" >nul 2>nul
+:: 1. ƒ|[ƒg8080‚ðŽg—p‚µ‚Ä‚¢‚éƒvƒƒZƒX‚ð’T‚µ‚ÄI—¹
+powershell -NoProfile -Command "$ports = Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue; if ($ports) { $ports | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } }"
 
-:: 2. server.py ã‚’å®Ÿè¡Œã—ã¦ã„ã‚‹ python / pythonw ãƒ—ãƒ­ã‚»ã‚¹ãŒã‚ã‚Œã°çµ‚äº†
-powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'server.py' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }" >nul 2>nul
+:: 2. server.py ‚ðŽÀs‚µ‚Ä‚¢‚é python / pythonw ƒvƒƒZƒX‚ª‚ ‚ê‚ÎI—¹
+powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*server.py*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"
 
-:: 3. start_signage.exe ãŒå‹•ã„ã¦ã„ã‚Œã°çµ‚äº†
-taskkill /f /im start_signage.exe >nul 2>nul
+:: 3. start_signage.exe ‚ª“®‚¢‚Ä‚¢‚ê‚ÎI—¹
+taskkill /f /im start_signage.exe >nul 2>&1
 
 echo.
-echo ã€å®Œäº†ã€‘ã‚µã‚¤ãƒãƒ¼ã‚¸ã‚µãƒ¼ãƒãƒ¼ã‚’åœæ­¢ã—ã¾ã—ãŸã€‚
+echo [Š®—¹] ƒTƒCƒl[ƒWƒT[ƒo[‚ð’âŽ~‚µ‚Ü‚µ‚½B
 echo.
 timeout /t 2 >nul
 exit

@@ -1,23 +1,10 @@
 {
-  "excel_path": "C:\\Users\\85371-housen-k5\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\平日(水～土)（本番用）\\(平日)作業進捗管理データ.xlsm",
+  "excel_path": "C:\\Users\\85371-butsuryupc\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\平日(水～土)（本番用）\\(平日)作業進捗管理データ.xlsm",
   "excel_paths": {
-    "平日": [
-      "C:\\Users\\85371-housen-k5\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\平日(水～土)（本番用）\\(平日)作業進捗管理データ.xlsm",
-      "C:\\Users\\85371-housen-k5\\OneDrive - トヨタモビリティパーツ株式会社\\新体制移行の情報共有 - ★入力シート\\平日(水～土)（本番用）\\(平日)作業進捗管理データ.xlsm",
-      "%USERPROFILE%\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\平日(水～土)（本番用）\\(平日)作業進捗管理データ.xlsm"
-    ],
-    "月曜": [
-      "C:\\Users\\85371-housen-k5\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\月曜（本番用）\\(月)作業進捗管理データ.xlsm",
-      "%USERPROFILE%\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\月曜（本番用）\\(月)作業進捗管理データ.xlsm"
-    ],
-    "火曜": [
-      "C:\\Users\\85371-housen-k5\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\火曜（本番用）\\(火)作業進捗管理データ.xlsm",
-      "%USERPROFILE%\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\火曜（本番用）\\(火)作業進捗管理データ.xlsm"
-    ],
-    "日・祝": [
-      "C:\\Users\\85371-housen-k5\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\日祝（本番用）\\(日祝)作業進捗管理データ.xlsm",
-      "%USERPROFILE%\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\日祝（本番用）\\(日祝)作業進捗管理データ.xlsm"
-    ]
+    "平日": "C:\\Users\\85371-butsuryupc\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\平日(水～土)（本番用）\\(平日)作業進捗管理データ.xlsm",
+    "月曜": "C:\\Users\\85371-butsuryupc\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\月曜（本番用）\\(月)作業進捗管理データ.xlsm",
+    "火曜": "C:\\Users\\85371-butsuryupc\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\火曜（本番用）\\(火)作業進捗管理データ.xlsm",
+    "日・祝": "C:\\Users\\85371-butsuryupc\\OneDrive - トヨタモビリティパーツ株式会社\\Shortcuts\\新体制移行の情報共有 - ★入力シート\\日祝（本番用）\\(日祝)作業進捗管理データ.xlsm"
   },
   "poll_interval_sec": 5,
   "font_size_scale": 1.0,
@@ -25,6 +12,5 @@
   "scroll_speed_px_per_sec": 40,
   "bottom_pause_sec": 4,
   "top_pause_sec": 2,
-  "theme": "dark",
-  "export_dir": "X:\\全社共有\\371神奈川\\全社ﾌｫﾙﾀﾞ\\物流本部フォルダ\\00_共有スペース\\庫内ステータス管理\\作業進捗状況システム"
+  "theme": "dark"
 }

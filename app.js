@@ -185,8 +185,29 @@
   // Initial tab highlight and header titles
   updateDayTabsUi(currentSelectedDay);
 
-  // Helper: Reload signage data dynamically across all environments (file://, http://, X:, OneDrive)
+  // Helper: Reload signage data dynamically across all environments (Firestore Cloud, file://, http://, X:, OneDrive)
   async function loadDataFromSharedStorage() {
+    const isCloudHosting = window.location.hostname.includes('web.app') || window.location.hostname.includes('firebaseapp.com');
+
+    // 0. Firestore Cloud Sync (ONLY for Firebase Hosting & remote web access, NOT for localhost)
+    if (isCloudHosting) {
+      try {
+        const firestoreUrl = 'https://firestore.googleapis.com/v1/projects/warehouse-work-progress/databases/(default)/documents/signage_data/live';
+        const fsResp = await fetch(firestoreUrl, { cache: 'no-store' });
+        if (fsResp.ok) {
+          const fsDoc = await fsResp.json();
+          const rawJson = fsDoc && fsDoc.fields && fsDoc.fields.payload && fsDoc.fields.payload.stringValue;
+          if (rawJson) {
+            const parsed = JSON.parse(rawJson);
+            if (parsed && parsed.days && Object.keys(parsed.days).length > 0) {
+              window.__ALL_SIGNAGE_DATA__ = parsed;
+              return parsed;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
     // 1. First Priority: Try Fetching JSON with Cache-Busting (fastest & cleanest)
     try {
       const url = 'signage_data.json' + (isFileProtocol ? '' : ('?_t=' + Date.now()));
@@ -252,29 +273,35 @@
     });
   }
 
-  // 2. Guaranteed Real-Time Polling Engine (Dual Mode: Server HTTP / Shared File Script)
+  // 2. Guaranteed Real-Time Polling Engine (Dual Mode: Server HTTP / Shared File Script / Firestore Cloud)
   async function fetchSignageData() {
     try {
       const nowTimeStr = new Date().toTimeString().split(' ')[0];
       let data = null;
-
       let allData = window.__ALL_SIGNAGE_DATA__;
 
-      if (!useStaticScriptMode) {
+      const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+      if (isLocalHost) {
         try {
           const resp = await fetch('/api/data?day=' + encodeURIComponent(currentSelectedDay) + '&_t=' + Date.now(), {
             cache: 'no-store',
             headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
           });
-          if (!resp.ok) throw new Error(`HTTP Error ${resp.status}`);
-          data = await resp.json();
+          if (resp.ok) {
+            const json = await resp.json();
+            if (json && json.courses) {
+              data = json;
+              useStaticScriptMode = false;
+            }
+          }
         } catch (fetchErr) {
-          console.warn('Web server fetch failed, switching to shared script mode...', fetchErr);
-          useStaticScriptMode = true;
+          // Localhost API unreachable, will fallback
         }
       }
 
-      if (useStaticScriptMode) {
+      if (!data) {
+        useStaticScriptMode = true;
         // ALWAYS await loadDataFromSharedStorage to get freshest data on every poll
         try {
           const reloaded = await loadDataFromSharedStorage();
@@ -297,7 +324,7 @@
         data.sharedTimestamp = allData.timestamp;
       }
 
-      if (data.day && data.day !== currentSelectedDay && !useStaticScriptMode) {
+      if (data && data.day && data.day !== currentSelectedDay && isLocalHost) {
         currentSelectedDay = data.day;
         updateDayTabsUi(currentSelectedDay);
       }
@@ -534,6 +561,10 @@
         const groupCompletedClass = isGroupAllCompleted ? 'group-completed-cell' : '';
 
         if (isMultiCourse) {
+          const subCourseCompleted = isGroupAllCompleted; // 集約コースの場合、全コース完了時のみ背景・バッジを変更
+          const subCourseCompletedClass = subCourseCompleted ? 'group-completed-cell' : '';
+          const subCourseBadgeClass = subCourseCompleted ? 'badge-completed' : '';
+
           if (isFirstCourseInGroup) {
             const timeInnerHtml = buildTimeCellHtml(groupTime, isGroupAllCompleted, groupCompletedTime, groupDiffMinutes, groupWarningValClass);
             // Vehicle Plate & Time Cell
@@ -541,8 +572,8 @@
               <td class="cell-vehicle-tall ${groupCompletedClass}" rowspan="${totalRows}">
                 <div class="badge-vehicle-tall ${isGroupAllCompleted ? 'badge-completed' : ''}"><span class="badge-text-inner">${group.vehicleName}</span></div>
               </td>
-              <td class="cell-course-sub ${c.is_completed ? 'group-completed-cell' : ''}" rowspan="2">
-                <div class="badge-course-sub ${c.is_completed ? 'badge-completed' : ''}"><span class="badge-text-inner">${c.course || '-'}</span></div>
+              <td class="cell-course-sub ${subCourseCompletedClass}" rowspan="2">
+                <div class="badge-course-sub ${subCourseBadgeClass}"><span class="badge-text-inner">${c.course || '-'}</span></div>
               </td>
               <td class="cell-time-tall ${groupCompletedClass}" rowspan="${totalRows}" data-time-val="${groupTime}" data-is-completed="${isGroupAllCompleted}">
                 ${timeInnerHtml}
@@ -550,8 +581,8 @@
             `;
           } else {
             leftColsHtml += `
-              <td class="cell-course-sub ${c.is_completed ? 'group-completed-cell' : ''}" rowspan="2">
-                <div class="badge-course-sub ${c.is_completed ? 'badge-completed' : ''}"><span class="badge-text-inner">${c.course || '-'}</span></div>
+              <td class="cell-course-sub ${subCourseCompletedClass}" rowspan="2">
+                <div class="badge-course-sub ${subCourseBadgeClass}"><span class="badge-text-inner">${c.course || '-'}</span></div>
               </td>
             `;
           }
@@ -662,6 +693,7 @@
 
   function fitBadgeFontSizes() {
     requestAnimationFrame(() => {
+      // 1. バッジテキストのスケーリング
       const badges = document.querySelectorAll('.badge-vehicle-tall, .badge-course-sub, .badge-vehicle-single, .badge-course-full');
       badges.forEach(badge => {
         const inner = badge.querySelector('.badge-text-inner') || badge;
@@ -682,6 +714,39 @@
           inner.style.transform = `scale(${ratio.toFixed(4)})`;
         } else {
           inner.style.transform = 'none';
+        }
+      });
+
+      // 2. 搬送完了時間テキストのスケーリング（タブレット等での完全フィット保証）
+      const timeCells = document.querySelectorAll('.cell-time, .cell-time-tall');
+      timeCells.forEach(cell => {
+        const content = cell.querySelector('.time-cell-content');
+        if (!content) return;
+        const availableW = cell.clientWidth - 4;
+        if (availableW <= 0) return;
+
+        // time-val のスケーリング
+        const timeVal = content.querySelector('.time-val');
+        if (timeVal) {
+          timeVal.style.transform = 'none';
+          const textW = timeVal.offsetWidth || timeVal.scrollWidth;
+          if (textW > availableW) {
+            const ratio = Math.max(0.4, availableW / textW);
+            timeVal.style.transformOrigin = 'center center';
+            timeVal.style.transform = `scale(${ratio.toFixed(4)})`;
+          }
+        }
+
+        // time-diff-2tier のスケーリング
+        const diffTier = content.querySelector('.time-diff-2tier');
+        if (diffTier) {
+          diffTier.style.transform = 'none';
+          const diffW = diffTier.offsetWidth || diffTier.scrollWidth;
+          if (diffW > availableW) {
+            const ratio = Math.max(0.5, availableW / diffW);
+            diffTier.style.transformOrigin = 'center center';
+            diffTier.style.transform = `scale(${ratio.toFixed(4)})`;
+          }
         }
       });
     });
@@ -824,7 +889,20 @@
 
   // 5. Config & Settings Modal
   function openSettings() {
-    inputExcelPath.value = config.excel_path || '';
+    // 現在選択中の曜日のパスを優先表示
+    let activePath = '';
+    if (config.excel_paths && config.excel_paths[currentSelectedDay]) {
+      activePath = config.excel_paths[currentSelectedDay];
+    } else {
+      activePath = config.excel_path || '';
+    }
+
+    const labelEl = document.querySelector('label[for="input-excel-path"]');
+    if (labelEl) {
+      labelEl.textContent = `【${currentSelectedDay}】エクセルファイルパス:`;
+    }
+
+    inputExcelPath.value = activePath;
     inputPollInterval.value = config.poll_interval_sec || 5;
     inputScrollSpeed.value = config.scroll_speed_px_per_sec || 35;
     inputBottomPause.value = config.bottom_pause_sec || 4;
@@ -838,8 +916,15 @@
   }
 
   async function saveSettings() {
+    const updatedPaths = Object.assign({}, config.excel_paths || {});
+    const inputVal = inputExcelPath.value.trim();
+    if (currentSelectedDay) {
+      updatedPaths[currentSelectedDay] = inputVal;
+    }
+
     const updated = {
-      excel_path: inputExcelPath.value.trim(),
+      excel_path: (currentSelectedDay === '平日') ? inputVal : (config.excel_path || inputVal),
+      excel_paths: updatedPaths,
       poll_interval_sec: parseInt(inputPollInterval.value, 10) || 5,
       scroll_speed_px_per_sec: parseInt(inputScrollSpeed.value, 10) || 35,
       bottom_pause_sec: parseInt(inputBottomPause.value, 10) || 4,
