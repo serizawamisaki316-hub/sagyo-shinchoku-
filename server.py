@@ -777,8 +777,14 @@ def refresh_data_for_day(canonical_day):
                     cached = MEMORY_CACHE.get(canonical_day)
                     cached_score = calculate_progress_score(cached)
                     new_score = calculate_progress_score(parsed_data)
-                    # Liveデータが進捗後退していないか（または初回）
-                    if not cached or new_score >= cached_score:
+
+                    # 一括リセット判定（QRデータ削除等により全タクトがクリアされ、スコアが0または極小になった状態）
+                    is_full_reset = (new_score == 0) or (new_score <= 10 and cached_score >= 50)
+
+                    # Liveデータが進捗後退していないか（または初回、または一括リセット）
+                    if not cached or new_score >= cached_score or is_full_reset:
+                        if is_full_reset and cached_score > 0:
+                            print(f"[RESET DETECTED: 画面Excel] [{canonical_day}] 一括リセット（QRデータ削除）を検知しました。画面を初期化します (旧スコア:{cached_score} -> 新スコア:{new_score})", flush=True)
                         LAST_FILE_MTIME[canonical_day] = -1.0
                         LAST_LIVE_TIME[canonical_day] = time.time()
                         MEMORY_CACHE[canonical_day] = parsed_data
@@ -835,15 +841,21 @@ def refresh_data_for_day(canonical_day):
                 cached_score = calculate_progress_score(cached)
                 new_score = calculate_progress_score(parsed_data)
 
+                # 一括リセット判定（QRデータ削除等により全タクトがクリアされ、スコアが0または極小になった状態）
+                is_full_reset = (new_score == 0) or (new_score <= 10 and cached_score >= 50)
+
                 # 【古いファイル拾い防止ガード】
                 # 現在のキャッシュが進捗を持っており、読み込んだディスクデータの進捗スコアが後退している場合、
-                # これは確実に「OneDrive同期遅延」または「古いファイル」を拾った状態であるため、破棄して既存キャッシュを維持する
+                # （ただし一括リセット時は除外して初期化を許可）
                 if cached and cached.get("success") and cached_score > 0 and new_score < cached_score:
-                    cached_mod = cached.get("last_modified", "")
-                    today_str = datetime.datetime.now().strftime("%Y/%m/%d")
-                    if today_str in cached_mod or "画面Excel" in cached_mod:
-                        print(f"[STALE GUARD: 抑止] [{canonical_day}] 古いファイルの読み込みをブロックしました (現スコア:{cached_score} > 読込スコア:{new_score})", flush=True)
-                        return cached
+                    if is_full_reset:
+                        print(f"[RESET DETECTED: ディスク] [{canonical_day}] 一括リセット（QRデータ削除）を検知しました。画面を初期化します (旧スコア:{cached_score} -> 新スコア:{new_score})", flush=True)
+                    else:
+                        cached_mod = cached.get("last_modified", "")
+                        today_str = datetime.datetime.now().strftime("%Y/%m/%d")
+                        if today_str in cached_mod or "画面Excel" in cached_mod:
+                            print(f"[STALE GUARD: 抑止] [{canonical_day}] 古いファイルの読み込みをブロックしました (現スコア:{cached_score} > 読込スコア:{new_score})", flush=True)
+                            return cached
 
                 LAST_FILE_MTIME[canonical_day] = mtime
                 MEMORY_CACHE[canonical_day] = parsed_data
