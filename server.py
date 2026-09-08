@@ -54,6 +54,11 @@ DEFAULT_CONFIG = {
     "theme": "dark"
 }
 
+# Excel常駐監視・スケジューラー設定
+EXCEL_SCHEDULE_START_HOUR = 7   # 稼働開始（朝 07:00）
+EXCEL_SCHEDULE_END_HOUR = 20    # 稼働停止（夜 20:00）
+EXCEL_HEALTHCHECK_INTERVAL = 15 # 死活監視間隔（秒）
+
 DAYS_ORDER = ["平日", "月曜", "火曜", "日・祝"]
 
 DAY_ALIASES = {
@@ -963,6 +968,181 @@ def sync_to_firestore_cloud(all_days_data, cfg=None):
         pass
 
 
+def launch_minimized_excel(target_excel_path):
+    """ExcelをVisible=Trueかつ最小化（タスクバー格納）で安全に起動・開く"""
+    if not target_excel_path or not os.path.exists(target_excel_path):
+        return False
+    if not HAS_WIN32:
+        return False
+
+    try:
+        pythoncom.CoInitialize()
+        xl_app = None
+        try:
+            xl_app = win32com.client.GetActiveObject("Excel.Application")
+        except Exception:
+            try:
+                xl_app = win32com.client.Dispatch("Excel.Application")
+            except Exception:
+                xl_app = None
+
+        if not xl_app:
+            norm_p = os.path.normpath(target_excel_path)
+            os.system(f'start /min "" excel.exe "{norm_p}"')
+            time.sleep(3)
+            try:
+                xl_app = win32com.client.GetActiveObject("Excel.Application")
+            except Exception:
+                pass
+
+        if xl_app:
+            xl_app.Visible = True
+            xl_app.DisplayAlerts = False
+            try:
+                xl_app.WindowState = -4140  # win32con.xlMinimized (-4140: 最小化)
+            except Exception:
+                pass
+
+            target_name = os.path.basename(target_excel_path).lower()
+            is_already_open = False
+            for wb in xl_app.Workbooks:
+                try:
+                    if wb.FullName.lower() == target_excel_path.lower() or wb.Name.lower() == target_name:
+                        is_already_open = True
+                        break
+                except Exception:
+                    pass
+
+            if not is_already_open:
+                print(f"[SUPERVISOR] 対象Excelを最小化で自動起動します: {target_excel_path}", flush=True)
+                xl_app.Workbooks.Open(target_excel_path)
+                try:
+                    xl_app.WindowState = -4140  # 確実に最小化を維持
+                except Exception:
+                    pass
+            xl_app.DisplayAlerts = True
+            return True
+    except Exception as e:
+        print(f"[SUPERVISOR LAUNCH ERROR] {e}", flush=True)
+        return False
+    return False
+
+
+def close_excel_safely():
+    """停止時間帯（夜20:00）にExcelを自動保存して安全にクローズする"""
+    if not HAS_WIN32:
+        return
+    try:
+        pythoncom.CoInitialize()
+        try:
+            xl_app = win32com.client.GetActiveObject("Excel.Application")
+        except Exception:
+            return
+
+        if xl_app:
+            xl_app.DisplayAlerts = False
+            for wb in list(xl_app.Workbooks):
+                try:
+                    wb.Save()
+                except Exception:
+                    pass
+                try:
+                    wb.Close(SaveChanges=False)
+                except Exception:
+                    pass
+            try:
+                xl_app.Quit()
+            except Exception:
+                pass
+            print("[SUPERVISOR] 夜間停止時刻(20:00)のため、Excelを自動保存して正常終了しました。", flush=True)
+    except Exception as e:
+        print(f"[SUPERVISOR CLOSE ERROR] {e}", flush=True)
+
+
+def is_excel_running(target_excel_path, canonical_day):
+    """対象Excelが現在Windows上で起動・生存しているか確認する"""
+    if not HAS_WIN32:
+        return False
+    try:
+        pythoncom.CoInitialize()
+        xl_app = win32com.client.GetActiveObject("Excel.Application")
+        if not xl_app:
+            return False
+
+        try:
+            if not xl_app.Visible:
+                return False
+        except Exception:
+            return False
+
+        target_name = os.path.basename(target_excel_path).lower() if target_excel_path else ""
+        keywords = DAY_KEYWORD_MAP.get(canonical_day, [])
+
+        for wb in xl_app.Workbooks:
+            try:
+                if target_excel_path and wb.FullName.lower() == target_excel_path.lower():
+                    return True
+                if target_name and wb.Name.lower() == target_name:
+                    return True
+                if any(kw.lower() in wb.Name.lower() for kw in keywords):
+                    return True
+            except Exception:
+                pass
+        return False
+    except Exception:
+        return False
+
+
+def excel_supervisor_worker():
+    """
+    Excel常駐監視・スケジューラーデーモンスレッド:
+      1. 朝 07:00 〜 夜 20:00:
+         - 本日の曜日Excelを特定し、最小化(WindowState=-4140)で常駐
+         - 15秒おきに死活監視を行い、手動終了やクラッシュを検知したら直ちに自動再起動
+      2. 夜 20:00 〜 翌朝 07:00:
+         - Excelが開かれていれば自動保存して安全にクローズ
+         - 停止時間帯は再起動を行わずに待機
+    """
+    if not HAS_WIN32:
+        print("[SUPERVISOR] Win32モジュールが無いため常駐監視はスキップされます。", flush=True)
+        return
+
+    print("[SUPERVISOR] Excel自動常駐・スケジューラー（朝7:00起動/夜20:00停止/死活監視）が稼働開始しました。", flush=True)
+    last_state = None
+
+    while True:
+        try:
+            now = datetime.datetime.now()
+            current_hour = now.hour
+            is_active_hours = (EXCEL_SCHEDULE_START_HOUR <= current_hour < EXCEL_SCHEDULE_END_HOUR)
+
+            if is_active_hours:
+                # --- 稼働時間帯 (07:00 〜 20:00) ---
+                canonical_day = resolve_canonical_day("")
+                target_file = find_excel_file_for_day(canonical_day)
+
+                if target_file and os.path.exists(target_file):
+                    running = is_excel_running(target_file, canonical_day)
+                    if not running:
+                        if last_state != "running":
+                            print(f"[SUPERVISOR] 朝の起動時刻(07:00)または初回起動を検知しました: [{canonical_day}]", flush=True)
+                        else:
+                            print(f"[SUPERVISOR WARN] Excelの停止・クラッシュを検知しました。直ちに自動再起動します: [{canonical_day}]", flush=True)
+
+                        launch_minimized_excel(target_file)
+                    last_state = "running"
+            else:
+                # --- 停止時間帯 (20:00 〜 翌朝 07:00) ---
+                if last_state != "stopped":
+                    close_excel_safely()
+                    last_state = "stopped"
+
+        except Exception as e:
+            print(f"[SUPERVISOR EXCEPTION] {e}", flush=True)
+
+        time.sleep(EXCEL_HEALTHCHECK_INTERVAL)
+
+
 def background_cache_worker():
     """Background polling daemon thread that keeps in-memory data fresh continuously."""
     print("[CACHE ENGINE] 高速インメモリ・キャッシュエンジンが起動しました。", flush=True)
@@ -1127,6 +1307,10 @@ def main():
     # Start background polling cache thread
     cache_thread = threading.Thread(target=background_cache_worker, daemon=True)
     cache_thread.start()
+
+    # Start Excel supervisor daemon thread (scheduler & health-check)
+    supervisor_thread = threading.Thread(target=excel_supervisor_worker, daemon=True)
+    supervisor_thread.start()
 
     while True:
         try:
