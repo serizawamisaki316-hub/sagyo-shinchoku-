@@ -22,6 +22,12 @@
   let lastRenderedDataHash = '';
   let latestSignageData = null;
 
+  // Static Version & Smart Refresh Management
+  let initialStaticVersion = null;
+  let needReload = false;
+  const pageStartTime = Date.now();
+  const MEMORY_REFRESH_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2時間 (日常のメモリ保護)
+
   // DOM Elements
   const viewport = document.getElementById('scroll-viewport');
   const scrollContent = document.getElementById('scroll-content');
@@ -280,7 +286,7 @@
       let data = null;
       let allData = window.__ALL_SIGNAGE_DATA__;
 
-      const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.port === '8080';
 
       if (isLocalHost) {
         try {
@@ -324,6 +330,32 @@
         data.sharedTimestamp = allData.timestamp;
       }
 
+      // 1. 静的アセット更新検知 (static_version: 案A)
+      let incomingVersion = (data && data.static_version) ? data.static_version : null;
+      if (!incomingVersion && isLocalHost) {
+        try {
+          const stResp = await fetch('/api/status?_t=' + Date.now(), {
+            cache: 'no-store',
+            headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
+          });
+          if (stResp.ok) {
+            const stJson = await stResp.json();
+            if (stJson && stJson.static_version) {
+              incomingVersion = stJson.static_version;
+            }
+          }
+        } catch (stErr) {}
+      }
+
+      if (incomingVersion) {
+        if (!initialStaticVersion) {
+          initialStaticVersion = incomingVersion;
+        } else if (initialStaticVersion !== incomingVersion) {
+          console.log(`[AUTO-RELOAD] New static version detected: ${incomingVersion} (current: ${initialStaticVersion})`);
+          needReload = true;
+        }
+      }
+
       if (data && data.day && data.day !== currentSelectedDay && isLocalHost) {
         currentSelectedDay = data.day;
         updateDayTabsUi(currentSelectedDay);
@@ -354,6 +386,18 @@
           renderGroupedCards(data);
         } else {
           updateTimeWarningClasses();
+        }
+
+        // コース数が少なく自動スクロール不要時（1画面収まり時）の安全リフレッシュ
+        const isLongRunning = (Date.now() - pageStartTime) > MEMORY_REFRESH_INTERVAL_MS;
+        if (needReload || isLongRunning) {
+          try {
+            const { maxScroll } = getScrollMetrics();
+            if (maxScroll <= 0) {
+              console.log('[AUTO-RELOAD] Non-scrolling layout: triggering clean reload');
+              setTimeout(() => { window.location.reload(true); }, 1500);
+            }
+          } catch (e) {}
         }
       }
     } catch (err) {
@@ -561,16 +605,18 @@
         const groupCompletedClass = isGroupAllCompleted ? 'group-completed-cell' : '';
 
         if (isMultiCourse) {
-          const subCourseCompleted = isGroupAllCompleted; // 集約コースの場合、全コース完了時のみ背景・バッジを変更
-          const subCourseCompletedClass = subCourseCompleted ? 'group-completed-cell' : '';
-          const subCourseBadgeClass = subCourseCompleted ? 'badge-completed' : '';
+          // 集約コースの場合：isGroupAllCompleted === false の間は、個別コース行が完了していても左3列およびバッジに完了クラスを一切付与しない
+          const groupCompletedClass = isGroupAllCompleted ? 'group-completed-cell' : '';
+          const groupBadgeClass = isGroupAllCompleted ? 'badge-completed' : '';
+          const subCourseCompletedClass = isGroupAllCompleted ? 'group-completed-cell' : '';
+          const subCourseBadgeClass = isGroupAllCompleted ? 'badge-completed' : '';
 
           if (isFirstCourseInGroup) {
             const timeInnerHtml = buildTimeCellHtml(groupTime, isGroupAllCompleted, groupCompletedTime, groupDiffMinutes, groupWarningValClass);
             // Vehicle Plate & Time Cell
             leftColsHtml += `
               <td class="cell-vehicle-tall ${groupCompletedClass}" rowspan="${totalRows}">
-                <div class="badge-vehicle-tall ${isGroupAllCompleted ? 'badge-completed' : ''}"><span class="badge-text-inner">${group.vehicleName}</span></div>
+                <div class="badge-vehicle-tall ${groupBadgeClass}"><span class="badge-text-inner">${group.vehicleName}</span></div>
               </td>
               <td class="cell-course-sub ${subCourseCompletedClass}" rowspan="2">
                 <div class="badge-course-sub ${subCourseBadgeClass}"><span class="badge-text-inner">${c.course || '-'}</span></div>
@@ -796,6 +842,14 @@
             viewport.scrollTo({ top: 0, behavior: 'smooth' });
 
             pauseTimer = setTimeout(() => {
+              // 2. トップ復帰停止時：ファイル更新検知時または起動2時間経過時に安全リフレッシュ（案B）
+              const isLongRunning = (Date.now() - pageStartTime) > MEMORY_REFRESH_INTERVAL_MS;
+              if (needReload || isLongRunning) {
+                console.log('[AUTO-RELOAD] Top position reached: triggering clean page refresh. needReload:', needReload, 'isLongRunning:', isLongRunning);
+                window.location.reload(true);
+                return;
+              }
+
               isScrolling = true;
               lastTimestamp = performance.now();
               requestAnimationFrame(scrollStep);

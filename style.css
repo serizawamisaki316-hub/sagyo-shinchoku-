@@ -367,23 +367,6 @@ html, body {
 }
 
 /* =========================================================
-   完了コース (F列=1) 全セル背景グレー (#E2E8F0) 連動
-   ========================================================= */
-.course-completed-row td {
-  background-color: var(--completed-row-bg) !important;
-}
-
-.course-completed-row td.cell-vehicle-tall:not(.group-completed-cell),
-.course-completed-row td.cell-course-sub:not(.group-completed-cell),
-.course-completed-row td.cell-time-tall:not(.group-completed-cell) {
-  background-color: #FFFFFF !important;
-}
-
-.group-completed-cell {
-  background-color: var(--completed-row-bg) !important;
-}
-
-/* =========================================================
    コース名・号車バッジ（★特大フォント ＆ はみ出し防止自動フィット）
    ========================================================= */
 .cell-vehicle-tall {
@@ -504,9 +487,21 @@ html, body {
 }
 
 /* =========================================================
-   ★ コース完了時（CK列=1）のグレー表示スタイル
+   ★ コース完了時（CK列=1 / 集約枠判定連動）のグレー表示スタイル
    ========================================================= */
-/* 1. 完了バッジ（濃紺から落ち着いたグレーへ変化） */
+/* 1. バッジ制御 */
+/* 未完了バッジ（濃紺 #0A2558 ＆ 白文字 #FFFFFF を完全維持） */
+.badge-vehicle-tall:not(.badge-completed),
+.badge-course-sub:not(.badge-completed),
+.badge-vehicle-single:not(.badge-completed),
+.badge-course-full:not(.badge-completed),
+.course-completed-row .badge-vehicle-tall:not(.badge-completed),
+.course-completed-row .badge-course-sub:not(.badge-completed) {
+  background: var(--badge-navy, #0A2558) !important;
+  color: var(--badge-text, #FFFFFF) !important;
+}
+
+/* 完了バッジ（全コース完了または単独コース完了でスレートグレー #64748B へ変化） */
 .badge-completed,
 .group-completed-cell .badge-vehicle-tall,
 .group-completed-cell .badge-course-sub,
@@ -518,17 +513,33 @@ html, body {
   border: 1px solid #475569 !important;
 }
 
-/* 2. 完了コース行の背景（薄いグレー） */
+/* 2. 完了コース行の背景（右側セル先行薄グレー変化） */
 .course-completed-row td {
   background-color: var(--completed-row-bg, #E2E8F0) !important;
 }
 
+/* 3. 集約コース未完了時の左3列（白背景 #FFFFFF を完全維持） */
+td.cell-vehicle-tall:not(.group-completed-cell),
+td.cell-course-sub:not(.group-completed-cell),
+td.cell-time-tall:not(.group-completed-cell),
 .course-completed-row td.cell-vehicle-tall:not(.group-completed-cell),
 .course-completed-row td.cell-course-sub:not(.group-completed-cell),
 .course-completed-row td.cell-time-tall:not(.group-completed-cell) {
   background-color: #FFFFFF !important;
 }
 
+/* 4. 集約全完了または単独完了時の左3列グレー化 */
+.group-completed-cell,
+td.cell-vehicle-tall.group-completed-cell,
+td.cell-course-sub.group-completed-cell,
+td.cell-time-tall.group-completed-cell,
+td.cell-vehicle-single.group-completed-cell,
+td.cell-course-full.group-completed-cell,
+td.cell-time.group-completed-cell {
+  background-color: var(--completed-row-bg, #E2E8F0) !important;
+}
+
+/* 5. 完了行内の各項目テキスト・タイル */
 .course-completed-row .cell-line-furidashi,
 .course-completed-row .cell-line-sagyo {
   color: #475569 !important;

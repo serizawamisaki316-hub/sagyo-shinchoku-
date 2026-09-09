@@ -1183,6 +1183,25 @@ def background_cache_worker():
             time.sleep(2)
 
 
+def get_static_version():
+    """app.js, style.css, index.html の最終更新日時(mtime)からバージョン文字列を生成"""
+    try:
+        targets = ["app.js", "style.css", "index.html"]
+        latest_mtime = 0
+        for name in targets:
+            p = os.path.join(APP_DIR, name)
+            if os.path.exists(p):
+                mt = os.path.getmtime(p)
+                if mt > latest_mtime:
+                    latest_mtime = mt
+        if latest_mtime > 0:
+            dt = datetime.datetime.fromtimestamp(latest_mtime)
+            return dt.strftime("%Y%m%d_%H%M%S")
+    except Exception:
+        pass
+    return "default_v1"
+
+
 class SignageRequestHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=APP_DIR, **kwargs)
@@ -1200,6 +1219,23 @@ class SignageRequestHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         try:
             parsed = urllib.parse.urlparse(self.path)
+            if parsed.path == "/api/status":
+                static_ver = get_static_version()
+                resp_json = json.dumps({
+                    "success": True,
+                    "static_version": static_ver,
+                    "server_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }, ensure_ascii=False)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                self.send_header("Pragma", "no-cache")
+                self.send_header("Expires", "0")
+                self.end_headers()
+                self.wfile.write(resp_json.encode("utf-8"))
+                return
+
             if parsed.path == "/api/data":
                 query = urllib.parse.parse_qs(parsed.query)
                 day_param = query.get("day", [""])[0]
@@ -1222,6 +1258,7 @@ class SignageRequestHandler(SimpleHTTPRequestHandler):
                 cfg = load_config()
                 resp_data = dict(data)
                 resp_data["config"] = cfg
+                resp_data["static_version"] = get_static_version()
 
                 resp_json = json.dumps(resp_data, ensure_ascii=False)
                 self.send_response(200)
