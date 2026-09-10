@@ -4,9 +4,16 @@ cd /d "%~dp0"
 chcp 65001 >nul
 title 倉庫作業進捗サイネージ 起動
 
+:: コマンドプロンプトの簡易編集モード（クリック時のフリーズ）を無効化
+reg add HKCU\Console /v QuickEdit /t REG_DWORD /d 0 /f >nul 2>nul
+
 echo ========================================================
 echo   倉庫作業進捗サイネージシステムを起動しています...
 echo ========================================================
+
+:: 起動前の非表示ゾンビExcelの残留チェック＆クリーンアップ
+powershell -NoProfile -Command "Get-Process EXCEL -ErrorAction SilentlyContinue | Where-Object { [string]::IsNullOrEmpty($_.MainWindowTitle) } | Stop-Process -Force -ErrorAction SilentlyContinue" >nul 2>nul
+
 
 :: 1. スタンドアロン実行ファイル（start_signage.exe）がある場合は最優先で起動
 if exist "%~dp0start_signage.exe" (

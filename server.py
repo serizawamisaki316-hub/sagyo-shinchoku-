@@ -38,12 +38,12 @@ CONFIG_FILE = os.path.join(APP_DIR, "config.json")
 PORT = 8080
 
 DEFAULT_CONFIG = {
-    "excel_path": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
+    "excel_path": r"%USERPROFILE%\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
     "excel_paths": {
-        "平日": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
-        "月曜": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\月曜（本番用）\(月)作業進捗管理データ.xlsm",
-        "火曜": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\火曜（本番用）\(火)作業進捗管理データ.xlsm",
-        "日・祝": r"C:\Users\85371-butsuryupc\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\日祝（本番用）\(日祝)作業進捗管理データ.xlsm"
+        "平日": r"%USERPROFILE%\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\平日(水～土)（本番用）\(平日)作業進捗管理データ.xlsm",
+        "月曜": r"%USERPROFILE%\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\月曜（本番用）\(月)作業進捗管理データ.xlsm",
+        "火曜": r"%USERPROFILE%\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\火曜（本番用）\(火)作業進捗管理データ.xlsm",
+        "日・祝": r"%USERPROFILE%\OneDrive - トヨタモビリティパーツ株式会社\Shortcuts\新体制移行の情報共有 - ★入力シート\日祝（本番用）\(日祝)作業進捗管理データ.xlsm"
     },
     "poll_interval_sec": 5,
     "font_size_scale": 1.0,
@@ -851,10 +851,15 @@ def refresh_data_for_day(canonical_day):
 
                 # 【古いファイル拾い防止ガード】
                 # 現在のキャッシュが進捗を持っており、読み込んだディスクデータの進捗スコアが後退している場合、
-                # （ただし一括リセット時は除外して初期化を許可）
+                # （ただし一括リセット時、またはファイル自体が新しく保存・更新された場合は正当な修正として受入）
+                cached_mtime = LAST_FILE_MTIME.get(canonical_day, 0)
+                is_newer_file = (mtime > cached_mtime and mtime > 0 and cached_mtime > 0)
+
                 if cached and cached.get("success") and cached_score > 0 and new_score < cached_score:
                     if is_full_reset:
                         print(f"[RESET DETECTED: ディスク] [{canonical_day}] 一括リセット（QRデータ削除）を検知しました。画面を初期化します (旧スコア:{cached_score} -> 新スコア:{new_score})", flush=True)
+                    elif is_newer_file:
+                        print(f"[STALE GUARD: 更新受入] [{canonical_day}] ファイル更新を検知したため進捗修正（スコア減少）を適用しました (現スコア:{cached_score} -> 新スコア:{new_score})", flush=True)
                     else:
                         cached_mod = cached.get("last_modified", "")
                         today_str = datetime.datetime.now().strftime("%Y/%m/%d")
@@ -968,6 +973,16 @@ def sync_to_firestore_cloud(all_days_data, cfg=None):
         pass
 
 
+def cleanup_zombie_excel():
+    """ウィンドウを持たない残留・ゾンビ化した非表示EXCELプロセスを安全に検知して終了する"""
+    try:
+        # MainWindowTitle が空の孤立EXCEL.EXEを強制終了
+        cmd = 'powershell -NoProfile -Command "Get-Process EXCEL -ErrorAction SilentlyContinue | Where-Object { [string]::IsNullOrEmpty($_.MainWindowTitle) } | Stop-Process -Force -ErrorAction SilentlyContinue"'
+        os.system(cmd)
+    except Exception:
+        pass
+
+
 def launch_minimized_excel(target_excel_path):
     """ExcelをVisible=Trueかつ最小化（タスクバー格納）で安全に起動・開く"""
     if not target_excel_path or not os.path.exists(target_excel_path):
@@ -1015,11 +1030,21 @@ def launch_minimized_excel(target_excel_path):
 
             if not is_already_open:
                 print(f"[SUPERVISOR] 対象Excelを最小化で自動起動します: {target_excel_path}", flush=True)
-                xl_app.Workbooks.Open(target_excel_path)
                 try:
-                    xl_app.WindowState = -4140  # 確実に最小化を維持
-                except Exception:
-                    pass
+                    xl_app.Workbooks.Open(target_excel_path)
+                    try:
+                        xl_app.WindowState = -4140  # 確実に最小化を維持
+                    except Exception:
+                        pass
+                except Exception as open_err:
+                    err_str = str(open_err)
+                    # 同名ブックが別プロセスでロックされている場合、ゾンビを掃除してリトライ
+                    if "使用されています" in err_str or "同じ名前のブック" in err_str or "-2146827284" in err_str:
+                        print(f"[SUPERVISOR WARN] 同名ブックの排他ロックを検知しました。孤立ゾンビExcelをクリーンアップします...", flush=True)
+                        cleanup_zombie_excel()
+                        time.sleep(2)
+                    raise open_err
+
             xl_app.DisplayAlerts = True
             return True
     except Exception as e:
@@ -1069,22 +1094,27 @@ def is_excel_running(target_excel_path, canonical_day):
         if not xl_app:
             return False
 
-        try:
-            if not xl_app.Visible:
-                return False
-        except Exception:
-            return False
-
         target_name = os.path.basename(target_excel_path).lower() if target_excel_path else ""
         keywords = DAY_KEYWORD_MAP.get(canonical_day, [])
 
         for wb in xl_app.Workbooks:
             try:
+                matched = False
                 if target_excel_path and wb.FullName.lower() == target_excel_path.lower():
-                    return True
-                if target_name and wb.Name.lower() == target_name:
-                    return True
-                if any(kw.lower() in wb.Name.lower() for kw in keywords):
+                    matched = True
+                elif target_name and wb.Name.lower() == target_name:
+                    matched = True
+                elif any(kw.lower() in wb.Name.lower() for kw in keywords):
+                    matched = True
+
+                if matched:
+                    # 非表示になっていても生存していれば表示・最小化状態に復帰
+                    try:
+                        if not xl_app.Visible:
+                            xl_app.Visible = True
+                            xl_app.WindowState = -4140
+                    except Exception:
+                        pass
                     return True
             except Exception:
                 pass
@@ -1107,8 +1137,12 @@ def excel_supervisor_worker():
         print("[SUPERVISOR] Win32モジュールが無いため常駐監視はスキップされます。", flush=True)
         return
 
-    print("[SUPERVISOR] Excel自動常駐・スケジューラー（朝7:00起動/夜20:00停止/死活監視）が稼働開始しました。", flush=True)
+    # 起動前に残留している非表示ゾンビExcelを安全に一掃
+    cleanup_zombie_excel()
+
+    print("[SUPERVISOR] Excel自動常駐・スケジューラー（朝7:00起動/夜20:00停止/死活監視/ゾンビ保護）が稼働開始しました。", flush=True)
     last_state = None
+    consecutive_errors = 0
 
     while True:
         try:
@@ -1127,15 +1161,28 @@ def excel_supervisor_worker():
                         if last_state != "running":
                             print(f"[SUPERVISOR] 朝の起動時刻(07:00)または初回起動を検知しました: [{canonical_day}]", flush=True)
                         else:
-                            print(f"[SUPERVISOR WARN] Excelの停止・クラッシュを検知しました。直ちに自動再起動します: [{canonical_day}]", flush=True)
+                            print(f"[SUPERVISOR WARN] Excelの停止・クラッシュを検知しました。自動再起動します: [{canonical_day}]", flush=True)
 
-                        launch_minimized_excel(target_file)
-                    last_state = "running"
+                        ok = launch_minimized_excel(target_file)
+                        if ok:
+                            last_state = "running"
+                            consecutive_errors = 0
+                        else:
+                            consecutive_errors += 1
+                            if consecutive_errors >= 3:
+                                # 連続失敗時はゾンビExcelを排除し、ログ溢れ防止のため長めに待機
+                                cleanup_zombie_excel()
+                                time.sleep(30)
+                                consecutive_errors = 0
+                    else:
+                        last_state = "running"
+                        consecutive_errors = 0
             else:
                 # --- 停止時間帯 (20:00 〜 翌朝 07:00) ---
                 if last_state != "stopped":
                     close_excel_safely()
                     last_state = "stopped"
+                    consecutive_errors = 0
 
         except Exception as e:
             print(f"[SUPERVISOR EXCEPTION] {e}", flush=True)
