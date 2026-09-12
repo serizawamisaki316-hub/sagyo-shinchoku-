@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 python_runtime/
+python_runtime_frozen/
 node_portable/
 build/
 dist/

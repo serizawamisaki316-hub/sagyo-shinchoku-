@@ -22,20 +22,18 @@ if exist "%~dp0start_signage.exe" (
     goto wait_and_open
 )
 
-:: 2. 同梱のpython_runtimeがあるか確認
-if exist "%~dp0python_runtime\python.exe" (
-    set "PYTHONHOME=%~dp0python_runtime"
-    set "PYTHONPATH=%~dp0python_runtime\Lib;%~dp0python_runtime\Lib\site-packages"
-    echo [OK] 同梱のPythonランタイムを使用します。
-    start "SignageServer" cmd /k "set "PYTHONHOME=%~dp0python_runtime" && set "PYTHONPATH=%~dp0python_runtime\Lib;%~dp0python_runtime\Lib\site-packages" && "%~dp0python_runtime\python.exe" server.py"
-    goto wait_and_open
-)
-
-:: 3. システムのPythonがあるか確認
+:: 2. システムのPythonを優先して使用
 where python >nul 2>nul
 if %errorlevel% equ 0 (
     echo [OK] システムのPythonを使用します。
     start "SignageServer" cmd /k "python server.py"
+    goto wait_and_open
+)
+
+:: 3. 同梱のpython_runtimeがあるか確認（フォールバック）
+if exist "%~dp0python_runtime\python.exe" (
+    echo [OK] 同梱のPythonランタイムを使用します。
+    start "SignageServer" cmd /k ""%~dp0python_runtime\python.exe" server.py"
     goto wait_and_open
 )
 
@@ -44,7 +42,7 @@ echo.
 echo ========================================================
 echo 【エラー】起動に必要なプログラムが見つかりません。
 echo ========================================================
-echo start_signage.exe または python_runtime がフォルダ内に存在しません。
+echo システムのPython または python_runtime がフォルダ内に存在しません。
 echo.
 pause
 exit /b 1
