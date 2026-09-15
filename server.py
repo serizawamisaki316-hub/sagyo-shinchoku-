@@ -647,32 +647,21 @@ def parse_rows_into_signage_data(canonical_day, excel_path, disp_rows, data_rows
         data_r2 = data_rows[r_idx + 1] if r_idx + 1 < len(data_rows) else [None] * 105
 
         # 1 & 2. 振出・査照のタクト判定:
-        # Excelの G..AE列（1〜25タクト）の「パワポ表示用変換」値を完全評価
-        # （データシート上でエンドカード99が打たれた場合、手前のタクトはすべて99完了となり青色表示される）
+        # 仕様書通り: Excelの G..AE列（インデックス6〜30）の「パワポ表示用変換」値を参照。
+        # この列にはExcel数式により、エンドカード(99)到達時に手前タクトもすべて99に変換済みの計算結果が入っている。
         def eval_row_tacts(data_row):
-            # AG..BE列 (インデックス 32..56) の現場入力値を取得
-            ag_be = []
+            # G..AE列 (インデックス 6..30) のExcel計算済み値を取得
+            g_ae = []
             for i in range(25):
-                c = 32 + i
+                c = 6 + i
                 v = data_row[c] if len(data_row) > c and data_row[c] is not None else 0
                 try:
                     v_num = int(float(v))
                 except (ValueError, TypeError):
                     v_num = 0
-                ag_be.append(v_num if v_num in (99, 1) else 0)
+                g_ae.append(v_num if v_num in (99, 1) else 0)
 
-            # エンドカード(99)が存在する場合、そのタクトおよび手前はすべて99(完了/青)
-            if 99 in ag_be:
-                match_99 = ag_be.index(99)
-                result = []
-                for idx in range(25):
-                    if idx <= match_99:
-                        result.append(99)
-                    else:
-                        result.append(ag_be[idx])
-                return [{"num": i + 1, "status": result[i]} for i in range(25)]
-            else:
-                return [{"num": i + 1, "status": ag_be[i]} for i in range(25)]
+            return [{"num": i + 1, "status": g_ae[i]} for i in range(25)]
 
         furidashi_items = eval_row_tacts(data_r1)
         sagyo_items = eval_row_tacts(data_r2)
