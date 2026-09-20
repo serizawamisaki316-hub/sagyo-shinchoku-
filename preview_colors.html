@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>配送なし（緑色）色見本プレビュー比較</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* プレビュー画面専用コントロールバー */
+    .color-switcher-bar {
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+    .color-switcher-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-right: 8px;
+    }
+    .color-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background: #1e293b;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .color-btn:hover {
+      background: #334155;
+      transform: translateY(-1px);
+    }
+    .color-btn.active {
+      border-color: #38bdf8;
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(56,189,248,0.5);
+    }
+    .color-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: inline-block;
+      border: 1px solid rgba(0,0,0,0.2);
+    }
+    .view-mode-btn {
+      margin-left: auto;
+      padding: 8px 16px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .info-card {
+      margin: 16px 20px;
+      padding: 12px 16px;
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 4px;
+      color: #1e3a8a;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .color-desc {
+      font-size: 13px;
+      color: #475569;
+    }
+    .color-code-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-weight: bold;
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- カラー切り替えバー -->
+  <div class="color-switcher-bar">
+    <span class="color-switcher-title">🎨 色見本切り替え:</span>
+    <button class="color-btn active" onclick="applyColor('current', '#C6EFCE', '#A3E635', '現在（薄い黄緑・パステル）')">
+      <span class="color-dot" style="background: #C6EFCE;"></span>
+      現在: #C6EFCE
+    </button>
+    <button class="color-btn" onclick="applyColor('planA', '#A3E89E', '#66BB6A', '案A: 若葉色（1段階濃く・自然）')">
+      <span class="color-dot" style="background: #A3E89E;"></span>
+      案A: #A3E89E
+    </button>
+    <button class="color-btn" onclick="applyColor('planB', '#86D94E', '#65A30D', '案B: 鮮やかライム（推奨・遠くから高視認性）')">
+      <span class="color-dot" style="background: #86D94E;"></span>
+      案B: #86D94E ★推奨
+    </button>
+    <button class="color-btn" onclick="applyColor('planC', '#7BC642', '#558B2F', '案C: アップルグリーン（推奨・適度な濃さ）')">
+      <span class="color-dot" style="background: #7BC642;"></span>
+      案C: #7BC642 ★推奨
+    </button>
+    <button class="color-btn" onclick="applyColor('planD', '#68B936', '#498226', '案D: 濃い若草色（しっかり濃いめ）')">
+      <span class="color-dot" style="background: #68B936;"></span>
+      案D: #68B936
+    </button>
+    <button class="color-btn" onclick="applyColor('planE', '#7CB342', '#558B2F', '案E: マテリアルライトグリーン（落ち着いた中濃）')">
+      <span class="color-dot" style="background: #7CB342;"></span>
+      案E: #7CB342
+    </button>
+  </div>
+
+  <!-- 現在選択中の説明 -->
+  <div class="info-card">
+    <div>
+      <strong>選択中のカラー: </strong>
+      <span id="current-color-name" style="font-weight: bold; font-size: 15px;">現在（薄い黄緑・パステル）</span>
+      <span style="margin-left: 12px;">背景色: <span class="color-code-badge" id="badge-bg">#C6EFCE</span></span>
+      <span style="margin-left: 8px;">枠線色: <span class="color-code-badge" id="badge-border">#A3E635</span></span>
+    </div>
+    <div class="color-desc" id="current-color-desc">
+      ※上のボタンをクリックすると、画面全体の「配送なし」タイル・伝票・凡例の色が瞬時に切り替わります。
+    </div>
+  </div>
+
+  <!-- サイネージ画面のヘッダー -->
+  <header class="signage-header" style="margin-bottom: 8px;">
+    <div class="header-left">
+      <div class="header-title-container">
+        <h1 class="header-title">倉庫作業進捗サイネージ（プレビュー比較）</h1>
+      </div>
+      <span class="course-count-badge">サンプルコース</span>
+      <div class="legend-container">
+        <div class="legend-item">
+          <div class="legend-tile legend-tile-grey">1</div>
+          <span>作業中</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-tile legend-tile-blue">1</div>
+          <span>完了</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-tile legend-tile-green" id="preview-legend-green"></div>
+          <span>配送なし</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="clock-display">
+        <span class="clock-date">2026/09/20 (日)</span>
+        <span class="clock-time">10:10:00</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-pill">
+        <span class="status-icon">🟢</span>
+        <span class="status-text">プレビューモード</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- テーブルプレビュー表示 -->
+  <main class="table-wrapper" style="overflow: visible; padding: 0 16px 40px 16px;">
+    
+    <!-- 一括比較カードテーブル -->
+    <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #cbd5e1;">
+      <div style="font-weight: bold; color: #0f172a; font-size: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <span>📊 <strong>【一括並列比較】</strong> 各案の黄緑色と通常タイル（作業中・完了）とのコントラスト</span>
+      </div>
+      <table style="width: 100%; border-collapse: separate; border-spacing: 0 6px;">
+        <!-- 通常の作業中・完了比較行 -->
+        <tr style="background: #f8fafc;">
+          <td style="width: 220px; padding: 6px 12px; font-weight: bold; font-size: 13px; color: #334155;">【基準】作業中 ＆ 完了</td>
+          <td style="padding: 4px;">
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <div class="progress-tile tile-blue-done" style="width: 32px; height: 32px; font-size: 14px;">1</div>
+              <div class="progress-tile tile-blue-done" style="width: 32px; height: 32px; font-size: 14px;">2</div>
+              <div class="progress-tile tile-blue-done" style="width: 32px; height: 32px; font-size: 14px;">3</div>
+              <div class="progress-tile tile-grey-active" style="width: 32px; height: 32px; font-size: 14px;">4</div>
+              <div class="progress-tile tile-unstarted" style="width: 32px; height: 32px;"></div>
+              <div class="progress-tile tile-unstarted" style="width: 32px; height: 32px;"></div>
+              <div class="progress-tile tile-unstarted" style="width: 32px; height: 32px;"></div>
+              <div class="slip-checkbox slip-done-blue" style="width: 32px; height: 32px; font-size: 16px; margin-left: 10px;">✓</div>
+              <span style="font-size: 12px; color: #64748b; margin-left: 10px;">※ 青（完了）/ グレー（作業中）/ 白（未着手）</span>
+            </div>
+          </td>
+        </tr>
+        <!-- 現在 -->
+        <tr style="background: #ffffff; border: 1px solid #e2e8f0;">
+          <td style="width: 220px; padding: 6px 12px; font-weight: bold; font-size: 13px; color: #475569;">
+            【現在】#C6EFCE (薄黄緑)
+          </td>
+          <td style="padding: 4px;">
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #C6EFCE; border: 1px solid #A3E635;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #C6EFCE; border: 1px solid #A3E635;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #C6EFCE; border: 1px solid #A3E635;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #C6EFCE; border: 1px solid #A3E635;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #C6EFCE; border: 1px solid #A3E635;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #C6EFCE; border: 1px solid #A3E635;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #C6EFCE; border: 1px solid #A3E635;"></div>
+              <div class="slip-checkbox" style="width: 32px; height: 32px; background: #C6EFCE; border: 1.5px solid #A3E635; margin-left: 10px;"></div>
+              <span style="font-size: 12px; color: #64748b; margin-left: 10px;">淡いパステル。遠目だと白に近め</span>
+            </div>
+          </td>
+        </tr>
+        <!-- 案A -->
+        <tr style="background: #ffffff;">
+          <td style="width: 220px; padding: 6px 12px; font-weight: bold; font-size: 13px; color: #166534;">
+            【案A】#A3E89E (若葉色)
+          </td>
+          <td style="padding: 4px;">
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #A3E89E; border: 1px solid #66BB6A;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #A3E89E; border: 1px solid #66BB6A;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #A3E89E; border: 1px solid #66BB6A;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #A3E89E; border: 1px solid #66BB6A;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #A3E89E; border: 1px solid #66BB6A;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #A3E89E; border: 1px solid #66BB6A;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #A3E89E; border: 1px solid #66BB6A;"></div>
+              <div class="slip-checkbox" style="width: 32px; height: 32px; background: #A3E89E; border: 1.5px solid #66BB6A; margin-left: 10px;"></div>
+              <span style="font-size: 12px; color: #166534; margin-left: 10px;">1段階濃く。爽やかで自然な黄緑</span>
+            </div>
+          </td>
+        </tr>
+        <!-- 案B (推奨) -->
+        <tr style="background: #f0fdf4; border-left: 4px solid #86D94E;">
+          <td style="width: 220px; padding: 6px 12px; font-weight: bold; font-size: 13px; color: #15803d;">
+            ★【案B】#86D94E (鮮やかライム)
+          </td>
+          <td style="padding: 4px;">
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #86D94E; border: 1px solid #65A30D;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #86D94E; border: 1px solid #65A30D;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #86D94E; border: 1px solid #65A30D;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #86D94E; border: 1px solid #65A30D;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #86D94E; border: 1px solid #65A30D;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #86D94E; border: 1px solid #65A30D;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #86D94E; border: 1px solid #65A30D;"></div>
+              <div class="slip-checkbox" style="width: 32px; height: 32px; background: #86D94E; border: 1.5px solid #65A30D; margin-left: 10px;"></div>
+              <span style="font-size: 12px; font-weight: bold; color: #15803d; margin-left: 10px;">★おすすめ！遠くの大型サイネージからでも一目瞭然の視認性</span>
+            </div>
+          </td>
+        </tr>
+        <!-- 案C (推奨) -->
+        <tr style="background: #f0fdf4; border-left: 4px solid #7BC642;">
+          <td style="width: 220px; padding: 6px 12px; font-weight: bold; font-size: 13px; color: #15803d;">
+            ★【案C】#7BC642 (アップルグリーン)
+          </td>
+          <td style="padding: 4px;">
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7BC642; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7BC642; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7BC642; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7BC642; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7BC642; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7BC642; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7BC642; border: 1px solid #558B2F;"></div>
+              <div class="slip-checkbox" style="width: 32px; height: 32px; background: #7BC642; border: 1.5px solid #558B2F; margin-left: 10px;"></div>
+              <span style="font-size: 12px; font-weight: bold; color: #15803d; margin-left: 10px;">★おすすめ！落ち着きと視認性のバランスが最も良い濃さ</span>
+            </div>
+          </td>
+        </tr>
+        <!-- 案D -->
+        <tr style="background: #ffffff;">
+          <td style="width: 220px; padding: 6px 12px; font-weight: bold; font-size: 13px; color: #166534;">
+            【案D】#68B936 (濃い若草色)
+          </td>
+          <td style="padding: 4px;">
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #68B936; border: 1px solid #498226;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #68B936; border: 1px solid #498226;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #68B936; border: 1px solid #498226;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #68B936; border: 1px solid #498226;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #68B936; border: 1px solid #498226;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #68B936; border: 1px solid #498226;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #68B936; border: 1px solid #498226;"></div>
+              <div class="slip-checkbox" style="width: 32px; height: 32px; background: #68B936; border: 1.5px solid #498226; margin-left: 10px;"></div>
+              <span style="font-size: 12px; color: #166534; margin-left: 10px;">かなりしっかり濃い色合い</span>
+            </div>
+          </td>
+        </tr>
+        <!-- 案E -->
+        <tr style="background: #ffffff;">
+          <td style="width: 220px; padding: 6px 12px; font-weight: bold; font-size: 13px; color: #166534;">
+            【案E】#7CB342 (ライトグリーン)
+          </td>
+          <td style="padding: 4px;">
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7CB342; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7CB342; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7CB342; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7CB342; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7CB342; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7CB342; border: 1px solid #558B2F;"></div>
+              <div class="progress-tile" style="width: 32px; height: 32px; background: #7CB342; border: 1px solid #558B2F;"></div>
+              <div class="slip-checkbox" style="width: 32px; height: 32px; background: #7CB342; border: 1.5px solid #558B2F; margin-left: 10px;"></div>
+              <span style="font-size: 12px; color: #166534; margin-left: 10px;">Google Material標準。目に優しい中濃</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="font-weight: bold; color: #0f172a; font-size: 15px; margin-bottom: 8px;">
+      🖥️ <strong>【サイネージ実画面プレビュー】</strong> （上部バーのボタンを押すと、この画面内の「配送なし」がリアルタイムに切り替わります）
+    </div>
+    <table class="signage-table">
+      <thead>
+        <tr>
+          <th class="col-course">コース</th>
+          <th class="col-time">搬送完了時間</th>
+          <th class="col-item">項目</th>
+          <!-- 1〜25タクトヘッダー -->
+          <th class="col-tact">1</th>
+          <th class="col-tact">2</th>
+          <th class="col-tact">3</th>
+          <th class="col-tact">4</th>
+          <th class="col-tact">5</th>
+          <th class="col-tact">6</th>
+          <th class="col-tact">7</th>
+          <th class="col-tact">8</th>
+          <th class="col-tact">9</th>
+          <th class="col-tact">10</th>
+          <th class="col-tact">11</th>
+          <th class="col-tact">12</th>
+          <th class="col-tact">13</th>
+          <th class="col-tact">14</th>
+          <th class="col-tact">15</th>
+          <th class="col-tact">16</th>
+          <th class="col-tact">17</th>
+          <th class="col-tact">18</th>
+          <th class="col-tact">19</th>
+          <th class="col-tact">20</th>
+          <th class="col-tact">21</th>
+          <th class="col-tact">22</th>
+          <th class="col-tact">23</th>
+          <th class="col-tact">24</th>
+          <th class="col-tact">25</th>
+          <th class="col-slip">伝票</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- コース1: 通常稼働コース（作業中・完了が混在） -->
+        <tr class="row-group-start">
+          <td rowspan="2" class="cell-course">
+            <div class="course-cell-container">
+              <span class="course-name-badge">1便 A101</span>
+            </div>
+          </td>
+          <td rowspan="2" class="cell-time">
+            <div class="time-cell-container">
+              <span class="time-main">09:30</span>
+            </div>
+          </td>
+          <td class="cell-item item-furidashi">振出</td>
+          <!-- 1〜5完了(青), 6作業中(グレー), 7〜25未着手(白) -->
+          <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+          <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+          <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">3</div></div></td>
+          <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">4</div></div></td>
+          <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">5</div></div></td>
+          <td><div class="cell-tile-container"><div class="progress-tile tile-grey-active">6</div></div></td>
+          <!-- 7〜25 未着手 -->
+          <script>
+            for(let i=7; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>');
+            }
+          </script>
+          <td rowspan="2" class="cell-slip">
+            <div class="slip-cell-container">
+              <div class="slip-checkbox slip-pending-empty"></div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="cell-item item-sagyo">査照</td>
+          <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">1</div></div></td>
+          <td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">2</div></div></td>
+          <td><div class="cell-tile-container"><div class="progress-tile tile-grey-active">3</div></div></td>
+          <script>
+            for(let i=4; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile tile-unstarted"></div></div></td>');
+            }
+          </script>
+        </tr>
+
+        <!-- コース2: ★【配送なし（欠便）コース】（全タクト・伝票が緑色） -->
+        <tr class="row-group-start">
+          <td rowspan="2" class="cell-course">
+            <div class="course-cell-container">
+              <span class="course-name-badge">1便 B202 (配送なし)</span>
+            </div>
+          </td>
+          <td rowspan="2" class="cell-time">
+            <div class="time-cell-container">
+              <span class="time-main">10:00</span>
+            </div>
+          </td>
+          <td class="cell-item item-furidashi">振出</td>
+          <!-- 1〜25 すべて配送なし緑色 -->
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile tile-green-nodelivery preview-target-tile"></div></div></td>');
+            }
+          </script>
+          <td rowspan="2" class="cell-slip">
+            <div class="slip-cell-container">
+              <div class="slip-checkbox slip-nodelivery-green preview-target-slip"></div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="cell-item item-sagyo">査照</td>
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile tile-green-nodelivery preview-target-tile"></div></div></td>');
+            }
+          </script>
+        </tr>
+
+        <!-- 各案の一覧並列比較行 -->
+        <tr style="background: #f1f5f9; border-top: 3px solid #0284c7;">
+          <td colspan="29" style="padding: 10px 16px; font-weight: bold; color: #0f172a; font-size: 15px;">
+            👇 【一括並列比較】各案の黄緑色を並べた比較サンプル（作業中・完了タイルとの対比）
+          </td>
+        </tr>
+
+        <!-- 現在色 -->
+        <tr>
+          <td colspan="3" style="padding: 8px 12px; font-weight: bold; font-size: 13px; color: #334155; background: #fff;">
+            【現在】#C6EFCE (薄い黄緑)
+          </td>
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile" style="background-color: #C6EFCE; border: 1px solid #A3E635;"></div></div></td>');
+            }
+          </script>
+          <td class="cell-slip">
+            <div class="slip-cell-container">
+              <div class="slip-checkbox" style="background-color: #C6EFCE; border: 1.5px solid #A3E635;"></div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 案A -->
+        <tr>
+          <td colspan="3" style="padding: 8px 12px; font-weight: bold; font-size: 13px; color: #334155; background: #fff;">
+            【案A】#A3E89E (若葉色・1段階増)
+          </td>
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile" style="background-color: #A3E89E; border: 1px solid #66BB6A;"></div></div></td>');
+            }
+          </script>
+          <td class="cell-slip">
+            <div class="slip-cell-container">
+              <div class="slip-checkbox" style="background-color: #A3E89E; border: 1.5px solid #66BB6A;"></div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 案B (推奨) -->
+        <tr style="background: #f0fdf4;">
+          <td colspan="3" style="padding: 8px 12px; font-weight: bold; font-size: 13px; color: #166534;">
+            ★【案B】#86D94E (鮮やかライム・推奨)
+          </td>
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile" style="background-color: #86D94E; border: 1px solid #65A30D;"></div></div></td>');
+            }
+          </script>
+          <td class="cell-slip">
+            <div class="slip-cell-container">
+              <div class="slip-checkbox" style="background-color: #86D94E; border: 1.5px solid #65A30D;"></div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 案C (推奨) -->
+        <tr style="background: #f0fdf4;">
+          <td colspan="3" style="padding: 8px 12px; font-weight: bold; font-size: 13px; color: #166534;">
+            ★【案C】#7BC642 (アップルグリーン・推奨)
+          </td>
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile" style="background-color: #7BC642; border: 1px solid #558B2F;"></div></div></td>');
+            }
+          </script>
+          <td class="cell-slip">
+            <div class="slip-cell-container">
+              <div class="slip-checkbox" style="background-color: #7BC642; border: 1.5px solid #558B2F;"></div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 案D -->
+        <tr>
+          <td colspan="3" style="padding: 8px 12px; font-weight: bold; font-size: 13px; color: #334155; background: #fff;">
+            【案D】#68B936 (濃い若草色・しっかり濃いめ)
+          </td>
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile" style="background-color: #68B936; border: 1px solid #498226;"></div></div></td>');
+            }
+          </script>
+          <td class="cell-slip">
+            <div class="slip-cell-container">
+              <div class="slip-checkbox" style="background-color: #68B936; border: 1.5px solid #498226;"></div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- 案E -->
+        <tr>
+          <td colspan="3" style="padding: 8px 12px; font-weight: bold; font-size: 13px; color: #334155; background: #fff;">
+            【案E】#7CB342 (マテリアルライトグリーン)
+          </td>
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile" style="background-color: #7CB342; border: 1px solid #558B2F;"></div></div></td>');
+            }
+          </script>
+          <td class="cell-slip">
+            <div class="slip-cell-container">
+              <div class="slip-checkbox" style="background-color: #7CB342; border: 1.5px solid #558B2F;"></div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- コース3: 完了済みコース（行全体がグレー背景＋全青タイル） -->
+        <tr class="row-group-start group-completed-cell">
+          <td rowspan="2" class="cell-course group-completed-cell">
+            <div class="course-cell-container">
+              <span class="course-name-badge group-completed-badge">1便 C303</span>
+            </div>
+          </td>
+          <td rowspan="2" class="cell-time group-completed-cell">
+            <div class="time-cell-container">
+              <span class="time-main">08:45</span>
+            </div>
+          </td>
+          <td class="cell-item item-furidashi group-completed-cell">振出</td>
+          <!-- 1〜25 完了青 -->
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">' + i + '</div></div></td>');
+            }
+          </script>
+          <td rowspan="2" class="cell-slip group-completed-cell">
+            <div class="slip-cell-container">
+              <div class="slip-checkbox slip-done-blue">✓</div>
+            </div>
+          </td>
+        </tr>
+        <tr class="group-completed-cell">
+          <td class="cell-item item-sagyo group-completed-cell">査照</td>
+          <script>
+            for(let i=1; i<=25; i++) {
+              document.write('<td><div class="cell-tile-container"><div class="progress-tile tile-blue-done">' + i + '</div></div></td>');
+            }
+          </script>
+        </tr>
+
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    function applyColor(planId, bgColor, borderColor, desc) {
+      // CSS変数を更新
+      document.documentElement.style.setProperty('--tile-nodelivery-bg', bgColor);
+      
+      // 枠線色の更新
+      const tiles = document.querySelectorAll('.progress-tile.tile-green-nodelivery, .legend-tile-green');
+      tiles.forEach(el => {
+        el.style.borderColor = borderColor;
+      });
+      const slips = document.querySelectorAll('.slip-checkbox.slip-nodelivery-green');
+      slips.forEach(el => {
+        el.style.borderColor = borderColor;
+      });
+
+      // 表示バッジの更新
+      document.getElementById('current-color-name').innerText = desc;
+      document.getElementById('badge-bg').innerText = bgColor;
+      document.getElementById('badge-border').innerText = borderColor;
+
+      // ボタンのアクティブ状態更新
+      document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+    }
+  </script>
+</body>
+</html>

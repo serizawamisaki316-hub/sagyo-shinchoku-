@@ -23,7 +23,7 @@
   /* 1〜25 進捗タイルカラー (ご指定仕様) */
   --tile-done-bg: #0070C0;        /* 完了済み: 鮮やかなブルー */
   --tile-active-bg: #94A3B8;      /* 進行中: グレー */
-  --tile-nodelivery-bg: #C6EFCE;  /* 配送なし: 薄い黄緑 */
+  --tile-nodelivery-bg: #7BC642;  /* 配送なし: アップルグリーン */
   --tile-pending-border: #CBD5E1;  /* 未着手: 白枠線 */
   
   --slip-done-bg: #0070C0;        /* 伝票完了: 完了済みと同じブルー */
@@ -750,10 +750,10 @@ td.cell-time.group-completed-cell {
   border: 1px solid #64748B;
 }
 
-/* ① 薄い黄緑: 配送なし -> 薄緑背景 (数字なし) */
+/* ① アップルグリーン: 配送なし -> 黄緑背景 (数字なし) */
 .progress-tile.tile-green-nodelivery {
   background-color: var(--tile-nodelivery-bg);
-  border: 1px solid #A3E635;
+  border: 1px solid #558B2F;
   color: transparent;
 }
 
@@ -800,10 +800,10 @@ td.cell-time.group-completed-cell {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
-/* 伝票 配送なし: 薄い黄緑背景 (チェックなし) */
+/* 伝票 配送なし: アップルグリーン背景 (チェックなし) */
 .slip-checkbox.slip-nodelivery-green {
   background-color: var(--tile-nodelivery-bg);
-  border: 1.5px solid #A3E635;
+  border: 1.5px solid #558B2F;
   color: transparent;
 }
 
@@ -1054,7 +1054,7 @@ td.cell-time.group-completed-cell {
 
 .legend-tile-green {
   background-color: var(--tile-nodelivery-bg);
-  border: 1px solid #A3E635;
+  border: 1px solid #558B2F;
 }
 
 /* =========================================================
