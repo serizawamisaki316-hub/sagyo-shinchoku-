@@ -103,16 +103,101 @@ def calculate_progress_score(data):
 
 
 
+def get_vernal_equinox(year):
+    """春分の日（天文計算式）"""
+    if year < 1980:
+        return 21
+    if year <= 2099:
+        return int(20.8431 + 0.242194 * (year - 1980) - int((year - 1980) / 4))
+    return 20
+
+
+def get_autumnal_equinox(year):
+    """秋分の日（天文計算式）"""
+    if year < 1980:
+        return 23
+    if year <= 2099:
+        return int(23.2488 + 0.242194 * (year - 1980) - int((year - 1980) / 4))
+    return 23
+
+
+def get_japanese_holidays(year):
+    """その年の国民の祝日一覧（振替休日・国民の休日を含む）を取得（外部ライブラリ完全不要）"""
+    holidays = {}
+
+    # 1. 固定祝日
+    holidays[datetime.date(year, 1, 1)] = "元日"
+    holidays[datetime.date(year, 2, 11)] = "建国記念の日"
+    if year >= 2020:
+        holidays[datetime.date(year, 2, 23)] = "天皇誕生日"
+    holidays[datetime.date(year, 3, get_vernal_equinox(year))] = "春分の日"
+    holidays[datetime.date(year, 4, 29)] = "昭和の日"
+    holidays[datetime.date(year, 5, 3)] = "憲法記念日"
+    holidays[datetime.date(year, 5, 4)] = "みどりの日"
+    holidays[datetime.date(year, 5, 5)] = "こどもの日"
+    if year >= 2016:
+        holidays[datetime.date(year, 8, 11)] = "山の日"
+    holidays[datetime.date(year, 9, get_autumnal_equinox(year))] = "秋分の日"
+    holidays[datetime.date(year, 11, 3)] = "文化の日"
+    holidays[datetime.date(year, 11, 23)] = "勤労感謝の日"
+
+    # 2. ハッピーマンデー (第N月曜日)
+    def nth_monday(y, m, n):
+        first = datetime.date(y, m, 1)
+        first_mon = 1 + (7 - first.weekday()) % 7
+        return datetime.date(y, m, first_mon + (n - 1) * 7)
+
+    holidays[nth_monday(year, 1, 2)] = "成人の日"
+    holidays[nth_monday(year, 7, 3)] = "海の日"
+    holidays[nth_monday(year, 9, 3)] = "敬老の日"
+    holidays[nth_monday(year, 10, 2)] = "スポーツの日"
+
+    # 3. 国民の休日 (祝日に挟まれた平日)
+    sorted_dates = sorted(holidays.keys())
+    citizen_holidays = {}
+    for i in range(len(sorted_dates) - 1):
+        d1 = sorted_dates[i]
+        d2 = sorted_dates[i + 1]
+        if (d2 - d1).days == 2:
+            between = d1 + datetime.timedelta(days=1)
+            if between.weekday() != 6 and between not in holidays:
+                citizen_holidays[between] = "国民の休日"
+    holidays.update(citizen_holidays)
+
+    # 4. 振替休日
+    substitute_holidays = {}
+    for h_date in sorted(holidays.keys()):
+        if h_date.weekday() == 6:  # 日曜日
+            sub = h_date + datetime.timedelta(days=1)
+            while sub in holidays or sub in substitute_holidays:
+                sub += datetime.timedelta(days=1)
+            substitute_holidays[sub] = "振替休日"
+    holidays.update(substitute_holidays)
+
+    return holidays
+
+
+def is_japanese_holiday(dt):
+    """指定日が日本の国民の祝日（振替休日・国民の休日含む）かどうかを判定"""
+    try:
+        if isinstance(dt, datetime.datetime):
+            dt = dt.date()
+        holidays = get_japanese_holidays(dt.year)
+        return dt in holidays
+    except Exception:
+        return False
+
+
 def resolve_canonical_day(day_input):
     try:
         if not day_input or not str(day_input).strip():
-            weekday = datetime.datetime.now().weekday()
-            # Monday=0, Tuesday=1, Wednesday=2, Thursday=3, Friday=4, Saturday=5, Sunday=6
-            if weekday == 6:
+            today = datetime.date.today()
+            # 祝日 または 日曜日(weekday == 6) は最優先で「日・祝」と判定
+            if is_japanese_holiday(today) or today.weekday() == 6:
                 return "日・祝"
-            elif weekday == 0:
+            elif today.weekday() == 0:
                 return "月曜"
-            elif weekday == 1:
+            elif today.weekday() == 1:
                 return "火曜"
             else:
                 return "平日"

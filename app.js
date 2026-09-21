@@ -129,6 +129,103 @@
     });
   }
 
+  // 日本の国民の祝日判定ロジック（振替休日・国民の休日対応、外部ライブラリ不要）
+  function getVernalEquinox(year) {
+    if (year < 1980) return 21;
+    if (year <= 2099) return Math.floor(20.8431 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
+    return 20;
+  }
+
+  function getAutumnalEquinox(year) {
+    if (year < 1980) return 23;
+    if (year <= 2099) return Math.floor(23.2488 + 0.242194 * (year - 1980) - Math.floor((year - 1980) / 4));
+    return 23;
+  }
+
+  function getNthMonday(year, month, n) {
+    const first = new Date(year, month - 1, 1);
+    const firstDay = first.getDay(); // 0:Sun, 1:Mon...
+    const firstMon = 1 + (firstDay === 1 ? 0 : (8 - firstDay) % 7);
+    return firstMon + (n - 1) * 7;
+  }
+
+  function formatHolidayKey(y, m, d) {
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+
+  function getJapaneseHolidays(year) {
+    const holidays = {};
+
+    // 1. 固定祝日
+    holidays[formatHolidayKey(year, 1, 1)] = '元日';
+    holidays[formatHolidayKey(year, 2, 11)] = '建国記念の日';
+    if (year >= 2020) holidays[formatHolidayKey(year, 2, 23)] = '天皇誕生日';
+    holidays[formatHolidayKey(year, 3, getVernalEquinox(year))] = '春分の日';
+    holidays[formatHolidayKey(year, 4, 29)] = '昭和の日';
+    holidays[formatHolidayKey(year, 5, 3)] = '憲法記念日';
+    holidays[formatHolidayKey(year, 5, 4)] = 'みどりの日';
+    holidays[formatHolidayKey(year, 5, 5)] = 'こどもの日';
+    if (year >= 2016) holidays[formatHolidayKey(year, 8, 11)] = '山の日';
+    holidays[formatHolidayKey(year, 9, getAutumnalEquinox(year))] = '秋分の日';
+    holidays[formatHolidayKey(year, 11, 3)] = '文化の日';
+    holidays[formatHolidayKey(year, 11, 23)] = '勤労感謝の日';
+
+    // 2. ハッピーマンデー (第N月曜日)
+    holidays[formatHolidayKey(year, 1, getNthMonday(year, 1, 2))] = '成人の日';
+    holidays[formatHolidayKey(year, 7, getNthMonday(year, 7, 3))] = '海の日';
+    holidays[formatHolidayKey(year, 9, getNthMonday(year, 9, 3))] = '敬老の日';
+    holidays[formatHolidayKey(year, 10, getNthMonday(year, 10, 2))] = 'スポーツの日';
+
+    // 3. 国民の休日 (祝日に挟まれた平日)
+    const sortedKeys = Object.keys(holidays).sort();
+    const citizen = {};
+    for (let i = 0; i < sortedKeys.length - 1; i++) {
+      const d1 = new Date(sortedKeys[i]);
+      const d2 = new Date(sortedKeys[i + 1]);
+      const diffDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+      if (diffDays === 2) {
+        const mid = new Date(d1.getTime() + 1000 * 60 * 60 * 24);
+        const midStr = formatHolidayKey(mid.getFullYear(), mid.getMonth() + 1, mid.getDate());
+        if (mid.getDay() !== 0 && !holidays[midStr]) {
+          citizen[midStr] = '国民の休日';
+        }
+      }
+    }
+    Object.assign(holidays, citizen);
+
+    // 4. 振替休日
+    const subHolidays = {};
+    for (const dateStr of Object.keys(holidays).sort()) {
+      const d = new Date(dateStr);
+      if (d.getDay() === 0) { // 日曜日
+        let cur = new Date(d.getTime() + 1000 * 60 * 60 * 24);
+        let curStr = formatHolidayKey(cur.getFullYear(), cur.getMonth() + 1, cur.getDate());
+        while (holidays[curStr] || subHolidays[curStr]) {
+          cur = new Date(cur.getTime() + 1000 * 60 * 60 * 24);
+          curStr = formatHolidayKey(cur.getFullYear(), cur.getMonth() + 1, cur.getDate());
+        }
+        subHolidays[curStr] = '振替休日';
+      }
+    }
+    Object.assign(holidays, subHolidays);
+
+    return holidays;
+  }
+
+  function isJapaneseHoliday(dateObj) {
+    try {
+      const d = dateObj || new Date();
+      const y = d.getFullYear();
+      const m = d.getMonth() + 1;
+      const day = d.getDate();
+      const key = formatHolidayKey(y, m, day);
+      const hMap = getJapaneseHolidays(y);
+      return !!hMap[key];
+    } catch (e) {
+      return false;
+    }
+  }
+
   // Day of week management & URL sync
   function getInitialDay() {
     const params = new URLSearchParams(window.location.search);
@@ -140,10 +237,11 @@
       if (['火曜', '火', 'tue', 'tuesday'].includes(clean)) return '火曜';
       if (['日・祝', '日祝', '日', '祝', 'sun', 'sunday', 'holiday'].includes(clean)) return '日・祝';
     }
-    const dayNum = new Date().getDay(); // 0:Sun, 1:Mon, 2:Tue, 3:Wed, 4:Thu, 5:Fri, 6:Sat
-    if (dayNum === 0) return '日・祝';
-    if (dayNum === 1) return '月曜';
-    if (dayNum === 2) return '火曜';
+    const now = new Date();
+    // 祝日 または 日曜日(0:Sun) は最優先で「日・祝」と判定
+    if (isJapaneseHoliday(now) || now.getDay() === 0) return '日・祝';
+    if (now.getDay() === 1) return '月曜';
+    if (now.getDay() === 2) return '火曜';
     return '平日';
   }
 
