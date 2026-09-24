@@ -972,6 +972,7 @@ FIREBASE_TOKEN = None
 FIREBASE_TOKEN_EXPIRY = 0
 LAST_CLOUD_SYNC_TIME = 0
 LAST_CLOUD_SYNC_HASH = ""
+CLOUD_SYNC_HEARTBEAT_SEC = 60  # データ無変更時のハートビート送信間隔（1分間隔）
 
 def find_firebase_credentials():
     candidates = [
@@ -1001,11 +1002,19 @@ def sync_to_firestore_cloud(all_days_data, cfg=None):
             return
 
         now = time.time()
-        days_hash = hashlib.md5(json.dumps(all_days_data, sort_keys=True, default=str).encode("utf-8")).hexdigest()
-        
-        # 変化がない場合は30秒に1回の定時ハートビート
-        if days_hash == LAST_CLOUD_SYNC_HASH and (now - LAST_CLOUD_SYNC_TIME) < 30:
-            return
+
+        # 【純粋進捗ハッシュ算出】
+        # last_modified（取得時刻）等の変動文字列を除外し、コース進捗実体（courses）および設定情報のみを対象化
+        pure_progress_data = {
+            "courses": {day: data.get("courses", []) for day, data in all_days_data.items() if isinstance(data, dict)},
+            "config": cfg or load_config()
+        }
+        days_hash = hashlib.md5(
+            json.dumps(pure_progress_data, sort_keys=True, default=str).encode("utf-8")
+        ).hexdigest()
+
+        # 進捗データに変更がなく、かつ前回の送信から1分（60秒）未満の場合は送信をスキップ
+        if days_hash == LAST_CLOUD_SYNC_HASH and (now - LAST_CLOUD_SYNC_TIME) < CLOUD_SYNC_HEARTBEAT_SEC:
             return
 
         if not FIREBASE_TOKEN or now >= FIREBASE_TOKEN_EXPIRY:
