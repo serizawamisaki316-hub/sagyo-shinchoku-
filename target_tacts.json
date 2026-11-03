@@ -1,1193 +1,184 @@
 {
-  "generated_at": "2026-11-03 09:26:17",
-  "source_file": "コース別作業完了時間(20261001-20261031).xlsx",
-  "period_str": "2026年10月1日 〜 2026年10月31日",
+  "generated_at": "2026-11-03 11:15:06",
+  "source_file": "コース別作業完了時間(20261101-20261102).xlsx",
+  "period_str": "2026年11月1日 〜 2026年11月2日",
   "days": {
-    "平日": {
-      "2号車_03": {
-        "vehicle": "2号車",
-        "course": "03",
-        "avg_tact": 2.1,
-        "target_tile": 2,
-        "sample_count": 18
-      },
-      "2号車_HF": {
-        "vehicle": "2号車",
-        "course": "HF",
-        "avg_tact": 1.5,
-        "target_tile": 2,
-        "sample_count": 17
-      },
-      "2号車_HG": {
-        "vehicle": "2号車",
-        "course": "HG",
-        "avg_tact": 6.7,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "2号車_HH": {
-        "vehicle": "2号車",
-        "course": "HH",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "12号車①_DF": {
-        "vehicle": "12号車①",
-        "course": "DF",
-        "avg_tact": 3.3,
-        "target_tile": 3,
-        "sample_count": 18
-      },
-      "12号車①_DG": {
-        "vehicle": "12号車①",
-        "course": "DG",
-        "avg_tact": 2.0,
-        "target_tile": 2,
-        "sample_count": 10
-      },
-      "12号車①_DH": {
-        "vehicle": "12号車①",
-        "course": "DH",
-        "avg_tact": 4.0,
-        "target_tile": 4,
-        "sample_count": 17
-      },
-      "7号車_HD": {
-        "vehicle": "7号車",
-        "course": "HD",
-        "avg_tact": 1.3,
-        "target_tile": 1,
-        "sample_count": 4
-      },
-      "A4_-": {
-        "vehicle": "A4",
-        "course": "-",
-        "avg_tact": 8.7,
-        "target_tile": 9,
-        "sample_count": 18
-      },
-      "A4": {
-        "vehicle": "A4",
-        "course": "-",
-        "avg_tact": 8.7,
-        "target_tile": 9,
-        "sample_count": 18
-      },
-      "A4_A4": {
-        "vehicle": "A4",
-        "course": "-",
-        "avg_tact": 8.7,
-        "target_tile": 9,
-        "sample_count": 18
-      },
-      "C1_-": {
-        "vehicle": "C1",
-        "course": "-",
-        "avg_tact": 4.7,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "C1": {
-        "vehicle": "C1",
-        "course": "-",
-        "avg_tact": 4.7,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "C1_C1": {
-        "vehicle": "C1",
-        "course": "-",
-        "avg_tact": 4.7,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "F9_-": {
-        "vehicle": "F9",
-        "course": "-",
-        "avg_tact": 8.1,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "F9": {
-        "vehicle": "F9",
-        "course": "-",
-        "avg_tact": 8.1,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "F9_F9": {
-        "vehicle": "F9",
-        "course": "-",
-        "avg_tact": 8.1,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "1号車_07": {
-        "vehicle": "1号車",
-        "course": "07",
-        "avg_tact": 2.8,
-        "target_tile": 3,
-        "sample_count": 18
-      },
-      "1号車_09": {
-        "vehicle": "1号車",
-        "course": "09",
-        "avg_tact": 1.9,
-        "target_tile": 2,
-        "sample_count": 18
-      },
-      "3号車_04": {
-        "vehicle": "3号車",
-        "course": "04",
-        "avg_tact": 2.8,
-        "target_tile": 3,
-        "sample_count": 18
-      },
-      "3号車_08": {
-        "vehicle": "3号車",
-        "course": "08",
-        "avg_tact": 1.9,
-        "target_tile": 2,
-        "sample_count": 17
-      },
-      "3号車_G4": {
-        "vehicle": "3号車",
-        "course": "G4",
-        "avg_tact": 4.5,
-        "target_tile": 5,
-        "sample_count": 17
-      },
-      "A3_-": {
-        "vehicle": "A3",
-        "course": "-",
-        "avg_tact": 6.7,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "A3": {
-        "vehicle": "A3",
-        "course": "-",
-        "avg_tact": 6.7,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "A3_A3": {
-        "vehicle": "A3",
-        "course": "-",
-        "avg_tact": 6.7,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "C4_-": {
-        "vehicle": "C4",
-        "course": "-",
-        "avg_tact": 6.2,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C4": {
-        "vehicle": "C4",
-        "course": "-",
-        "avg_tact": 6.2,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C4_C4": {
-        "vehicle": "C4",
-        "course": "-",
-        "avg_tact": 6.2,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "D9_-": {
-        "vehicle": "D9",
-        "course": "-",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "D9": {
-        "vehicle": "D9",
-        "course": "-",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "D9_D9": {
-        "vehicle": "D9",
-        "course": "-",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "5号車_06": {
-        "vehicle": "5号車",
-        "course": "06",
-        "avg_tact": 2.4,
-        "target_tile": 2,
-        "sample_count": 18
-      },
-      "5号車_G2": {
-        "vehicle": "5号車",
-        "course": "G2",
-        "avg_tact": 3.4,
-        "target_tile": 3,
-        "sample_count": 18
-      },
-      "8号車①_H2": {
-        "vehicle": "8号車①",
-        "course": "H2",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "10号車①_FF": {
-        "vehicle": "10号車①",
-        "course": "FF",
-        "avg_tact": 4.9,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "10号車①_FG": {
-        "vehicle": "10号車①",
-        "course": "FG",
-        "avg_tact": 4.2,
-        "target_tile": 4,
-        "sample_count": 18
-      },
-      "D1_-": {
-        "vehicle": "D1",
-        "course": "-",
-        "avg_tact": 8.9,
-        "target_tile": 9,
-        "sample_count": 18
-      },
-      "D1": {
-        "vehicle": "D1",
-        "course": "-",
-        "avg_tact": 8.9,
-        "target_tile": 9,
-        "sample_count": 18
-      },
-      "D1_D1": {
-        "vehicle": "D1",
-        "course": "-",
-        "avg_tact": 8.9,
-        "target_tile": 9,
-        "sample_count": 18
-      },
-      "D6_-": {
-        "vehicle": "D6",
-        "course": "-",
-        "avg_tact": 5.1,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "D6": {
-        "vehicle": "D6",
-        "course": "-",
-        "avg_tact": 5.1,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "D6_D6": {
-        "vehicle": "D6",
-        "course": "-",
-        "avg_tact": 5.1,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "D8_-": {
-        "vehicle": "D8",
-        "course": "-",
-        "avg_tact": 6.8,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "D8": {
-        "vehicle": "D8",
-        "course": "-",
-        "avg_tact": 6.8,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "D8_D8": {
-        "vehicle": "D8",
-        "course": "-",
-        "avg_tact": 6.8,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "4号車①_17": {
-        "vehicle": "4号車①",
-        "course": "17",
-        "avg_tact": 3.4,
-        "target_tile": 3,
-        "sample_count": 18
-      },
-      "4号車①_HA": {
-        "vehicle": "4号車①",
-        "course": "HA",
-        "avg_tact": 6.2,
-        "target_tile": 6,
-        "sample_count": 17
-      },
-      "A5_-": {
-        "vehicle": "A5",
-        "course": "-",
-        "avg_tact": 6.1,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "A5": {
-        "vehicle": "A5",
-        "course": "-",
-        "avg_tact": 6.1,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "A5_A5": {
-        "vehicle": "A5",
-        "course": "-",
-        "avg_tact": 6.1,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C5_-": {
-        "vehicle": "C5",
-        "course": "-",
-        "avg_tact": 6.3,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C5": {
-        "vehicle": "C5",
-        "course": "-",
-        "avg_tact": 6.3,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C5_C5": {
-        "vehicle": "C5",
-        "course": "-",
-        "avg_tact": 6.3,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C7_-": {
-        "vehicle": "C7",
-        "course": "-",
-        "avg_tact": 7.4,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "C7": {
-        "vehicle": "C7",
-        "course": "-",
-        "avg_tact": 7.4,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "C7_C7": {
-        "vehicle": "C7",
-        "course": "-",
-        "avg_tact": 7.4,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "11号車①_FH": {
-        "vehicle": "11号車①",
-        "course": "FH",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 17
-      },
-      "11号車①_FJ": {
-        "vehicle": "11号車①",
-        "course": "FJ",
-        "avg_tact": 3.3,
-        "target_tile": 3,
-        "sample_count": 16
-      },
-      "9号車_G1": {
-        "vehicle": "9号車",
-        "course": "G1",
-        "avg_tact": 2.6,
-        "target_tile": 3,
-        "sample_count": 18
-      },
-      "C9_-": {
-        "vehicle": "C9",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C9": {
-        "vehicle": "C9",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C9_C9": {
-        "vehicle": "C9",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "D5_-": {
-        "vehicle": "D5",
-        "course": "-",
-        "avg_tact": 8.8,
-        "target_tile": 9,
-        "sample_count": 18
-      },
-      "D5": {
-        "vehicle": "D5",
-        "course": "-",
-        "avg_tact": 8.8,
-        "target_tile": 9,
-        "sample_count": 18
-      },
-      "D5_D5": {
-        "vehicle": "D5",
-        "course": "-",
-        "avg_tact": 8.8,
-        "target_tile": 9,
-        "sample_count": 18
-      },
-      "D7_-": {
-        "vehicle": "D7",
-        "course": "-",
-        "avg_tact": 7.1,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "D7": {
-        "vehicle": "D7",
-        "course": "-",
-        "avg_tact": 7.1,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "D7_D7": {
-        "vehicle": "D7",
-        "course": "-",
-        "avg_tact": 7.1,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "DC_-": {
-        "vehicle": "DC",
-        "course": "-",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "DC": {
-        "vehicle": "DC",
-        "course": "-",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "DC_DC": {
-        "vehicle": "DC",
-        "course": "-",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "F2_-": {
-        "vehicle": "F2",
-        "course": "-",
-        "avg_tact": 6.8,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "F2": {
-        "vehicle": "F2",
-        "course": "-",
-        "avg_tact": 6.8,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "F2_F2": {
-        "vehicle": "F2",
-        "course": "-",
-        "avg_tact": 6.8,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "F7_-": {
-        "vehicle": "F7",
-        "course": "-",
-        "avg_tact": 7.9,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "F7": {
-        "vehicle": "F7",
-        "course": "-",
-        "avg_tact": 7.9,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "F7_F7": {
-        "vehicle": "F7",
-        "course": "-",
-        "avg_tact": 7.9,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "G5_-": {
-        "vehicle": "G5",
-        "course": "-",
-        "avg_tact": 7.3,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "G5": {
-        "vehicle": "G5",
-        "course": "-",
-        "avg_tact": 7.3,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "G5_G5": {
-        "vehicle": "G5",
-        "course": "-",
-        "avg_tact": 7.3,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "G9_-": {
-        "vehicle": "G9",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "G9": {
-        "vehicle": "G9",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "G9_G9": {
-        "vehicle": "G9",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "A2_-": {
-        "vehicle": "A2",
-        "course": "-",
-        "avg_tact": 5.5,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "A2": {
-        "vehicle": "A2",
-        "course": "-",
-        "avg_tact": 5.5,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "A2_A2": {
-        "vehicle": "A2",
-        "course": "-",
-        "avg_tact": 5.5,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "13号車_AA": {
-        "vehicle": "13号車",
-        "course": "AA",
-        "avg_tact": 1.0,
-        "target_tile": 1,
-        "sample_count": 1
-      },
-      "13号車_AC": {
-        "vehicle": "13号車",
-        "course": "AC",
-        "avg_tact": 1.4,
-        "target_tile": 1,
-        "sample_count": 14
-      },
-      "13号車_AD": {
-        "vehicle": "13号車",
-        "course": "AD",
-        "avg_tact": 1.0,
-        "target_tile": 1,
-        "sample_count": 7
-      },
-      "C2_-": {
-        "vehicle": "C2",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C2": {
-        "vehicle": "C2",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C2_C2": {
-        "vehicle": "C2",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C6_-": {
-        "vehicle": "C6",
-        "course": "-",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C6": {
-        "vehicle": "C6",
-        "course": "-",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C6_C6": {
-        "vehicle": "C6",
-        "course": "-",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "D2_-": {
-        "vehicle": "D2",
-        "course": "-",
-        "avg_tact": 7.6,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "D2": {
-        "vehicle": "D2",
-        "course": "-",
-        "avg_tact": 7.6,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "D2_D2": {
-        "vehicle": "D2",
-        "course": "-",
-        "avg_tact": 7.6,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "D4_-": {
-        "vehicle": "D4",
-        "course": "-",
-        "avg_tact": 5.1,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "D4": {
-        "vehicle": "D4",
-        "course": "-",
-        "avg_tact": 5.1,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "D4_D4": {
-        "vehicle": "D4",
-        "course": "-",
-        "avg_tact": 5.1,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "DD_-": {
-        "vehicle": "DD",
-        "course": "-",
-        "avg_tact": 8.4,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "DD": {
-        "vehicle": "DD",
-        "course": "-",
-        "avg_tact": 8.4,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "DD_DD": {
-        "vehicle": "DD",
-        "course": "-",
-        "avg_tact": 8.4,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "F4_-": {
-        "vehicle": "F4",
-        "course": "-",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "F4": {
-        "vehicle": "F4",
-        "course": "-",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "F4_F4": {
-        "vehicle": "F4",
-        "course": "-",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "F5_-": {
-        "vehicle": "F5",
-        "course": "-",
-        "avg_tact": 5.1,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "F5": {
-        "vehicle": "F5",
-        "course": "-",
-        "avg_tact": 5.1,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "F5_F5": {
-        "vehicle": "F5",
-        "course": "-",
-        "avg_tact": 5.1,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "F6_-": {
-        "vehicle": "F6",
-        "course": "-",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "F6": {
-        "vehicle": "F6",
-        "course": "-",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "F6_F6": {
-        "vehicle": "F6",
-        "course": "-",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "FD_-": {
-        "vehicle": "FD",
-        "course": "-",
-        "avg_tact": 7.2,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "FD": {
-        "vehicle": "FD",
-        "course": "-",
-        "avg_tact": 7.2,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "FD_FD": {
-        "vehicle": "FD",
-        "course": "-",
-        "avg_tact": 7.2,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "G6_-": {
-        "vehicle": "G6",
-        "course": "-",
-        "avg_tact": 5.4,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "G6": {
-        "vehicle": "G6",
-        "course": "-",
-        "avg_tact": 5.4,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "G6_G6": {
-        "vehicle": "G6",
-        "course": "-",
-        "avg_tact": 5.4,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "G7_-": {
-        "vehicle": "G7",
-        "course": "-",
-        "avg_tact": 7.8,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "G7": {
-        "vehicle": "G7",
-        "course": "-",
-        "avg_tact": 7.8,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "G7_G7": {
-        "vehicle": "G7",
-        "course": "-",
-        "avg_tact": 7.8,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "C3_-": {
-        "vehicle": "C3",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C3": {
-        "vehicle": "C3",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C3_C3": {
-        "vehicle": "C3",
-        "course": "-",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "C8_-": {
-        "vehicle": "C8",
-        "course": "-",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "C8": {
-        "vehicle": "C8",
-        "course": "-",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "C8_C8": {
-        "vehicle": "C8",
-        "course": "-",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "DA_-": {
-        "vehicle": "DA",
-        "course": "-",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "DA": {
-        "vehicle": "DA",
-        "course": "-",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "DA_DA": {
-        "vehicle": "DA",
-        "course": "-",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 18
-      },
-      "F8_-": {
-        "vehicle": "F8",
-        "course": "-",
-        "avg_tact": 8.0,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "F8": {
-        "vehicle": "F8",
-        "course": "-",
-        "avg_tact": 8.0,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "F8_F8": {
-        "vehicle": "F8",
-        "course": "-",
-        "avg_tact": 8.0,
-        "target_tile": 8,
-        "sample_count": 18
-      },
-      "G8_-": {
-        "vehicle": "G8",
-        "course": "-",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "G8": {
-        "vehicle": "G8",
-        "course": "-",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "G8_G8": {
-        "vehicle": "G8",
-        "course": "-",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 18
-      },
-      "8号車②_H4": {
-        "vehicle": "8号車②",
-        "course": "H4",
-        "avg_tact": 3.4,
-        "target_tile": 3,
-        "sample_count": 18
-      },
-      "ジェイズ_H51": {
-        "vehicle": "ジェイズ",
-        "course": "H51",
-        "avg_tact": 2.9,
-        "target_tile": 3,
-        "sample_count": 17
-      },
-      "11号車②_CA": {
-        "vehicle": "11号車②",
-        "course": "CA",
-        "avg_tact": 5.5,
-        "target_tile": 6,
-        "sample_count": 17
-      },
-      "10号車②_FA": {
-        "vehicle": "10号車②",
-        "course": "FA",
-        "avg_tact": 2.8,
-        "target_tile": 3,
-        "sample_count": 4
-      },
-      "10号車②_FK": {
-        "vehicle": "10号車②",
-        "course": "FK",
-        "avg_tact": 3.5,
-        "target_tile": 4,
-        "sample_count": 17
-      },
-      "4号車②_G3": {
-        "vehicle": "4号車②",
-        "course": "G3",
-        "avg_tact": 6.7,
-        "target_tile": 7,
-        "sample_count": 18
-      },
-      "12号車②_FC": {
-        "vehicle": "12号車②",
-        "course": "FC",
-        "avg_tact": 3.3,
-        "target_tile": 3,
-        "sample_count": 15
-      }
-    },
+    "平日": {},
     "月曜": {
       "2号車_03": {
         "vehicle": "2号車",
         "course": "03",
-        "avg_tact": 1.7,
-        "target_tile": 2,
-        "sample_count": 3
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "2号車_HH": {
         "vehicle": "2号車",
         "course": "HH",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 3
+        "avg_tact": 2.0,
+        "target_tile": 2,
+        "sample_count": 1
       },
       "1号車_07": {
         "vehicle": "1号車",
         "course": "07",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 3
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "1号車_09": {
         "vehicle": "1号車",
         "course": "09",
-        "avg_tact": 2.0,
-        "target_tile": 2,
-        "sample_count": 3
+        "avg_tact": 1.0,
+        "target_tile": 1,
+        "sample_count": 1
       },
       "3号車_04": {
         "vehicle": "3号車",
         "course": "04",
-        "avg_tact": 3.3,
-        "target_tile": 3,
-        "sample_count": 3
+        "avg_tact": 2.0,
+        "target_tile": 2,
+        "sample_count": 1
       },
       "3号車_08": {
         "vehicle": "3号車",
         "course": "08",
-        "avg_tact": 1.0,
-        "target_tile": 1,
-        "sample_count": 3
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "3号車_G4": {
         "vehicle": "3号車",
         "course": "G4",
-        "avg_tact": 3.0,
-        "target_tile": 3,
+        "avg_tact": 2.0,
+        "target_tile": 2,
         "sample_count": 1
       },
       "12号車①_DF": {
         "vehicle": "12号車①",
         "course": "DF",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 3
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "12号車①_DG": {
         "vehicle": "12号車①",
         "course": "DG",
-        "avg_tact": 1.0,
-        "target_tile": 1,
-        "sample_count": 1
+        "avg_tact": null,
+        "target_tile": null,
+        "sample_count": 0
       },
       "3D_F5": {
         "vehicle": "3D",
         "course": "F5",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
+        "avg_tact": 4.0,
+        "target_tile": 4,
+        "sample_count": 1
       },
       "3D_F6": {
         "vehicle": "3D",
         "course": "F6",
-        "avg_tact": 4.7,
-        "target_tile": 5,
-        "sample_count": 3
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "3D_F9": {
         "vehicle": "3D",
         "course": "F9",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "3F_C6": {
         "vehicle": "3F",
         "course": "C6",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 3
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "3F_D4": {
         "vehicle": "3F",
         "course": "D4",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "3F_F7": {
         "vehicle": "3F",
         "course": "F7",
-        "avg_tact": 6.3,
-        "target_tile": 6,
-        "sample_count": 3
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "4C_C9": {
         "vehicle": "4C",
         "course": "C9",
-        "avg_tact": 6.7,
-        "target_tile": 7,
-        "sample_count": 3
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "4C_D5": {
         "vehicle": "4C",
         "course": "D5",
-        "avg_tact": 10.3,
-        "target_tile": 10,
-        "sample_count": 3
+        "avg_tact": 12.0,
+        "target_tile": 12,
+        "sample_count": 1
       },
       "4F_D6": {
         "vehicle": "4F",
         "course": "D6",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 3
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "4F_F4": {
         "vehicle": "4F",
         "course": "F4",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 3
+        "avg_tact": 10.0,
+        "target_tile": 10,
+        "sample_count": 1
       },
       "4H_DD": {
         "vehicle": "4H",
         "course": "DD",
-        "avg_tact": 5.7,
+        "avg_tact": 6.0,
         "target_tile": 6,
-        "sample_count": 3
+        "sample_count": 1
       },
       "4H_G9": {
         "vehicle": "4H",
         "course": "G9",
-        "avg_tact": 6.3,
-        "target_tile": 6,
-        "sample_count": 3
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "5A_D2": {
         "vehicle": "5A",
         "course": "D2",
-        "avg_tact": 8.7,
-        "target_tile": 9,
-        "sample_count": 3
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "5A_F4": {
         "vehicle": "5A",
         "course": "F4",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 3
+        "avg_tact": 10.0,
+        "target_tile": 10,
+        "sample_count": 1
       },
       "4号車①_17": {
         "vehicle": "4号車①",
         "course": "17",
-        "avg_tact": 4.3,
-        "target_tile": 4,
-        "sample_count": 3
+        "avg_tact": 2.0,
+        "target_tile": 2,
+        "sample_count": 1
       },
       "4号車①_HA": {
         "vehicle": "4号車①",
         "course": "HA",
-        "avg_tact": 5.5,
+        "avg_tact": 6.0,
         "target_tile": 6,
-        "sample_count": 2
+        "sample_count": 1
       },
       "11号車_FH": {
         "vehicle": "11号車",
@@ -1199,23 +190,23 @@
       "11号車_FJ": {
         "vehicle": "11号車",
         "course": "FJ",
-        "avg_tact": null,
-        "target_tile": null,
-        "sample_count": 0
+        "avg_tact": 1.0,
+        "target_tile": 1,
+        "sample_count": 1
       },
       "10号車_FG": {
         "vehicle": "10号車",
         "course": "FG",
-        "avg_tact": 4.7,
-        "target_tile": 5,
-        "sample_count": 3
+        "avg_tact": 2.0,
+        "target_tile": 2,
+        "sample_count": 1
       },
       "5号車_06": {
         "vehicle": "5号車",
         "course": "06",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 3
+        "avg_tact": 4.0,
+        "target_tile": 4,
+        "sample_count": 1
       },
       "5号車_G2": {
         "vehicle": "5号車",
@@ -1227,774 +218,247 @@
       "2A_A4": {
         "vehicle": "2A",
         "course": "A4",
-        "avg_tact": 8.3,
-        "target_tile": 8,
-        "sample_count": 3
-      },
-      "2A_D5": {
-        "vehicle": "2A",
-        "course": "D5",
-        "avg_tact": 10.3,
-        "target_tile": 10,
-        "sample_count": 3
-      },
-      "2A_DC": {
-        "vehicle": "2A",
-        "course": "DC",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "3A_C2": {
-        "vehicle": "3A",
-        "course": "C2",
-        "avg_tact": 4.7,
-        "target_tile": 5,
-        "sample_count": 3
-      },
-      "3A_C3": {
-        "vehicle": "3A",
-        "course": "C3",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "3A_C7": {
-        "vehicle": "3A",
-        "course": "C7",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "4A_C6": {
-        "vehicle": "4A",
-        "course": "C6",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 3
-      },
-      "4A_D7": {
-        "vehicle": "4A",
-        "course": "D7",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "4A_F8": {
-        "vehicle": "4A",
-        "course": "F8",
-        "avg_tact": 6.3,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "4A_G5": {
-        "vehicle": "4A",
-        "course": "G5",
-        "avg_tact": 4.7,
-        "target_tile": 5,
-        "sample_count": 3
-      },
-      "2F_A5": {
-        "vehicle": "2F",
-        "course": "A5",
-        "avg_tact": 6.3,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "3C_C4": {
-        "vehicle": "3C",
-        "course": "C4",
-        "avg_tact": 3.7,
-        "target_tile": 4,
-        "sample_count": 3
-      },
-      "3C_C5": {
-        "vehicle": "3C",
-        "course": "C5",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "5C_F2": {
-        "vehicle": "5C",
-        "course": "F2",
-        "avg_tact": 4.7,
-        "target_tile": 5,
-        "sample_count": 3
-      },
-      "5C_F5": {
-        "vehicle": "5C",
-        "course": "F5",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "5C_F9": {
-        "vehicle": "5C",
-        "course": "F9",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "6C_A3": {
-        "vehicle": "6C",
-        "course": "A3",
-        "avg_tact": 3.3,
-        "target_tile": 3,
-        "sample_count": 3
-      },
-      "6C_G6": {
-        "vehicle": "6C",
-        "course": "G6",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 3
-      },
-      "4J_DA": {
-        "vehicle": "4J",
-        "course": "DA",
-        "avg_tact": 8.0,
-        "target_tile": 8,
-        "sample_count": 3
-      },
-      "4J_DD": {
-        "vehicle": "4J",
-        "course": "DD",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "4J_G9": {
-        "vehicle": "4J",
-        "course": "G9",
-        "avg_tact": 6.3,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "6A_D8": {
-        "vehicle": "6A",
-        "course": "D8",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 3
-      },
-      "6A_G7": {
-        "vehicle": "6A",
-        "course": "G7",
         "avg_tact": 9.0,
         "target_tile": 9,
-        "sample_count": 3
-      },
-      "6A_G8": {
-        "vehicle": "6A",
-        "course": "G8",
-        "avg_tact": 3.3,
-        "target_tile": 3,
-        "sample_count": 3
-      },
-      "2C_C1": {
-        "vehicle": "2C",
-        "course": "C1",
-        "avg_tact": 4.0,
-        "target_tile": 4,
-        "sample_count": 3
-      },
-      "2C_C2": {
-        "vehicle": "2C",
-        "course": "C2",
-        "avg_tact": 4.7,
-        "target_tile": 5,
-        "sample_count": 3
-      },
-      "2C_D6": {
-        "vehicle": "2C",
-        "course": "D6",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 3
-      },
-      "2D_A2": {
-        "vehicle": "2D",
-        "course": "A2",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "2D_D9": {
-        "vehicle": "2D",
-        "course": "D9",
-        "avg_tact": 3.7,
-        "target_tile": 4,
-        "sample_count": 3
-      },
-      "4D_A4": {
-        "vehicle": "4D",
-        "course": "A4",
-        "avg_tact": 8.3,
-        "target_tile": 8,
-        "sample_count": 3
-      },
-      "4D_DC": {
-        "vehicle": "4D",
-        "course": "DC",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "4G_D1": {
-        "vehicle": "4G",
-        "course": "D1",
-        "avg_tact": 8.7,
-        "target_tile": 9,
-        "sample_count": 3
-      },
-      "4G_D2": {
-        "vehicle": "4G",
-        "course": "D2",
-        "avg_tact": 8.7,
-        "target_tile": 9,
-        "sample_count": 3
-      },
-      "5D_C8": {
-        "vehicle": "5D",
-        "course": "C8",
-        "avg_tact": 5.7,
-        "target_tile": 6,
-        "sample_count": 3
-      },
-      "5D_FD": {
-        "vehicle": "5D",
-        "course": "FD",
-        "avg_tact": 6.7,
-        "target_tile": 7,
-        "sample_count": 3
-      },
-      "13号車_AA": {
-        "vehicle": "13号車",
-        "course": "AA",
-        "avg_tact": null,
-        "target_tile": null,
-        "sample_count": 0
-      },
-      "13号車_AC": {
-        "vehicle": "13号車",
-        "course": "AC",
-        "avg_tact": 2.0,
-        "target_tile": 2,
         "sample_count": 1
-      },
-      "13号車_AD": {
-        "vehicle": "13号車",
-        "course": "AD",
-        "avg_tact": null,
-        "target_tile": null,
-        "sample_count": 0
-      },
-      "ジェイズ_H51": {
-        "vehicle": "ジェイズ",
-        "course": "H51",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 2
-      },
-      "12号車②_FC": {
-        "vehicle": "12号車②",
-        "course": "FC",
-        "avg_tact": 4.0,
-        "target_tile": 4,
-        "sample_count": 2
-      },
-      "11号車②_CA": {
-        "vehicle": "11号車②",
-        "course": "CA",
-        "avg_tact": 1.0,
-        "target_tile": 1,
-        "sample_count": 1
-      },
-      "10号車②_FA": {
-        "vehicle": "10号車②",
-        "course": "FA",
-        "avg_tact": null,
-        "target_tile": null,
-        "sample_count": 0
-      },
-      "10号車②_FK": {
-        "vehicle": "10号車②",
-        "course": "FK",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 1
-      },
-      "4号車_G3": {
-        "vehicle": "4号車",
-        "course": "G3",
-        "avg_tact": 3.7,
-        "target_tile": 4,
-        "sample_count": 3
-      }
-    },
-    "火曜": {
-      "1号車_07": {
-        "vehicle": "1号車",
-        "course": "07",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 4
-      },
-      "1号車_09": {
-        "vehicle": "1号車",
-        "course": "09",
-        "avg_tact": 1.8,
-        "target_tile": 2,
-        "sample_count": 4
-      },
-      "3号車_04": {
-        "vehicle": "3号車",
-        "course": "04",
-        "avg_tact": 3.5,
-        "target_tile": 4,
-        "sample_count": 4
-      },
-      "3号車_08": {
-        "vehicle": "3号車",
-        "course": "08",
-        "avg_tact": 1.3,
-        "target_tile": 1,
-        "sample_count": 4
-      },
-      "3号車_G4": {
-        "vehicle": "3号車",
-        "course": "G4",
-        "avg_tact": 4.0,
-        "target_tile": 4,
-        "sample_count": 4
-      },
-      "12号車①_DF": {
-        "vehicle": "12号車①",
-        "course": "DF",
-        "avg_tact": 3.8,
-        "target_tile": 4,
-        "sample_count": 4
-      },
-      "12号車①_DG": {
-        "vehicle": "12号車①",
-        "course": "DG",
-        "avg_tact": 2.0,
-        "target_tile": 2,
-        "sample_count": 3
-      },
-      "3D_F5": {
-        "vehicle": "3D",
-        "course": "F5",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 4
-      },
-      "3D_F6": {
-        "vehicle": "3D",
-        "course": "F6",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 4
-      },
-      "3D_F9": {
-        "vehicle": "3D",
-        "course": "F9",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 4
-      },
-      "3F_C6": {
-        "vehicle": "3F",
-        "course": "C6",
-        "avg_tact": 3.5,
-        "target_tile": 4,
-        "sample_count": 4
-      },
-      "3F_D4": {
-        "vehicle": "3F",
-        "course": "D4",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 4
-      },
-      "3F_F7": {
-        "vehicle": "3F",
-        "course": "F7",
-        "avg_tact": 2.8,
-        "target_tile": 3,
-        "sample_count": 4
-      },
-      "4C_C9": {
-        "vehicle": "4C",
-        "course": "C9",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 4
-      },
-      "4C_D5": {
-        "vehicle": "4C",
-        "course": "D5",
-        "avg_tact": 7.3,
-        "target_tile": 7,
-        "sample_count": 4
-      },
-      "4F_D6": {
-        "vehicle": "4F",
-        "course": "D6",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 4
-      },
-      "4F_F4": {
-        "vehicle": "4F",
-        "course": "F4",
-        "avg_tact": 4.3,
-        "target_tile": 4,
-        "sample_count": 4
-      },
-      "4H_DD": {
-        "vehicle": "4H",
-        "course": "DD",
-        "avg_tact": 5.5,
-        "target_tile": 6,
-        "sample_count": 4
-      },
-      "4H_G9": {
-        "vehicle": "4H",
-        "course": "G9",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 4
-      },
-      "5A_D2": {
-        "vehicle": "5A",
-        "course": "D2",
-        "avg_tact": 4.8,
-        "target_tile": 5,
-        "sample_count": 4
-      },
-      "5A_F4": {
-        "vehicle": "5A",
-        "course": "F4",
-        "avg_tact": 4.3,
-        "target_tile": 4,
-        "sample_count": 4
-      },
-      "4号車①_17": {
-        "vehicle": "4号車①",
-        "course": "17",
-        "avg_tact": 2.8,
-        "target_tile": 3,
-        "sample_count": 4
-      },
-      "4号車①_HA": {
-        "vehicle": "4号車①",
-        "course": "HA",
-        "avg_tact": 1.7,
-        "target_tile": 2,
-        "sample_count": 3
-      },
-      "11号車_FH": {
-        "vehicle": "11号車",
-        "course": "FH",
-        "avg_tact": 1.0,
-        "target_tile": 1,
-        "sample_count": 2
-      },
-      "11号車_FJ": {
-        "vehicle": "11号車",
-        "course": "FJ",
-        "avg_tact": 1.0,
-        "target_tile": 1,
-        "sample_count": 2
-      },
-      "10号車_FG": {
-        "vehicle": "10号車",
-        "course": "FG",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 2
-      },
-      "3A_C2": {
-        "vehicle": "3A",
-        "course": "C2",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 4
-      },
-      "3A_C3": {
-        "vehicle": "3A",
-        "course": "C3",
-        "avg_tact": 2.5,
-        "target_tile": 3,
-        "sample_count": 4
-      },
-      "3A_C7": {
-        "vehicle": "3A",
-        "course": "C7",
-        "avg_tact": 4.3,
-        "target_tile": 4,
-        "sample_count": 4
-      },
-      "2A_A4": {
-        "vehicle": "2A",
-        "course": "A4",
-        "avg_tact": 8.0,
-        "target_tile": 8,
-        "sample_count": 4
       },
       "2A_D5": {
         "vehicle": "2A",
         "course": "D5",
-        "avg_tact": 7.3,
-        "target_tile": 7,
-        "sample_count": 4
+        "avg_tact": 12.0,
+        "target_tile": 12,
+        "sample_count": 1
       },
       "2A_DC": {
         "vehicle": "2A",
         "course": "DC",
-        "avg_tact": 4.0,
-        "target_tile": 4,
-        "sample_count": 4
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
+      },
+      "3A_C2": {
+        "vehicle": "3A",
+        "course": "C2",
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
+      },
+      "3A_C3": {
+        "vehicle": "3A",
+        "course": "C3",
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
+      },
+      "3A_C7": {
+        "vehicle": "3A",
+        "course": "C7",
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "4A_C6": {
         "vehicle": "4A",
         "course": "C6",
-        "avg_tact": 3.5,
-        "target_tile": 4,
-        "sample_count": 4
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "4A_D7": {
         "vehicle": "4A",
         "course": "D7",
-        "avg_tact": 5.5,
+        "avg_tact": 6.0,
         "target_tile": 6,
-        "sample_count": 4
+        "sample_count": 1
       },
       "4A_F8": {
         "vehicle": "4A",
         "course": "F8",
-        "avg_tact": 5.3,
-        "target_tile": 5,
-        "sample_count": 4
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "4A_G5": {
         "vehicle": "4A",
         "course": "G5",
-        "avg_tact": 2.0,
-        "target_tile": 2,
-        "sample_count": 3
-      },
-      "5号車_06": {
-        "vehicle": "5号車",
-        "course": "06",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 3
-      },
-      "5号車_G2": {
-        "vehicle": "5号車",
-        "course": "G2",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 3
-      },
-      "2号車_03": {
-        "vehicle": "2号車",
-        "course": "03",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 4
-      },
-      "2号車_HF": {
-        "vehicle": "2号車",
-        "course": "HF",
-        "avg_tact": 1.3,
-        "target_tile": 1,
-        "sample_count": 3
-      },
-      "2号車_HH": {
-        "vehicle": "2号車",
-        "course": "HH",
-        "avg_tact": null,
-        "target_tile": null,
-        "sample_count": 0
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "2F_A5": {
         "vehicle": "2F",
         "course": "A5",
-        "avg_tact": 5.5,
-        "target_tile": 6,
-        "sample_count": 4
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "3C_C4": {
         "vehicle": "3C",
         "course": "C4",
-        "avg_tact": 2.7,
+        "avg_tact": 3.0,
         "target_tile": 3,
-        "sample_count": 3
+        "sample_count": 1
       },
       "3C_C5": {
         "vehicle": "3C",
         "course": "C5",
-        "avg_tact": 3.5,
-        "target_tile": 4,
-        "sample_count": 4
+        "avg_tact": 9.0,
+        "target_tile": 9,
+        "sample_count": 1
       },
       "5C_F2": {
         "vehicle": "5C",
         "course": "F2",
-        "avg_tact": 2.7,
-        "target_tile": 3,
-        "sample_count": 3
+        "avg_tact": 4.0,
+        "target_tile": 4,
+        "sample_count": 1
       },
       "5C_F5": {
         "vehicle": "5C",
         "course": "F5",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 4
+        "avg_tact": 4.0,
+        "target_tile": 4,
+        "sample_count": 1
       },
       "5C_F9": {
         "vehicle": "5C",
         "course": "F9",
-        "avg_tact": 5.0,
-        "target_tile": 5,
-        "sample_count": 4
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "6C_A3": {
         "vehicle": "6C",
         "course": "A3",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 3
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "6C_G6": {
         "vehicle": "6C",
         "course": "G6",
-        "avg_tact": 2.5,
-        "target_tile": 3,
-        "sample_count": 4
+        "avg_tact": 4.0,
+        "target_tile": 4,
+        "sample_count": 1
       },
       "4J_DA": {
         "vehicle": "4J",
         "course": "DA",
-        "avg_tact": 8.5,
-        "target_tile": 9,
-        "sample_count": 4
+        "avg_tact": 10.0,
+        "target_tile": 10,
+        "sample_count": 1
       },
       "4J_DD": {
         "vehicle": "4J",
         "course": "DD",
-        "avg_tact": 5.5,
+        "avg_tact": 6.0,
         "target_tile": 6,
-        "sample_count": 4
+        "sample_count": 1
       },
       "4J_G9": {
         "vehicle": "4J",
         "course": "G9",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 4
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "6A_D8": {
         "vehicle": "6A",
         "course": "D8",
-        "avg_tact": 4.5,
-        "target_tile": 5,
-        "sample_count": 4
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "6A_G7": {
         "vehicle": "6A",
         "course": "G7",
         "avg_tact": 6.0,
         "target_tile": 6,
-        "sample_count": 4
+        "sample_count": 1
       },
       "6A_G8": {
         "vehicle": "6A",
         "course": "G8",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 4
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "2C_C1": {
         "vehicle": "2C",
         "course": "C1",
-        "avg_tact": 4.3,
-        "target_tile": 4,
-        "sample_count": 4
+        "avg_tact": 2.0,
+        "target_tile": 2,
+        "sample_count": 1
       },
       "2C_C2": {
         "vehicle": "2C",
         "course": "C2",
-        "avg_tact": 5.3,
+        "avg_tact": 5.0,
         "target_tile": 5,
-        "sample_count": 4
+        "sample_count": 1
       },
       "2C_D6": {
         "vehicle": "2C",
         "course": "D6",
-        "avg_tact": 2.3,
-        "target_tile": 2,
-        "sample_count": 4
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "2D_A2": {
         "vehicle": "2D",
         "course": "A2",
-        "avg_tact": 3.3,
-        "target_tile": 3,
-        "sample_count": 4
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "2D_D9": {
         "vehicle": "2D",
         "course": "D9",
-        "avg_tact": 3.3,
-        "target_tile": 3,
-        "sample_count": 4
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "4D_A4": {
         "vehicle": "4D",
         "course": "A4",
-        "avg_tact": 8.0,
-        "target_tile": 8,
-        "sample_count": 4
+        "avg_tact": 9.0,
+        "target_tile": 9,
+        "sample_count": 1
       },
       "4D_DC": {
         "vehicle": "4D",
         "course": "DC",
-        "avg_tact": 4.0,
-        "target_tile": 4,
-        "sample_count": 4
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "4G_D1": {
         "vehicle": "4G",
         "course": "D1",
-        "avg_tact": 7.8,
+        "avg_tact": 8.0,
         "target_tile": 8,
-        "sample_count": 4
+        "sample_count": 1
       },
       "4G_D2": {
         "vehicle": "4G",
         "course": "D2",
-        "avg_tact": 4.8,
-        "target_tile": 5,
-        "sample_count": 4
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "5D_C8": {
         "vehicle": "5D",
         "course": "C8",
-        "avg_tact": 3.8,
-        "target_tile": 4,
-        "sample_count": 4
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "5D_FD": {
         "vehicle": "5D",
         "course": "FD",
-        "avg_tact": 7.3,
-        "target_tile": 7,
-        "sample_count": 4
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "13号車_AA": {
         "vehicle": "13号車",
@@ -2013,361 +477,355 @@
       "13号車_AD": {
         "vehicle": "13号車",
         "course": "AD",
-        "avg_tact": 1.0,
-        "target_tile": 1,
+        "avg_tact": 2.0,
+        "target_tile": 2,
         "sample_count": 1
       },
       "ジェイズ_H51": {
         "vehicle": "ジェイズ",
         "course": "H51",
-        "avg_tact": 3.0,
-        "target_tile": 3,
+        "avg_tact": 4.0,
+        "target_tile": 4,
         "sample_count": 1
       },
       "12号車②_FC": {
         "vehicle": "12号車②",
         "course": "FC",
-        "avg_tact": 2.5,
-        "target_tile": 3,
-        "sample_count": 2
+        "avg_tact": 1.0,
+        "target_tile": 1,
+        "sample_count": 1
       },
       "11号車②_CA": {
         "vehicle": "11号車②",
         "course": "CA",
-        "avg_tact": null,
-        "target_tile": null,
-        "sample_count": 0
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "10号車②_FA": {
         "vehicle": "10号車②",
         "course": "FA",
-        "avg_tact": 1.5,
-        "target_tile": 2,
-        "sample_count": 2
-      },
-      "10号車②_FK": {
-        "vehicle": "10号車②",
-        "course": "FK",
         "avg_tact": null,
         "target_tile": null,
         "sample_count": 0
       },
+      "10号車②_FK": {
+        "vehicle": "10号車②",
+        "course": "FK",
+        "avg_tact": 2.0,
+        "target_tile": 2,
+        "sample_count": 1
+      },
       "4号車_G3": {
         "vehicle": "4号車",
         "course": "G3",
-        "avg_tact": 3.0,
-        "target_tile": 3,
-        "sample_count": 2
-      },
-      "4号車②_G3": {
-        "vehicle": "4号車②",
-        "course": "G3",
-        "avg_tact": 6.0,
-        "target_tile": 6,
+        "avg_tact": 9.0,
+        "target_tile": 9,
         "sample_count": 1
       }
     },
+    "火曜": {},
     "日・祝": {
       "12号車①_04": {
         "vehicle": "12号車①",
         "course": "04",
-        "avg_tact": 2.0,
-        "target_tile": 2,
-        "sample_count": 2
+        "avg_tact": 1.0,
+        "target_tile": 1,
+        "sample_count": 1
       },
       "12号車①_FH": {
         "vehicle": "12号車①",
         "course": "FH",
         "avg_tact": 4.0,
         "target_tile": 4,
-        "sample_count": 5
+        "sample_count": 1
       },
       "12号車①_FJ": {
         "vehicle": "12号車①",
         "course": "FJ",
-        "avg_tact": 1.0,
-        "target_tile": 1,
-        "sample_count": 3
+        "avg_tact": 4.0,
+        "target_tile": 4,
+        "sample_count": 1
       },
       "9号車①_H2": {
         "vehicle": "9号車①",
         "course": "H2",
-        "avg_tact": 4.2,
-        "target_tile": 4,
-        "sample_count": 5
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "22_C6": {
         "vehicle": "22",
         "course": "C6",
-        "avg_tact": 5.6,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "22_F7": {
         "vehicle": "22",
         "course": "F7",
-        "avg_tact": 8.0,
-        "target_tile": 8,
-        "sample_count": 5
+        "avg_tact": 13.0,
+        "target_tile": 13,
+        "sample_count": 1
       },
       "23_A4": {
         "vehicle": "23",
         "course": "A4",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "23_D5": {
         "vehicle": "23",
         "course": "D5",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "23_DC": {
         "vehicle": "23",
         "course": "DC",
-        "avg_tact": 4.2,
+        "avg_tact": 4.0,
         "target_tile": 4,
-        "sample_count": 5
+        "sample_count": 1
       },
       "24_D8": {
         "vehicle": "24",
         "course": "D8",
-        "avg_tact": 6.8,
-        "target_tile": 7,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "24_G7": {
         "vehicle": "24",
         "course": "G7",
-        "avg_tact": 5.6,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 9.0,
+        "target_tile": 9,
+        "sample_count": 1
       },
       "31_C3": {
         "vehicle": "31",
         "course": "C3",
-        "avg_tact": 5.6,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "31_C7": {
         "vehicle": "31",
         "course": "C7",
-        "avg_tact": 5.4,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "32_C2": {
         "vehicle": "32",
         "course": "C2",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 12.0,
+        "target_tile": 12,
+        "sample_count": 1
       },
       "32_C3": {
         "vehicle": "32",
         "course": "C3",
-        "avg_tact": 5.6,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "33_C5": {
         "vehicle": "33",
         "course": "C5",
-        "avg_tact": 5.4,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "33_F5": {
         "vehicle": "33",
         "course": "F5",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "33_F6": {
         "vehicle": "33",
         "course": "F6",
-        "avg_tact": 7.6,
-        "target_tile": 8,
-        "sample_count": 5
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "42_C4": {
         "vehicle": "42",
         "course": "C4",
-        "avg_tact": 5.8,
+        "avg_tact": 6.0,
         "target_tile": 6,
-        "sample_count": 5
+        "sample_count": 1
       },
       "42_C5": {
         "vehicle": "42",
         "course": "C5",
-        "avg_tact": 5.4,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "47_D8": {
         "vehicle": "47",
         "course": "D8",
-        "avg_tact": 6.8,
-        "target_tile": 7,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "47_G8": {
         "vehicle": "47",
         "course": "G8",
-        "avg_tact": 5.4,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "51_C1": {
         "vehicle": "51",
         "course": "C1",
-        "avg_tact": 4.0,
-        "target_tile": 4,
-        "sample_count": 5
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "51_D2": {
         "vehicle": "51",
         "course": "D2",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "51_D6": {
         "vehicle": "51",
         "course": "D6",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "51_F4": {
         "vehicle": "51",
         "course": "F4",
-        "avg_tact": 4.2,
-        "target_tile": 4,
-        "sample_count": 5
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "2号車_G3": {
         "vehicle": "2号車",
         "course": "G3",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 11.0,
+        "target_tile": 11,
+        "sample_count": 1
       },
       "21_A2": {
         "vehicle": "21",
         "course": "A2",
-        "avg_tact": 3.4,
-        "target_tile": 3,
-        "sample_count": 5
+        "avg_tact": 4.0,
+        "target_tile": 4,
+        "sample_count": 1
       },
       "21_D9": {
         "vehicle": "21",
         "course": "D9",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "41_C9": {
         "vehicle": "41",
         "course": "C9",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "41_D5": {
         "vehicle": "41",
         "course": "D5",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "43_C6": {
         "vehicle": "43",
         "course": "C6",
-        "avg_tact": 5.6,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "43_D4": {
         "vehicle": "43",
         "course": "D4",
-        "avg_tact": 5.4,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "43_F7": {
         "vehicle": "43",
         "course": "F7",
-        "avg_tact": 8.0,
-        "target_tile": 8,
-        "sample_count": 5
+        "avg_tact": 13.0,
+        "target_tile": 13,
+        "sample_count": 1
       },
       "45_A5": {
         "vehicle": "45",
         "course": "A5",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "45_D9": {
         "vehicle": "45",
         "course": "D9",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "52_F2": {
         "vehicle": "52",
         "course": "F2",
-        "avg_tact": 7.2,
-        "target_tile": 7,
-        "sample_count": 5
+        "avg_tact": 13.0,
+        "target_tile": 13,
+        "sample_count": 1
       },
       "52_F5": {
         "vehicle": "52",
         "course": "F5",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "52_F9": {
         "vehicle": "52",
         "course": "F9",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 4
+        "avg_tact": 10.0,
+        "target_tile": 10,
+        "sample_count": 1
       },
       "8号車_G1": {
         "vehicle": "8号車",
         "course": "G1",
-        "avg_tact": 2.8,
-        "target_tile": 3,
-        "sample_count": 4
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "8号車_G2": {
         "vehicle": "8号車",
         "course": "G2",
-        "avg_tact": 2.0,
-        "target_tile": 2,
-        "sample_count": 1
+        "avg_tact": null,
+        "target_tile": null,
+        "sample_count": 0
       },
       "13号車①_AC": {
         "vehicle": "13号車①",
         "course": "AC",
-        "avg_tact": 1.3,
-        "target_tile": 1,
-        "sample_count": 3
+        "avg_tact": 2.0,
+        "target_tile": 2,
+        "sample_count": 1
       },
       "13号車①_AD": {
         "vehicle": "13号車①",
         "course": "AD",
-        "avg_tact": 2.0,
-        "target_tile": 2,
-        "sample_count": 1
+        "avg_tact": null,
+        "target_tile": null,
+        "sample_count": 0
       },
       "10号車_08": {
         "vehicle": "10号車",
@@ -2379,226 +837,226 @@
       "10号車_DH": {
         "vehicle": "10号車",
         "course": "DH",
-        "avg_tact": 3.4,
-        "target_tile": 3,
-        "sample_count": 5
+        "avg_tact": 1.0,
+        "target_tile": 1,
+        "sample_count": 1
       },
       "10号車_FF": {
         "vehicle": "10号車",
         "course": "FF",
-        "avg_tact": 3.8,
+        "avg_tact": 4.0,
         "target_tile": 4,
-        "sample_count": 4
+        "sample_count": 1
       },
       "10号車_FG": {
         "vehicle": "10号車",
         "course": "FG",
-        "avg_tact": 4.0,
-        "target_tile": 4,
-        "sample_count": 4
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "34_C8": {
         "vehicle": "34",
         "course": "C8",
-        "avg_tact": 5.6,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "34_D7": {
         "vehicle": "34",
         "course": "D7",
-        "avg_tact": 4.2,
-        "target_tile": 4,
-        "sample_count": 5
+        "avg_tact": 6.0,
+        "target_tile": 6,
+        "sample_count": 1
       },
       "3号車①_G4": {
         "vehicle": "3号車①",
         "course": "G4",
-        "avg_tact": 3.6,
-        "target_tile": 4,
-        "sample_count": 5
+        "avg_tact": 3.0,
+        "target_tile": 3,
+        "sample_count": 1
       },
       "44_D1": {
         "vehicle": "44",
         "course": "D1",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "44_F2": {
         "vehicle": "44",
         "course": "F2",
-        "avg_tact": 7.2,
-        "target_tile": 7,
-        "sample_count": 5
+        "avg_tact": 13.0,
+        "target_tile": 13,
+        "sample_count": 1
       },
       "46_A3": {
         "vehicle": "46",
         "course": "A3",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "46_D2": {
         "vehicle": "46",
         "course": "D2",
-        "avg_tact": 6.4,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "46_G6": {
         "vehicle": "46",
         "course": "G6",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 10.0,
+        "target_tile": 10,
+        "sample_count": 1
       },
       "46_G7": {
         "vehicle": "46",
         "course": "G7",
-        "avg_tact": 5.6,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 9.0,
+        "target_tile": 9,
+        "sample_count": 1
       },
       "48_DA": {
         "vehicle": "48",
         "course": "DA",
-        "avg_tact": 3.2,
+        "avg_tact": 3.0,
         "target_tile": 3,
-        "sample_count": 5
+        "sample_count": 1
       },
       "48_DC": {
         "vehicle": "48",
         "course": "DC",
-        "avg_tact": 4.2,
+        "avg_tact": 4.0,
         "target_tile": 4,
-        "sample_count": 5
+        "sample_count": 1
       },
       "48_G9": {
         "vehicle": "48",
         "course": "G9",
-        "avg_tact": 6.5,
-        "target_tile": 7,
-        "sample_count": 4
+        "avg_tact": 9.0,
+        "target_tile": 9,
+        "sample_count": 1
       },
       "49_DD": {
         "vehicle": "49",
         "course": "DD",
-        "avg_tact": 6.2,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "49_G9": {
         "vehicle": "49",
         "course": "G9",
-        "avg_tact": 6.5,
-        "target_tile": 7,
-        "sample_count": 4
+        "avg_tact": 9.0,
+        "target_tile": 9,
+        "sample_count": 1
       },
       "53_F8": {
         "vehicle": "53",
         "course": "F8",
-        "avg_tact": 7.2,
-        "target_tile": 7,
-        "sample_count": 5
+        "avg_tact": 9.0,
+        "target_tile": 9,
+        "sample_count": 1
       },
       "53_FD": {
         "vehicle": "53",
         "course": "FD",
-        "avg_tact": 3.8,
-        "target_tile": 4,
-        "sample_count": 5
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "54_C6": {
         "vehicle": "54",
         "course": "C6",
-        "avg_tact": 5.6,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 7.0,
+        "target_tile": 7,
+        "sample_count": 1
       },
       "54_FD": {
         "vehicle": "54",
         "course": "FD",
-        "avg_tact": 3.8,
-        "target_tile": 4,
-        "sample_count": 5
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "54_G5": {
         "vehicle": "54",
         "course": "G5",
         "avg_tact": 8.0,
         "target_tile": 8,
-        "sample_count": 5
+        "sample_count": 1
       },
       "61_G5": {
         "vehicle": "61",
         "course": "G5",
         "avg_tact": 8.0,
         "target_tile": 8,
-        "sample_count": 5
+        "sample_count": 1
       },
       "61_G9": {
         "vehicle": "61",
         "course": "G9",
-        "avg_tact": 6.5,
-        "target_tile": 7,
-        "sample_count": 4
+        "avg_tact": 9.0,
+        "target_tile": 9,
+        "sample_count": 1
       },
       "62_A3": {
         "vehicle": "62",
         "course": "A3",
-        "avg_tact": 6.0,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 8.0,
+        "target_tile": 8,
+        "sample_count": 1
       },
       "62_G6": {
         "vehicle": "62",
         "course": "G6",
-        "avg_tact": 5.8,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 10.0,
+        "target_tile": 10,
+        "sample_count": 1
       },
       "2号車②_HA": {
         "vehicle": "2号車②",
         "course": "HA",
-        "avg_tact": 3.6,
-        "target_tile": 4,
-        "sample_count": 5
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "9号車②_HG": {
         "vehicle": "9号車②",
         "course": "HG",
-        "avg_tact": 4.8,
+        "avg_tact": 5.0,
         "target_tile": 5,
-        "sample_count": 4
+        "sample_count": 1
       },
       "9号車②_HH": {
         "vehicle": "9号車②",
         "course": "HH",
-        "avg_tact": 6.2,
-        "target_tile": 6,
-        "sample_count": 5
+        "avg_tact": 12.0,
+        "target_tile": 12,
+        "sample_count": 1
       },
       "12号車②_CA": {
         "vehicle": "12号車②",
         "course": "CA",
-        "avg_tact": 7.3,
-        "target_tile": 7,
-        "sample_count": 4
+        "avg_tact": 5.0,
+        "target_tile": 5,
+        "sample_count": 1
       },
       "13号車②_FK": {
         "vehicle": "13号車②",
         "course": "FK",
-        "avg_tact": 3.8,
-        "target_tile": 4,
-        "sample_count": 5
+        "avg_tact": 2.0,
+        "target_tile": 2,
+        "sample_count": 1
       },
       "3号車②_H4": {
         "vehicle": "3号車②",
         "course": "H4",
-        "avg_tact": 5.2,
-        "target_tile": 5,
-        "sample_count": 5
+        "avg_tact": 2.0,
+        "target_tile": 2,
+        "sample_count": 1
       }
     }
   }

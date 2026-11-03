@@ -706,6 +706,132 @@ def format_cell_time(time_val):
     return s
 
 
+import unicodedata
+
+# =========================================================
+# 平均振出回数 (target_tacts.json) 自動読込・ホットリロード機構
+# =========================================================
+TARGET_TACTS_CACHE = {
+    "mtime": 0.0,
+    "path": "",
+    "data": None
+}
+TARGET_TACTS_LOCK = threading.Lock()
+
+
+def normalize_course_key_str(val):
+    if val is None:
+        return ""
+    s = unicodedata.normalize("NFKC", str(val)).strip()
+    for h in ("ー", "―", "‐", "－", "ｰ"):
+        s = s.replace(h, "-")
+    return "".join(s.split())
+
+
+def get_target_tacts_data():
+    """target_tacts.json の更新日時(mtime)を監視し、更新があれば再起動なしで自動リロードする"""
+    candidates = [
+        os.path.join(APP_DIR, "target_tacts.json"),
+        r"X:\全社共有\371神奈川\全社ﾌｫﾙﾀﾞ\物流本部フォルダ\00_共有スペース\庫内ステータス管理\作業進捗状況システム\target_tacts.json"
+    ]
+    best_path = ""
+    best_mtime = 0.0
+    for p in candidates:
+        try:
+            if os.path.exists(p):
+                mt = os.path.getmtime(p)
+                if mt > best_mtime:
+                    best_mtime = mt
+                    best_path = p
+        except Exception:
+            pass
+
+    if not best_path:
+        return None
+
+    with TARGET_TACTS_LOCK:
+        if TARGET_TACTS_CACHE["data"] is not None and TARGET_TACTS_CACHE["mtime"] == best_mtime and TARGET_TACTS_CACHE["path"] == best_path:
+            return TARGET_TACTS_CACHE["data"]
+
+        try:
+            with open(best_path, "r", encoding="utf-8") as f:
+                loaded = json.load(f)
+            TARGET_TACTS_CACHE["mtime"] = best_mtime
+            TARGET_TACTS_CACHE["path"] = best_path
+            TARGET_TACTS_CACHE["data"] = loaded
+            print(f"[TARGET TACTS] 平均タクト定義を読み込みました: {best_path} (集計期間: {loaded.get('period_str', '-')})", flush=True)
+            return loaded
+        except Exception as e:
+            print(f"[TARGET TACTS WARN] target_tacts.json の読み込みに失敗しました: {e}", flush=True)
+            return TARGET_TACTS_CACHE["data"]
+
+
+def lookup_target_tact_for_course(canonical_day, vehicle, course):
+    """指定された曜日・号車・コースに対応する (target_tile, avg_tact) を返す"""
+    tacts_data = get_target_tacts_data()
+    if not tacts_data or not isinstance(tacts_data, dict):
+        return None, None
+
+    days_map = tacts_data.get("days", {})
+    day_courses = days_map.get(canonical_day) or {}
+    if not day_courses:
+        return None, None
+
+    v_raw = str(vehicle or "").strip()
+    c_raw = str(course or "").strip()
+    v_norm = normalize_course_key_str(v_raw)
+    c_norm = normalize_course_key_str(c_raw) or "-"
+
+    # 1. 直接キー検索
+    for cand_key in (f"{v_raw}_{c_raw}", f"{v_norm}_{c_norm}", v_raw, v_norm):
+        if cand_key and cand_key in day_courses:
+            entry = day_courses[cand_key]
+            return entry.get("target_tile"), entry.get("avg_tact")
+
+    # 2. 正規化キーでの走査検索
+    entries = list(day_courses.values())
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        ev = normalize_course_key_str(entry.get("vehicle"))
+        ec = normalize_course_key_str(entry.get("course")) or "-"
+        if ev == v_norm and ec == c_norm:
+            return entry.get("target_tile"), entry.get("avg_tact")
+
+    if c_norm in ("-", ""):
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            ev = normalize_course_key_str(entry.get("vehicle"))
+            ec = normalize_course_key_str(entry.get("course"))
+            if ev == v_norm or ec == v_norm:
+                return entry.get("target_tile"), entry.get("avg_tact")
+    else:
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            ec = normalize_course_key_str(entry.get("course"))
+            if ec == c_norm:
+                return entry.get("target_tile"), entry.get("avg_tact")
+
+    return None, None
+
+
+def apply_target_tacts_to_signage_data(canonical_day, data):
+    """サイネージデータ内の各コースに最新の target_tile / avg_tact を付与する"""
+    if not data or not isinstance(data, dict):
+        return data
+    courses = data.get("courses")
+    if not isinstance(courses, list):
+        return data
+    for c in courses:
+        if isinstance(c, dict):
+            t_tile, a_tact = lookup_target_tact_for_course(canonical_day, c.get("vehicle"), c.get("course"))
+            c["target_tile"] = t_tile
+            c["avg_tact"] = a_tact
+    return data
+
+
 def parse_rows_into_signage_data(canonical_day, excel_path, disp_rows, data_rows, last_mod):
     courses = []
     last_vehicle = ""
@@ -789,12 +915,16 @@ def parse_rows_into_signage_data(canonical_day, excel_path, disp_rows, data_rows
 
         course_id = f"course_{r_idx//2 + 1}"
 
+        target_tile_val, avg_tact_val = lookup_target_tact_for_course(canonical_day, last_vehicle, course_name)
+
         courses.append({
             "id": course_id,
             "row_index": r_idx + 1,
             "vehicle": last_vehicle,
             "course": course_name,
             "time": time_str,
+            "target_tile": target_tile_val,
+            "avg_tact": avg_tact_val,
             "is_completed": is_course_completed,
             "is_no_delivery": is_no_delivery,
             "group_completed_time": group_completed_time,
@@ -889,9 +1019,9 @@ def refresh_data_for_day(canonical_day):
                 return cached
 
             last_mtime = LAST_FILE_MTIME.get(canonical_day)
-            # ファイルに変更がなく、すでにキャッシュがある場合は即時返却
+            # ファイルに変更がなく、すでにキャッシュがある場合は即時返却（target_tacts.jsonの更新は即時反映）
             if cached and cached.get("success") and last_mtime == mtime and mtime > 0:
-                return cached
+                return apply_target_tacts_to_signage_data(canonical_day, cached)
 
         # 3. ディスクファイルから直接読み込み (openpyxl)
         file_bytes = read_locked_file_bytes(excel_path)
@@ -1319,7 +1449,7 @@ def background_cache_worker():
 def get_static_version():
     """app.js, style.css, index.html の最終更新日時(mtime)からバージョン文字列を生成"""
     try:
-        targets = ["app.js", "style.css", "index.html"]
+        targets = ["app.js", "style.css", "index.html", "target_tacts.json"]
         latest_mtime = 0
         for name in targets:
             p = os.path.join(APP_DIR, name)

@@ -1255,4 +1255,19 @@ td.cell-time.group-completed-cell {
   }
 }
 
-
+/* =========================================================
+   ★ 平均振出回数（目標タクト枠）: どの状態でもパープル太枠 (#7C3AED) に統一
+   ========================================================= */
+.progress-tile.target-frame,
+.progress-tile.tile-unstarted.target-frame,
+.progress-tile.tile-grey-active.target-frame,
+.progress-tile.tile-blue-done.target-frame,
+.course-completed-row .progress-tile.target-frame,
+.course-completed-row .progress-tile.tile-unstarted.target-frame,
+.course-completed-row .progress-tile.tile-grey-active.target-frame,
+.course-completed-row .progress-tile.tile-blue-done.target-frame {
+  box-shadow: inset 0 0 0 3.5px #7C3AED, 0 0 8px rgba(124, 58, 237, 0.6) !important;
+  border-color: #7C3AED !important;
+  position: relative;
+  z-index: 2;
+}

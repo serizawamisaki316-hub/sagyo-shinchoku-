@@ -289,6 +289,116 @@
   // Initial tab highlight and header titles
   updateDayTabsUi(currentSelectedDay);
 
+  // =========================================================
+  // ★ 平均振出回数 (target_tacts.json) 読み込み＆コース照合ヘルパー
+  // =========================================================
+  let lastTargetTactsFetchTime = 0;
+
+  function normalizeCourseKeyStr(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .trim()
+      .replace(/[！-～]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+      .replace(/[ー―‐－ｰ]/g, '-')
+      .replace(/\s+/g, '');
+  }
+
+  async function ensureTargetTactsLoaded() {
+    const now = Date.now();
+    if (window.__TARGET_TACTS_DATA__ && (now - lastTargetTactsFetchTime) < 15000) {
+      return window.__TARGET_TACTS_DATA__;
+    }
+    const isCloudHosting = window.location.hostname.includes('web.app') || window.location.hostname.includes('firebaseapp.com');
+    if (isCloudHosting) {
+      try {
+        const fsTactsUrl = 'https://firestore.googleapis.com/v1/projects/warehouse-work-progress/databases/(default)/documents/signage_data/target_tacts';
+        const fsResp = await fetch(fsTactsUrl, { cache: 'no-store' });
+        if (fsResp.ok) {
+          const fsDoc = await fsResp.json();
+          const rawJson = fsDoc && fsDoc.fields && fsDoc.fields.payload && fsDoc.fields.payload.stringValue;
+          if (rawJson) {
+            const parsed = JSON.parse(rawJson);
+            if (parsed && parsed.days) {
+              window.__TARGET_TACTS_DATA__ = parsed;
+              lastTargetTactsFetchTime = now;
+              return parsed;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+    try {
+      const url = 'target_tacts.json' + (isFileProtocol ? '' : ('?_t=' + now));
+      const resp = await fetch(url, { cache: 'no-store' });
+      if (resp.ok) {
+        const json = await resp.json();
+        if (json && json.days) {
+          window.__TARGET_TACTS_DATA__ = json;
+          lastTargetTactsFetchTime = now;
+          return json;
+        }
+      }
+    } catch (e) {}
+    return window.__TARGET_TACTS_DATA__ || null;
+  }
+
+  function resolveCourseTargetTile(courseObj, dayName) {
+    if (!courseObj) return null;
+    const tactsData = window.__TARGET_TACTS_DATA__;
+    if (!tactsData || !tactsData.days) {
+      return (courseObj.target_tile !== undefined) ? courseObj.target_tile : null;
+    }
+
+    const cleanDay = (dayName || currentSelectedDay || '平日').replace(/[（\(\)）]/g, '').replace(/表示/g, '').trim();
+    const dayMap = tactsData.days[cleanDay];
+    if (!dayMap || Object.keys(dayMap).length === 0) {
+      return null;
+    }
+
+    const vRaw = String(courseObj.vehicle || '').trim();
+    const cRaw = String(courseObj.course || '').trim();
+    const vNorm = normalizeCourseKeyStr(vRaw);
+    const cNorm = normalizeCourseKeyStr(cRaw) || '-';
+
+    // 1. Direct key lookup
+    const directCandidates = [`${vRaw}_${cRaw}`, `${vNorm}_${cNorm}`, vRaw, vNorm];
+    for (const k of directCandidates) {
+      if (k && dayMap[k] && dayMap[k].target_tile !== undefined) {
+        return dayMap[k].target_tile;
+      }
+    }
+
+    // 2. Normalized scan lookup
+    const entries = Object.values(dayMap);
+    for (const entry of entries) {
+      if (!entry) continue;
+      const ev = normalizeCourseKeyStr(entry.vehicle);
+      const ec = normalizeCourseKeyStr(entry.course) || '-';
+      if (ev === vNorm && ec === cNorm) {
+        return entry.target_tile;
+      }
+    }
+    if (cNorm === '-' || cNorm === '') {
+      for (const entry of entries) {
+        if (!entry) continue;
+        const ev = normalizeCourseKeyStr(entry.vehicle);
+        const ec = normalizeCourseKeyStr(entry.course);
+        if (ev === vNorm || ec === vNorm) {
+          return entry.target_tile;
+        }
+      }
+    } else {
+      for (const entry of entries) {
+        if (!entry) continue;
+        const ec = normalizeCourseKeyStr(entry.course);
+        if (ec === cNorm) {
+          return entry.target_tile;
+        }
+      }
+    }
+    return null;
+  }
+
   // Helper: Reload signage data dynamically across all environments (Firestore Cloud, file://, http://, X:, OneDrive)
   async function loadDataFromSharedStorage() {
     const isCloudHosting = window.location.hostname.includes('web.app') || window.location.hostname.includes('firebaseapp.com');
@@ -475,10 +585,12 @@
           document.documentElement.style.setProperty('--font-scale', config.font_size_scale || 1.0);
         }
 
+        await ensureTargetTactsLoaded();
         latestSignageData = data;
 
-        // Smart Render
-        const currentDataHash = JSON.stringify(data.courses);
+        // Smart Render (includes target_tacts timestamp so frame updates trigger re-render)
+        const tactsVer = (window.__TARGET_TACTS_DATA__ && window.__TARGET_TACTS_DATA__.generated_at) || '';
+        const currentDataHash = JSON.stringify(data.courses) + '|' + tactsVer + '|' + currentSelectedDay;
         if (currentDataHash !== lastRenderedDataHash) {
           lastRenderedDataHash = currentDataHash;
           renderGroupedCards(data);
@@ -660,8 +772,10 @@
 
         // Helper to format tile
         const isNoDel = c.is_no_delivery;
+        const rawTargetTile = resolveCourseTargetTile(c, data.day || data.title || currentSelectedDay);
+        const targetTileNum = (rawTargetTile !== null && rawTargetTile !== undefined) ? Number(rawTargetTile) : null;
 
-        const buildTileHtml = (item) => {
+        const buildTileHtml = (item, isFuridashiRow = false) => {
           let tileClass = 'tile-unstarted';
           let displayNum = '';
 
@@ -677,14 +791,16 @@
             tileClass = 'tile-unstarted';        // 未着手: 0 (白枠)
           }
 
-          return `<td><div class="cell-tile-container"><div class="progress-tile ${tileClass}">${displayNum}</div></div></td>`;
+          const targetFrameClass = (isFuridashiRow && !isNoDel && targetTileNum !== null && Number(item.num) === targetTileNum) ? ' target-frame' : '';
+
+          return `<td><div class="cell-tile-container"><div class="progress-tile ${tileClass}${targetFrameClass}">${displayNum}</div></div></td>`;
         };
 
-        // 1..25 Tiles for 振出
-        const furidashiTiles = (c.furidashi.items || []).map(buildTileHtml).join('');
+        // 1..25 Tiles for 振出 (上段のみ平均振出回数のパープル太枠を表示)
+        const furidashiTiles = (c.furidashi.items || []).map(item => buildTileHtml(item, true)).join('');
 
-        // 1..25 Tiles for 査照
-        const sagyoTiles = (c.sagyo.items || []).map(buildTileHtml).join('');
+        // 1..25 Tiles for 査照 (下段は枠線なし)
+        const sagyoTiles = (c.sagyo.items || []).map(item => buildTileHtml(item, false)).join('');
 
         // Slip Checkbox (伝票: 配送なし優先で薄緑、完了済みブルー背景 + チェック、未着手は白枠)
         const slipChecked = c.slip && c.slip.is_done;

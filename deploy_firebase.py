@@ -28,6 +28,10 @@ SCOPES = [
 ]
 
 def find_service_account_key(base_dir):
+    # 0. Check firebase_credentials.json first
+    cred_file = os.path.join(base_dir, "firebase_credentials.json")
+    if os.path.exists(cred_file):
+        return cred_file
     # 1. Look in current directory
     for f in glob.glob(os.path.join(base_dir, "*.json")):
         base = os.path.basename(f)
@@ -74,7 +78,7 @@ def deploy():
     
     # 2. Prepare files to deploy (must be gzipped for Firebase Hosting API)
     files_to_deploy = {}
-    for filename in ["index.html", "style.css", "app.js"]:
+    for filename in ["index.html", "style.css", "app.js", "target_tacts.json"]:
         filepath = os.path.join(base_dir, filename)
         if os.path.exists(filepath):
             with open(filepath, "rb") as f:
