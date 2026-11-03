@@ -999,6 +999,7 @@ def sync_to_firestore_cloud(all_days_data, cfg=None):
 
         key_path = find_firebase_credentials()
         if not key_path:
+            print("[CLOUD SYNC ERROR] Firebase認証鍵(firebase_credentials.json)が見つかりません。送信をスキップします。", flush=True)
             return
 
         now = time.time()
@@ -1047,13 +1048,15 @@ def sync_to_firestore_cloud(all_days_data, cfg=None):
             "Authorization": f"Bearer {FIREBASE_TOKEN}",
             "Content-Type": "application/json"
         }
-        resp = requests.patch(doc_url, headers=headers, json=body, timeout=5)
+        resp = requests.patch(doc_url, headers=headers, json=body, timeout=10)
         if resp.ok:
             LAST_CLOUD_SYNC_TIME = now
             LAST_CLOUD_SYNC_HASH = days_hash
             print(f"[CLOUD SYNC] 最新データをFirestoreへ送信しました ({now_str})", flush=True)
+        else:
+            print(f"[CLOUD SYNC ERROR] HTTP {resp.status_code}: {resp.text}", flush=True)
     except Exception as e:
-        pass
+        print(f"[CLOUD SYNC EXCEPTION] {type(e).__name__}: {e}", flush=True)
 
 
 def cleanup_zombie_excel():
